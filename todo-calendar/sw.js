@@ -1,5 +1,6 @@
-// Offline support: serve from cache, refresh the cache in the background.
-const CACHE = "todo-calendar-v1";
+// Offline support: always try the network first so updates show right away,
+// fall back to the cached copy when offline.
+const CACHE = "todo-calendar-v2";
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
@@ -19,12 +20,17 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   if (new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
-    caches.open(CACHE).then(async (cache) => {
-      const cached = await cache.match(e.request, { ignoreSearch: true });
-      const fresh = fetch(e.request)
-        .then((res) => { if (res.ok) cache.put(e.request, res.clone()); return res; })
-        .catch(() => cached);
-      return cached || fresh;
-    })
+    fetch(e.request)
+      .then((res) => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(e.request, copy));
+        }
+        return res;
+      })
+      .catch(() =>
+        caches.match(e.request, { ignoreSearch: true })
+          .then((r) => r || (e.request.mode === "navigate" ? caches.match("./index.html") : undefined))
+      )
   );
 });

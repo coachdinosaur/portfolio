@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Todo Calendar</title>
-<meta name="description" content="A simple todo list on a calendar, with priorities.">
+<title>Todo List</title>
+<meta name="description" content="A simple todo list with priorities and a pull-up calendar.">
 <meta name="theme-color" content="#4f46e5">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -27,23 +27,79 @@
   html,body{margin:0}
   body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);
        -webkit-tap-highlight-color:transparent;line-height:1.4}
+  body.lock{overflow:hidden}
   button,input,select{font:inherit;color:inherit}
   button{cursor:pointer}
   .wrap{max-width:560px;margin:0 auto;padding:14px 12px calc(28px + env(safe-area-inset-bottom))}
-  .top{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 12px}
-  .top h1{font-size:1.2rem;margin:0;letter-spacing:-.01em}
-  .top .sub{font-size:.85rem;color:var(--muted)}
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+  .p1{--pc:var(--p1)} .p2{--pc:var(--p2)} .p3{--pc:var(--p3)} .p4{--pc:var(--p4)}
 
-  /* Calendar */
-  .cal-head{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+  /* Header */
+  .top{display:flex;align-items:center;gap:8px;margin:2px 0 10px}
+  .date-btn{flex:1;min-width:0;text-align:left;background:none;border:none;padding:4px 2px;display:flex;flex-direction:column;align-items:flex-start}
+  .date-main{font-size:1.55rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;display:inline-flex;align-items:center;gap:8px}
+  .date-main::after{content:"";width:7px;height:7px;border:solid var(--muted);border-width:0 2px 2px 0;transform:translateY(-3px) rotate(45deg)}
+  .date-sub{font-size:.88rem;color:var(--muted)}
+  .chip{height:38px;padding:0 14px;border-radius:999px;border:none;background:var(--accent-soft);color:var(--accent);font-weight:700;white-space:nowrap}
+  .icon-btn{flex:none;width:46px;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--accent)}
+  .progress{display:flex;align-items:center;gap:10px;margin:0 2px 12px;font-size:.8rem;color:var(--muted)}
+  .bar{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:width .25s}
+
+  /* Overdue banner */
+  .overdue{display:flex;align-items:center;gap:10px;border-color:var(--p1);padding:10px 12px}
+  .overdue p{margin:0;flex:1;font-size:.9rem}
+  .overdue button{border:none;border-radius:10px;padding:8px 12px;background:var(--p1);color:#fff;font-weight:650;white-space:nowrap}
+
+  /* Add form */
+  .add{display:flex;flex-wrap:wrap;gap:8px}
+  .add input{flex:1 1 100%;min-width:0;height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:16px}
+  .add input:focus,.add select:focus,.edit:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  .add select{flex:1;height:44px;padding:0 10px;border-radius:12px;border:1px solid var(--line);border-left:6px solid var(--pc);background:var(--bg);font-size:16px}
+  .add button{height:44px;padding:0 22px;border:none;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:700}
+  .for-date{width:100%;font-size:.8rem;color:var(--muted);margin:2px 2px 0}
+  .for-date b{color:var(--accent)}
+  @media (min-width:520px){ .add input{flex:1 1 200px} }
+
+  /* List */
+  .list{list-style:none;margin:0;padding:0}
+  .task{display:flex;align-items:center;gap:10px;padding:11px 2px;border-top:1px solid var(--line)}
+  .task:first-child{border-top:none}
+  .check{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center}
+  .task.done .check{background:var(--muted);border-color:var(--muted)}
+  .task.done .check::after{content:"";width:6px;height:11px;border:solid var(--card);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+  .text{flex:1;min-width:0;overflow-wrap:anywhere;cursor:text}
+  .task.done .text{text-decoration:line-through;color:var(--muted)}
+  .edit{flex:1;min-width:0;height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:16px}
+  .pill{flex:none;font-size:.7rem;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid var(--pc);background:transparent;color:var(--pc)}
+  .task.done .pill{opacity:.5}
+  .del{flex:none;width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-size:1.35rem;line-height:1}
+  .del:hover{background:var(--bg)}
+  .empty{color:var(--muted);text-align:center;font-size:.92rem;margin:10px 0}
+  .hint{color:var(--muted);font-size:.75rem;text-align:center;margin:10px 0 0}
+
+  footer{text-align:center;font-size:.8rem;color:var(--muted);margin-top:6px}
+  footer button,footer label{border:none;background:none;color:var(--accent);font-weight:600;padding:6px 8px;cursor:pointer}
+  footer input{display:none}
+
+  /* Pull-up calendar */
+  .backdrop{position:fixed;inset:0;background:rgba(10,12,20,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+  .backdrop.open{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;background:var(--card);
+         border-radius:22px 22px 0 0;padding:0 14px calc(14px + env(safe-area-inset-bottom));
+         transform:translateY(calc(100% + 50px));transition:transform .25s cubic-bezier(.2,.8,.2,1);z-index:21;
+         box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+  .sheet.open{transform:translateY(0)}
+  .sheet-top{touch-action:none}
+  .grab{display:flex;justify-content:center;padding:10px 0 8px;cursor:pointer}
+  .grab span{width:42px;height:5px;border-radius:99px;background:var(--line)}
+  .cal-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
   .cal-head h2{flex:1;font-size:1.05rem;margin:0;text-align:center}
-  .icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:1.25rem;line-height:1}
-  .today-btn{height:38px;padding:0 12px;border-radius:10px;border:none;background:var(--accent-soft);color:var(--accent);font-weight:650}
+  .nav-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:1.3rem;line-height:1}
   .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
   .dow span{text-align:center;font-size:.72rem;color:var(--muted);font-weight:600;padding:2px 0 6px}
-  .day{aspect-ratio:1/1;min-height:40px;border:none;border-radius:10px;background:transparent;padding:0;
-       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+  .day{aspect-ratio:1/1;max-height:56px;min-height:40px;border:none;border-radius:10px;background:transparent;padding:0;
+       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:100%}
   .day:hover{background:var(--accent-soft)}
   .day .num{font-size:.95rem;font-weight:500;line-height:1}
   .day.out{opacity:.38}
@@ -59,49 +115,11 @@
   .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:10px;font-size:.75rem;color:var(--muted)}
   .legend span{display:inline-flex;align-items:center;gap:5px}
   .legend i{width:8px;height:8px;border-radius:50%;background:var(--pc)}
+  .sheet-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.8rem;color:var(--muted)}
 
-  .p1{--pc:var(--p1)} .p2{--pc:var(--p2)} .p3{--pc:var(--p3)} .p4{--pc:var(--p4)}
-
-  /* Overdue banner */
-  .overdue{display:flex;align-items:center;gap:10px;border-color:var(--p1);padding:10px 12px}
-  .overdue p{margin:0;flex:1;font-size:.9rem}
-  .overdue button{border:none;border-radius:10px;padding:8px 12px;background:var(--p1);color:#fff;font-weight:650;white-space:nowrap}
-
-  /* Day panel */
-  .day-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}
-  .day-head h2{font-size:1.05rem;margin:0}
-  .tag{font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}
-  .count{font-size:.82rem;color:var(--muted);white-space:nowrap}
-  .add{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
-  .add input{flex:1 1 100%;min-width:0;height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:16px}
-  .add input:focus,.add select:focus,.edit:focus{outline:2px solid var(--accent);outline-offset:-1px}
-  .add select{flex:1;height:44px;padding:0 10px;border-radius:12px;border:1px solid var(--line);border-left:6px solid var(--pc);background:var(--bg);font-size:16px}
-  .add button{height:44px;padding:0 22px;border:none;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:700}
-  @media (min-width:520px){ .add input{flex:1 1 200px} }
-
-  .list{list-style:none;margin:0;padding:0}
-  .task{display:flex;align-items:center;gap:10px;padding:10px 2px;border-top:1px solid var(--line)}
-  .task:first-child{border-top:none}
-  .check{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center}
-  .task.done .check{background:var(--muted);border-color:var(--muted)}
-  .task.done .check::after{content:"";width:6px;height:11px;border:solid var(--card);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
-  .text{flex:1;min-width:0;overflow-wrap:anywhere;cursor:text}
-  .task.done .text{text-decoration:line-through;color:var(--muted)}
-  .edit{flex:1;min-width:0;height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:16px}
-  .pill{flex:none;font-size:.7rem;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid var(--pc);background:transparent;color:var(--pc)}
-  .task.done .pill{opacity:.5}
-  .del{flex:none;width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-size:1.35rem;line-height:1}
-  .del:hover{background:var(--bg)}
-  .empty{color:var(--muted);text-align:center;font-size:.9rem;margin:14px 0 6px}
-  .hint{color:var(--muted);font-size:.75rem;text-align:center;margin:8px 0 0}
-
-  footer{text-align:center;font-size:.8rem;color:var(--muted);margin-top:6px}
-  footer button,footer label{border:none;background:none;color:var(--accent);font-weight:600;padding:6px 8px;cursor:pointer}
-  footer input{display:none}
-
-  .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,160%);
+  .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,200%);
          background:#1c1f2a;color:#fff;padding:10px 16px;border-radius:12px;display:flex;gap:16px;align-items:center;
-         box-shadow:0 6px 24px rgba(0,0,0,.25);transition:transform .2s ease;z-index:10;font-size:.9rem;max-width:calc(100% - 24px)}
+         box-shadow:0 6px 24px rgba(0,0,0,.25);transition:transform .2s ease;z-index:30;font-size:.9rem;max-width:calc(100% - 24px)}
   .toast.show{transform:translate(-50%,0)}
   .toast button{background:none;border:none;color:#a5b4fc;font-weight:700;padding:0}
   .toast button:empty{display:none}
@@ -109,9 +127,20 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="top">
-    <h1>Todo Calendar</h1>
-    <span class="sub" id="todaySummary"></span>
+  <header class="top">
+    <button class="date-btn" id="dateBtn" type="button" aria-label="Open calendar">
+      <span class="date-main" id="dateMain">Today</span>
+      <span class="date-sub" id="dateSub"></span>
+    </button>
+    <button class="chip" id="todayChip" type="button" hidden>Back to today</button>
+    <button class="icon-btn" id="calBtn" type="button" aria-label="Open calendar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+    </button>
+  </header>
+
+  <div class="progress" id="progress" hidden>
+    <div class="bar"><i id="bar"></i></div>
+    <span id="progressText"></span>
   </div>
 
   <section class="card overdue" id="overdue" hidden>
@@ -120,38 +149,23 @@
   </section>
 
   <section class="card">
-    <div class="cal-head">
-      <button class="icon-btn" id="prevBtn" type="button" aria-label="Previous month">‹</button>
-      <h2 id="monthLabel"></h2>
-      <button class="icon-btn" id="nextBtn" type="button" aria-label="Next month">›</button>
-      <button class="today-btn" id="todayBtn" type="button">Today</button>
-    </div>
-    <div class="dow" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
-    <div class="grid" id="grid"></div>
-    <div class="legend">
-      <span class="p1"><i></i>Critical</span><span class="p2"><i></i>High</span>
-      <span class="p3"><i></i>Medium</span><span class="p4"><i></i>Low</span>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="day-head">
-      <h2 id="dayTitle"></h2>
-      <span class="count" id="dayCount"></span>
-    </div>
     <form class="add" id="addForm" autocomplete="off">
       <input id="taskInput" type="text" placeholder="Add a task…" maxlength="200" aria-label="Task">
-      <select id="prioSelect" aria-label="Priority">
+      <select id="prioSelect" aria-label="Urgency">
         <option value="1">Critical</option>
         <option value="2">High</option>
         <option value="3">Medium</option>
         <option value="4">Low</option>
       </select>
       <button type="submit">Add</button>
+      <p class="for-date" id="forDate" hidden></p>
     </form>
+  </section>
+
+  <section class="card">
     <ul class="list" id="list"></ul>
-    <p class="empty" id="empty">No tasks for this day.</p>
-    <p class="hint" id="hint" hidden>Tap a task to edit · tap its label to change priority</p>
+    <p class="empty" id="empty"></p>
+    <p class="hint" id="hint" hidden>Tap a task to edit · tap its label to change urgency</p>
   </section>
 
   <footer>
@@ -159,6 +173,28 @@
     <button type="button" id="exportBtn">Export backup</button>·<label for="importInput">Import backup</label>
     <input type="file" id="importInput" accept="application/json,.json">
   </footer>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Calendar" aria-hidden="true">
+  <div class="sheet-top" id="sheetTop">
+    <div class="grab" id="grab" aria-hidden="true"><span></span></div>
+    <div class="cal-head">
+      <button class="nav-btn" id="prevBtn" type="button" aria-label="Previous month">‹</button>
+      <h2 id="monthLabel"></h2>
+      <button class="nav-btn" id="nextBtn" type="button" aria-label="Next month">›</button>
+    </div>
+  </div>
+  <div class="dow" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+  <div class="grid" id="grid"></div>
+  <div class="legend">
+    <span class="p1"><i></i>Critical</span><span class="p2"><i></i>High</span>
+    <span class="p3"><i></i>Medium</span><span class="p4"><i></i>Low</span>
+  </div>
+  <div class="sheet-foot">
+    <span>Pick a day to see or add its tasks</span>
+    <button class="chip" id="sheetToday" type="button">Today</button>
+  </div>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastBtn"></button></div>
@@ -174,6 +210,7 @@
   var dateOf = function(k){ var p = k.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); };
   var todayKey = function(){ return keyOf(new Date()); };
   var uid = function(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); };
+  var plural = function(n, w){ return n + " " + w + (n === 1 ? "" : "s"); };
 
   function load(){
     try { var v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v : []; }
@@ -185,118 +222,74 @@
   }
 
   var tasks = load();
-  var selected = todayKey();
-  var now = new Date();
-  var view = { y: now.getFullYear(), m: now.getMonth() };
+  var selected = todayKey();       // the day whose list is shown (and where new tasks go)
+  var view = null;                 // month shown in the calendar sheet
+  var sheetOpen = false;
 
-  // open tasks first, then by priority, then oldest first
+  // open tasks first, then by urgency, then oldest first
   function sortTasks(a, b){ return (a.done - b.done) || (a.prio - b.prio) || (a.created - b.created); }
 
-  // ---------- Calendar ----------
-  function renderCalendar(){
-    var t = todayKey();
-    var first = new Date(view.y, view.m, 1);
-    $("monthLabel").textContent = first.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-
-    var open = {};
-    tasks.forEach(function(x){ if (!x.done) (open[x.date] = open[x.date] || []).push(x.prio); });
-
-    var daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
-    var cells = Math.ceil((first.getDay() + daysInMonth) / 7) * 7;
-    var grid = $("grid");
-    grid.innerHTML = "";
-
-    for (var i = 0; i < cells; i++){
-      var d = new Date(view.y, view.m, 1 - first.getDay() + i);
-      var k = keyOf(d);
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "day" + (d.getMonth() !== view.m ? " out" : "") + (k === t ? " today" : "") + (k === selected ? " sel" : "");
-      btn.dataset.key = k;
-
-      var num = document.createElement("span");
-      num.className = "num";
-      num.textContent = d.getDate();
-      btn.appendChild(num);
-
-      var dots = document.createElement("span");
-      dots.className = "dots";
-      var prios = (open[k] || []).slice().sort();
-      prios.slice(0, 3).forEach(function(p){
-        var dot = document.createElement("span");
-        dot.className = "dot p" + p;
-        dots.appendChild(dot);
-      });
-      if (prios.length > 3){
-        var plus = document.createElement("span");
-        plus.className = "plus";
-        plus.textContent = "+";
-        dots.appendChild(plus);
-      }
-      btn.appendChild(dots);
-
-      var label = d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
-      if (prios.length) label += ", " + prios.length + " open task" + (prios.length > 1 ? "s" : "");
-      btn.setAttribute("aria-label", label);
-      if (k === selected) btn.setAttribute("aria-pressed", "true");
-      grid.appendChild(btn);
-    }
-  }
-
-  $("grid").addEventListener("click", function(e){
-    var btn = e.target.closest(".day");
-    if (!btn) return;
-    selected = btn.dataset.key;
-    var d = dateOf(selected);
-    if (d.getMonth() !== view.m || d.getFullYear() !== view.y) view = { y: d.getFullYear(), m: d.getMonth() };
-    render();
-  });
-
-  function shiftMonth(n){
-    var d = new Date(view.y, view.m + n, 1);
-    view = { y: d.getFullYear(), m: d.getMonth() };
-    renderCalendar();
-  }
-  $("prevBtn").onclick = function(){ shiftMonth(-1); };
-  $("nextBtn").onclick = function(){ shiftMonth(1); };
-  $("todayBtn").onclick = function(){
-    var d = new Date();
-    selected = keyOf(d);
-    view = { y: d.getFullYear(), m: d.getMonth() };
-    render();
-  };
-
-  // swipe left/right on the calendar to change month
-  var sx = null, sy = null;
-  $("grid").addEventListener("touchstart", function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
-  $("grid").addEventListener("touchend", function(e){
-    if (sx === null) return;
-    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-    sx = null;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) shiftMonth(dx < 0 ? 1 : -1);
-  });
-
-  // ---------- Day panel ----------
-  function relativeTag(k){
+  function relative(k){
     var diff = Math.round((dateOf(k) - dateOf(todayKey())) / 86400000);
     return diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : diff === -1 ? "Yesterday" : "";
   }
+  function shortDate(k){ return dateOf(k).toLocaleDateString(undefined, { month: "short", day: "numeric" }); }
 
-  function renderDay(){
-    var title = $("dayTitle");
-    title.textContent = dateOf(selected).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
-    var tag = relativeTag(selected);
-    if (tag){
-      var s = document.createElement("span");
-      s.className = "tag";
-      s.textContent = tag;
-      title.appendChild(s);
+  function selectDay(k){
+    selected = k;
+    render();
+  }
+
+  // ---------- Header ----------
+  function renderHeader(){
+    var d = dateOf(selected), t = todayKey();
+    var rel = relative(selected);
+    var sameYear = d.getFullYear() === new Date().getFullYear();
+    $("dateMain").textContent = rel || d.toLocaleDateString(undefined, { weekday: "long" });
+    $("dateSub").textContent = rel
+      ? d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: sameYear ? undefined : "numeric" })
+      : d.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+    $("todayChip").hidden = selected === t;
+
+    var items = tasks.filter(function(x){ return x.date === selected; });
+    var done = items.filter(function(x){ return x.done; }).length;
+    $("progress").hidden = items.length === 0;
+    $("bar").style.width = items.length ? (done / items.length * 100) + "%" : "0";
+    $("progressText").textContent = done === items.length && items.length ? "All done ✓" : done + " of " + items.length + " done";
+
+    $("taskInput").placeholder = selected === t ? "Add a task…" : "Add a task for " + shortDate(selected) + "…";
+    var fd = $("forDate");
+    fd.hidden = selected === t;
+    if (selected !== t){
+      fd.textContent = "";
+      fd.append("Adding to ");
+      var b = document.createElement("b");
+      b.textContent = d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+      fd.append(b);
     }
+  }
 
+  // ---------- Overdue ----------
+  function renderOverdue(){
+    var t = todayKey();
+    var od = tasks.filter(function(x){ return !x.done && x.date < t; });
+    $("overdue").hidden = od.length === 0 || selected !== t;
+    $("overdueText").textContent = plural(od.length, "unfinished task") + " from earlier days";
+  }
+  $("moveAllBtn").onclick = function(){
+    var t = todayKey(), n = 0;
+    tasks.forEach(function(x){ if (!x.done && x.date < t){ x.date = t; n++; } });
+    save();
+    selectDay(t);
+    toast("Moved " + plural(n, "task") + " to today");
+  };
+
+  // ---------- List ----------
+  function renderList(){
     var items = tasks.filter(function(x){ return x.date === selected; }).sort(sortTasks);
-    var left = items.filter(function(x){ return !x.done; }).length;
-    $("dayCount").textContent = items.length ? (left ? left + " left" : "All done ✓") + (items.length - left && left ? " · " + (items.length - left) + " done" : "") : "";
-    $("empty").hidden = items.length > 0;
+    var empty = $("empty");
+    empty.hidden = items.length > 0;
+    empty.textContent = selected === todayKey() ? "Nothing to do yet today. Add a task above." : "No tasks on " + shortDate(selected) + ".";
     $("hint").hidden = items.length === 0;
 
     var list = $("list");
@@ -320,7 +313,7 @@
       pill.type = "button";
       pill.className = "pill";
       pill.textContent = PRIO[tk.prio];
-      pill.setAttribute("aria-label", "Priority " + PRIO[tk.prio] + ", tap to change");
+      pill.setAttribute("aria-label", "Urgency " + PRIO[tk.prio] + ", tap to change");
       pill.onclick = function(){ tk.prio = tk.prio % 4 + 1; save(); render(); };
 
       var del = document.createElement("button");
@@ -370,7 +363,7 @@
 
   // ---------- Add ----------
   var prioSelect = $("prioSelect");
-  try { var lp = localStorage.getItem(PRIO_KEY); if (PRIO[lp]) prioSelect.value = lp; else prioSelect.value = "3"; }
+  try { var lp = localStorage.getItem(PRIO_KEY); prioSelect.value = PRIO[lp] ? lp : "3"; }
   catch(e){ prioSelect.value = "3"; }
   function paintSelect(){ prioSelect.className = "p" + prioSelect.value; }
   prioSelect.addEventListener("change", paintSelect);
@@ -390,27 +383,134 @@
     render();
   });
 
-  // ---------- Overdue + header ----------
-  function renderOverdue(){
-    var t = todayKey();
-    var od = tasks.filter(function(x){ return !x.done && x.date < t; });
-    $("overdue").hidden = od.length === 0;
-    $("overdueText").textContent = od.length + " unfinished task" + (od.length > 1 ? "s" : "") + " from earlier days";
+  // ---------- Pull-up calendar ----------
+  var sheet = $("sheet"), backdrop = $("backdrop");
 
-    var today = tasks.filter(function(x){ return x.date === t; });
-    var done = today.filter(function(x){ return x.done; }).length;
-    $("todaySummary").textContent = today.length ? "Today: " + done + "/" + today.length + " done" : "";
+  function renderCalendar(){
+    if (!view) return;
+    var t = todayKey();
+    var first = new Date(view.y, view.m, 1);
+    $("monthLabel").textContent = first.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+
+    var open = {};
+    tasks.forEach(function(x){ if (!x.done) (open[x.date] = open[x.date] || []).push(x.prio); });
+
+    var daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
+    var cells = Math.ceil((first.getDay() + daysInMonth) / 7) * 7;
+    var grid = $("grid");
+    grid.innerHTML = "";
+    for (var i = 0; i < cells; i++){
+      var d = new Date(view.y, view.m, 1 - first.getDay() + i);
+      var k = keyOf(d);
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "day" + (d.getMonth() !== view.m ? " out" : "") + (k === t ? " today" : "") + (k === selected ? " sel" : "");
+      btn.dataset.key = k;
+
+      var num = document.createElement("span");
+      num.className = "num";
+      num.textContent = d.getDate();
+      btn.appendChild(num);
+
+      var dots = document.createElement("span");
+      dots.className = "dots";
+      var prios = (open[k] || []).slice().sort();
+      prios.slice(0, 3).forEach(function(p){
+        var dot = document.createElement("span");
+        dot.className = "dot p" + p;
+        dots.appendChild(dot);
+      });
+      if (prios.length > 3){
+        var plus = document.createElement("span");
+        plus.className = "plus";
+        plus.textContent = "+";
+        dots.appendChild(plus);
+      }
+      btn.appendChild(dots);
+
+      var label = d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+      if (prios.length) label += ", " + plural(prios.length, "open task");
+      btn.setAttribute("aria-label", label);
+      grid.appendChild(btn);
+    }
   }
-  $("moveAllBtn").onclick = function(){
-    var t = todayKey(), n = 0;
-    tasks.forEach(function(x){ if (!x.done && x.date < t){ x.date = t; n++; } });
-    save();
-    var d = new Date();
-    selected = t;
+
+  function openSheet(){
+    if (sheetOpen) return;
+    sheetOpen = true;
+    var d = dateOf(selected);
     view = { y: d.getFullYear(), m: d.getMonth() };
-    render();
-    toast("Moved " + n + " task" + (n > 1 ? "s" : "") + " to today");
-  };
+    renderCalendar();
+    sheet.classList.add("open");
+    backdrop.classList.add("open");
+    sheet.setAttribute("aria-hidden", "false");
+    sheet.inert = false;
+    document.body.classList.add("lock");
+    // let the phone's Back button close the calendar
+    try { history.pushState({ sheet: true }, ""); } catch(e){}
+  }
+  function closeSheet(fromHistory){
+    if (!sheetOpen) return;
+    sheetOpen = false;
+    sheet.classList.remove("open");
+    backdrop.classList.remove("open");
+    sheet.setAttribute("aria-hidden", "true");
+    sheet.inert = true;
+    document.body.classList.remove("lock");
+    if (!fromHistory && history.state && history.state.sheet){ try { history.back(); } catch(e){} }
+  }
+  sheet.inert = true;
+  window.addEventListener("popstate", function(){ if (sheetOpen) closeSheet(true); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeSheet(); });
+
+  $("calBtn").onclick = openSheet;
+  $("dateBtn").onclick = openSheet;
+  backdrop.onclick = function(){ closeSheet(); };
+  $("grab").onclick = function(){ closeSheet(); };
+  $("todayChip").onclick = function(){ selectDay(todayKey()); };
+  $("sheetToday").onclick = function(){ closeSheet(); selectDay(todayKey()); };
+
+  $("grid").addEventListener("click", function(e){
+    var btn = e.target.closest(".day");
+    if (!btn) return;
+    closeSheet();
+    selectDay(btn.dataset.key);
+  });
+
+  function shiftMonth(n){
+    var d = new Date(view.y, view.m + n, 1);
+    view = { y: d.getFullYear(), m: d.getMonth() };
+    renderCalendar();
+  }
+  $("prevBtn").onclick = function(){ shiftMonth(-1); };
+  $("nextBtn").onclick = function(){ shiftMonth(1); };
+
+  // swipe left/right on the days to change month
+  var sx = null, sy = null;
+  $("grid").addEventListener("touchstart", function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  $("grid").addEventListener("touchend", function(e){
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    sx = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) shiftMonth(dx < 0 ? 1 : -1);
+  });
+
+  // drag the top of the sheet down to close it
+  var dragStart = null, dragDy = 0;
+  var top = $("sheetTop");
+  top.addEventListener("touchstart", function(e){ dragStart = e.touches[0].clientY; dragDy = 0; sheet.style.transition = "none"; }, { passive: true });
+  top.addEventListener("touchmove", function(e){
+    if (dragStart === null) return;
+    dragDy = Math.max(0, e.touches[0].clientY - dragStart);
+    sheet.style.transform = "translateY(" + dragDy + "px)";
+  }, { passive: true });
+  top.addEventListener("touchend", function(){
+    if (dragStart === null) return;
+    dragStart = null;
+    sheet.style.transition = "";
+    sheet.style.transform = "";
+    if (dragDy > 70) closeSheet();
+  });
 
   // ---------- Backup ----------
   $("exportBtn").onclick = function(){
@@ -439,7 +539,7 @@
         n++;
       });
       save(); render();
-      toast("Imported " + n + " task" + (n === 1 ? "" : "s"));
+      toast("Imported " + plural(n, "task"));
     }).catch(function(){ toast("That file isn't a valid backup"); })
       .then(function(){ input.value = ""; });
   };
@@ -460,16 +560,26 @@
     $("toast").classList.remove("show");
   };
 
-  function render(){ renderOverdue(); renderCalendar(); renderDay(); }
+  function render(){ renderHeader(); renderOverdue(); renderList(); renderCalendar(); }
 
-  // refresh when coming back to the tab (date may have changed)
-  document.addEventListener("visibilitychange", function(){ if (!document.hidden) render(); });
-  // keep tabs in sync
+  // if the app stays open past midnight, follow the new day when it was showing "today"
+  var shownToday = todayKey();
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden) return;
+    var t = todayKey();
+    if (t !== shownToday){ if (selected === shownToday) selected = t; shownToday = t; }
+    render();
+  });
   window.addEventListener("storage", function(e){ if (e.key === KEY){ tasks = load(); render(); } });
 
   render();
 
-  if ("serviceWorker" in navigator) {
+  if ("serviceWorker" in navigator){
+    var hadController = !!navigator.serviceWorker.controller, reloaded = false;
+    // when an update installs, reload once so the new version shows right away
+    navigator.serviceWorker.addEventListener("controllerchange", function(){
+      if (hadController && !reloaded){ reloaded = true; location.reload(); }
+    });
     window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
   }
 })();

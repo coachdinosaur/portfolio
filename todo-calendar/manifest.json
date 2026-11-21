@@ -1,7 +1,7 @@
 {
-  "name": "Todo Calendar",
+  "name": "Todo List",
   "short_name": "Todos",
-  "description": "A simple todo list on a calendar, with priorities.",
+  "description": "A simple todo list with priorities and a pull-up calendar.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

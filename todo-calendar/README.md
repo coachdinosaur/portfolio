@@ -1,22 +1,26 @@
-# Todo Calendar
+# Todo List
 
-A simple todo list on a calendar. Pick a day, type a task, choose a priority, and tap **Add**.
+A simple todo list with urgency levels. New tasks go on today's list.
+To check or plan another day, tap the calendar button (or the date at the top) to pull up the calendar,
+pick a day, then add tasks for that date.
 
 **Live:** https://coachdinosaur.github.io/portfolio/todo-calendar/
 
-## Priorities
+## Urgency levels
 
-| Level    | Use it for                          |
-|----------|-------------------------------------|
+| Level    | Use it for                           |
+|----------|--------------------------------------|
 | Critical | Must be done now / today, no excuses |
-| High     | Urgent, do soon                     |
-| Medium   | Needed, but can wait a bit          |
-| Low      | Normal, whenever there's time       |
+| High     | Urgent, do soon                      |
+| Medium   | Needed, but can wait a bit           |
+| Low      | Normal, whenever there's time        |
 
 ## Features
 
-- Month calendar with coloured dots for open tasks on each day (swipe to change month)
-- Tap a task to edit it, tap its label to change priority, × to delete (with undo)
+- Today's list is the main screen; the calendar slides up only when you need it
+  (close it by tapping outside, dragging it down, or the phone's Back button)
+- Coloured dots on the calendar show which days have unfinished tasks
+- Tap a task to edit it, tap its label to change urgency, × to delete (with undo)
 - "Move to today" for unfinished tasks from earlier days
 - Works offline and can be installed to the home screen (Chrome menu → *Add to Home screen*)
 - Export / import a JSON backup
