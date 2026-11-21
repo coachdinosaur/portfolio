@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Todo Calendar</title>
+<meta name="description" content="A simple todo list on a calendar, with priorities.">
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --bg:#f5f6fa; --card:#ffffff; --text:#1c1f2a; --muted:#6b7280; --line:#e5e7ef;
+    --accent:#4f46e5; --accent-soft:#eef0ff; --on-accent:#ffffff;
+    --p1:#dc2626; --p2:#ea580c; --p3:#2563eb; --p4:#6b7280;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1117; --card:#181b24; --text:#e8eaf0; --muted:#9aa1b2; --line:#2a2f3c;
+      --accent:#818cf8; --accent-soft:#232846; --on-accent:#0f1117;
+      --p1:#f87171; --p2:#fb923c; --p3:#60a5fa; --p4:#9ca3af;
+    }
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  html,body{margin:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);
+       -webkit-tap-highlight-color:transparent;line-height:1.4}
+  button,input,select{font:inherit;color:inherit}
+  button{cursor:pointer}
+  .wrap{max-width:560px;margin:0 auto;padding:14px 12px calc(28px + env(safe-area-inset-bottom))}
+  .top{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 12px}
+  .top h1{font-size:1.2rem;margin:0;letter-spacing:-.01em}
+  .top .sub{font-size:.85rem;color:var(--muted)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+
+  /* Calendar */
+  .cal-head{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+  .cal-head h2{flex:1;font-size:1.05rem;margin:0;text-align:center}
+  .icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:1.25rem;line-height:1}
+  .today-btn{height:38px;padding:0 12px;border-radius:10px;border:none;background:var(--accent-soft);color:var(--accent);font-weight:650}
+  .dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .dow span{text-align:center;font-size:.72rem;color:var(--muted);font-weight:600;padding:2px 0 6px}
+  .day{aspect-ratio:1/1;min-height:40px;border:none;border-radius:10px;background:transparent;padding:0;
+       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+  .day:hover{background:var(--accent-soft)}
+  .day .num{font-size:.95rem;font-weight:500;line-height:1}
+  .day.out{opacity:.38}
+  .day.today{box-shadow:inset 0 0 0 1.5px var(--accent)}
+  .day.today .num{color:var(--accent);font-weight:800}
+  .day.sel,.day.sel:hover{background:var(--accent)}
+  .day.sel .num{color:var(--on-accent)}
+  .dots{display:flex;gap:2px;height:6px;align-items:center}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--pc)}
+  .day.sel .dot{box-shadow:0 0 0 1.5px var(--on-accent)}
+  .plus{font-size:.6rem;font-weight:700;line-height:1;color:var(--muted)}
+  .day.sel .plus{color:var(--on-accent)}
+  .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:10px;font-size:.75rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{width:8px;height:8px;border-radius:50%;background:var(--pc)}
+
+  .p1{--pc:var(--p1)} .p2{--pc:var(--p2)} .p3{--pc:var(--p3)} .p4{--pc:var(--p4)}
+
+  /* Overdue banner */
+  .overdue{display:flex;align-items:center;gap:10px;border-color:var(--p1);padding:10px 12px}
+  .overdue p{margin:0;flex:1;font-size:.9rem}
+  .overdue button{border:none;border-radius:10px;padding:8px 12px;background:var(--p1);color:#fff;font-weight:650;white-space:nowrap}
+
+  /* Day panel */
+  .day-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .day-head h2{font-size:1.05rem;margin:0}
+  .tag{font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}
+  .count{font-size:.82rem;color:var(--muted);white-space:nowrap}
+  .add{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+  .add input{flex:1 1 100%;min-width:0;height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:16px}
+  .add input:focus,.add select:focus,.edit:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  .add select{flex:1;height:44px;padding:0 10px;border-radius:12px;border:1px solid var(--line);border-left:6px solid var(--pc);background:var(--bg);font-size:16px}
+  .add button{height:44px;padding:0 22px;border:none;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:700}
+  @media (min-width:520px){ .add input{flex:1 1 200px} }
+
+  .list{list-style:none;margin:0;padding:0}
+  .task{display:flex;align-items:center;gap:10px;padding:10px 2px;border-top:1px solid var(--line)}
+  .task:first-child{border-top:none}
+  .check{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center}
+  .task.done .check{background:var(--muted);border-color:var(--muted)}
+  .task.done .check::after{content:"";width:6px;height:11px;border:solid var(--card);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+  .text{flex:1;min-width:0;overflow-wrap:anywhere;cursor:text}
+  .task.done .text{text-decoration:line-through;color:var(--muted)}
+  .edit{flex:1;min-width:0;height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:16px}
+  .pill{flex:none;font-size:.7rem;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid var(--pc);background:transparent;color:var(--pc)}
+  .task.done .pill{opacity:.5}
+  .del{flex:none;width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-size:1.35rem;line-height:1}
+  .del:hover{background:var(--bg)}
+  .empty{color:var(--muted);text-align:center;font-size:.9rem;margin:14px 0 6px}
+  .hint{color:var(--muted);font-size:.75rem;text-align:center;margin:8px 0 0}
+
+  footer{text-align:center;font-size:.8rem;color:var(--muted);margin-top:6px}
+  footer button,footer label{border:none;background:none;color:var(--accent);font-weight:600;padding:6px 8px;cursor:pointer}
+  footer input{display:none}
+
+  .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,160%);
+         background:#1c1f2a;color:#fff;padding:10px 16px;border-radius:12px;display:flex;gap:16px;align-items:center;
+         box-shadow:0 6px 24px rgba(0,0,0,.25);transition:transform .2s ease;z-index:10;font-size:.9rem;max-width:calc(100% - 24px)}
+  .toast.show{transform:translate(-50%,0)}
+  .toast button{background:none;border:none;color:#a5b4fc;font-weight:700;padding:0}
+  .toast button:empty{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Todo Calendar</h1>
+    <span class="sub" id="todaySummary"></span>
+  </div>
+
+  <section class="card overdue" id="overdue" hidden>
+    <p id="overdueText"></p>
+    <button id="moveAllBtn" type="button">Move to today</button>
+  </section>
+
+  <section class="card">
+    <div class="cal-head">
+      <button class="icon-btn" id="prevBtn" type="button" aria-label="Previous month">‹</button>
+      <h2 id="monthLabel"></h2>
+      <button class="icon-btn" id="nextBtn" type="button" aria-label="Next month">›</button>
+      <button class="today-btn" id="todayBtn" type="button">Today</button>
+    </div>
+    <div class="dow" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+    <div class="grid" id="grid"></div>
+    <div class="legend">
+      <span class="p1"><i></i>Critical</span><span class="p2"><i></i>High</span>
+      <span class="p3"><i></i>Medium</span><span class="p4"><i></i>Low</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="day-head">
+      <h2 id="dayTitle"></h2>
+      <span class="count" id="dayCount"></span>
+    </div>
+    <form class="add" id="addForm" autocomplete="off">
+      <input id="taskInput" type="text" placeholder="Add a task…" maxlength="200" aria-label="Task">
+      <select id="prioSelect" aria-label="Priority">
+        <option value="1">Critical</option>
+        <option value="2">High</option>
+        <option value="3">Medium</option>
+        <option value="4">Low</option>
+      </select>
+      <button type="submit">Add</button>
+    </form>
+    <ul class="list" id="list"></ul>
+    <p class="empty" id="empty">No tasks for this day.</p>
+    <p class="hint" id="hint" hidden>Tap a task to edit · tap its label to change priority</p>
+  </section>
+
+  <footer>
+    Tasks are saved on this device only.<br>
+    <button type="button" id="exportBtn">Export backup</button>·<label for="importInput">Import backup</label>
+    <input type="file" id="importInput" accept="application/json,.json">
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastBtn"></button></div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "todo-calendar-v1", PRIO_KEY = "todo-calendar-last-prio";
+  var PRIO = {1:"Critical", 2:"High", 3:"Medium", 4:"Low"};
+  var $ = function(id){ return document.getElementById(id); };
+  var pad = function(n){ return String(n).padStart(2, "0"); };
+  var keyOf = function(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
+  var dateOf = function(k){ var p = k.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+  var todayKey = function(){ return keyOf(new Date()); };
+  var uid = function(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); };
+
+  function load(){
+    try { var v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v : []; }
+    catch(e){ return []; }
+  }
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(tasks)); }
+    catch(e){ toast("Couldn't save — browser storage is blocked or full"); }
+  }
+
+  var tasks = load();
+  var selected = todayKey();
+  var now = new Date();
+  var view = { y: now.getFullYear(), m: now.getMonth() };
+
+  // open tasks first, then by priority, then oldest first
+  function sortTasks(a, b){ return (a.done - b.done) || (a.prio - b.prio) || (a.created - b.created); }
+
+  // ---------- Calendar ----------
+  function renderCalendar(){
+    var t = todayKey();
+    var first = new Date(view.y, view.m, 1);
+    $("monthLabel").textContent = first.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+
+    var open = {};
+    tasks.forEach(function(x){ if (!x.done) (open[x.date] = open[x.date] || []).push(x.prio); });
+
+    var daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
+    var cells = Math.ceil((first.getDay() + daysInMonth) / 7) * 7;
+    var grid = $("grid");
+    grid.innerHTML = "";
+
+    for (var i = 0; i < cells; i++){
+      var d = new Date(view.y, view.m, 1 - first.getDay() + i);
+      var k = keyOf(d);
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "day" + (d.getMonth() !== view.m ? " out" : "") + (k === t ? " today" : "") + (k === selected ? " sel" : "");
+      btn.dataset.key = k;
+
+      var num = document.createElement("span");
+      num.className = "num";
+      num.textContent = d.getDate();
+      btn.appendChild(num);
+
+      var dots = document.createElement("span");
+      dots.className = "dots";
+      var prios = (open[k] || []).slice().sort();
+      prios.slice(0, 3).forEach(function(p){
+        var dot = document.createElement("span");
+        dot.className = "dot p" + p;
+        dots.appendChild(dot);
+      });
+      if (prios.length > 3){
+        var plus = document.createElement("span");
+        plus.className = "plus";
+        plus.textContent = "+";
+        dots.appendChild(plus);
+      }
+      btn.appendChild(dots);
+
+      var label = d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+      if (prios.length) label += ", " + prios.length + " open task" + (prios.length > 1 ? "s" : "");
+      btn.setAttribute("aria-label", label);
+      if (k === selected) btn.setAttribute("aria-pressed", "true");
+      grid.appendChild(btn);
+    }
+  }
+
+  $("grid").addEventListener("click", function(e){
+    var btn = e.target.closest(".day");
+    if (!btn) return;
+    selected = btn.dataset.key;
+    var d = dateOf(selected);
+    if (d.getMonth() !== view.m || d.getFullYear() !== view.y) view = { y: d.getFullYear(), m: d.getMonth() };
+    render();
+  });
+
+  function shiftMonth(n){
+    var d = new Date(view.y, view.m + n, 1);
+    view = { y: d.getFullYear(), m: d.getMonth() };
+    renderCalendar();
+  }
+  $("prevBtn").onclick = function(){ shiftMonth(-1); };
+  $("nextBtn").onclick = function(){ shiftMonth(1); };
+  $("todayBtn").onclick = function(){
+    var d = new Date();
+    selected = keyOf(d);
+    view = { y: d.getFullYear(), m: d.getMonth() };
+    render();
+  };
+
+  // swipe left/right on the calendar to change month
+  var sx = null, sy = null;
+  $("grid").addEventListener("touchstart", function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  $("grid").addEventListener("touchend", function(e){
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    sx = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) shiftMonth(dx < 0 ? 1 : -1);
+  });
+
+  // ---------- Day panel ----------
+  function relativeTag(k){
+    var diff = Math.round((dateOf(k) - dateOf(todayKey())) / 86400000);
+    return diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : diff === -1 ? "Yesterday" : "";
+  }
+
+  function renderDay(){
+    var title = $("dayTitle");
+    title.textContent = dateOf(selected).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+    var tag = relativeTag(selected);
+    if (tag){
+      var s = document.createElement("span");
+      s.className = "tag";
+      s.textContent = tag;
+      title.appendChild(s);
+    }
+
+    var items = tasks.filter(function(x){ return x.date === selected; }).sort(sortTasks);
+    var left = items.filter(function(x){ return !x.done; }).length;
+    $("dayCount").textContent = items.length ? (left ? left + " left" : "All done ✓") + (items.length - left && left ? " · " + (items.length - left) + " done" : "") : "";
+    $("empty").hidden = items.length > 0;
+    $("hint").hidden = items.length === 0;
+
+    var list = $("list");
+    list.innerHTML = "";
+    items.forEach(function(tk){
+      var li = document.createElement("li");
+      li.className = "task p" + tk.prio + (tk.done ? " done" : "");
+
+      var check = document.createElement("button");
+      check.type = "button";
+      check.className = "check";
+      check.setAttribute("aria-label", tk.done ? "Mark as not done" : "Mark as done");
+      check.onclick = function(){ tk.done = !tk.done; save(); render(); };
+
+      var text = document.createElement("span");
+      text.className = "text";
+      text.textContent = tk.text;
+      text.onclick = function(){ startEdit(text, tk); };
+
+      var pill = document.createElement("button");
+      pill.type = "button";
+      pill.className = "pill";
+      pill.textContent = PRIO[tk.prio];
+      pill.setAttribute("aria-label", "Priority " + PRIO[tk.prio] + ", tap to change");
+      pill.onclick = function(){ tk.prio = tk.prio % 4 + 1; save(); render(); };
+
+      var del = document.createElement("button");
+      del.type = "button";
+      del.className = "del";
+      del.textContent = "×";
+      del.setAttribute("aria-label", "Delete task");
+      del.onclick = function(){ removeTask(tk.id); };
+
+      li.append(check, text, pill, del);
+      list.appendChild(li);
+    });
+  }
+
+  function startEdit(span, tk){
+    var inp = document.createElement("input");
+    inp.className = "edit";
+    inp.value = tk.text;
+    inp.maxLength = 200;
+    span.replaceWith(inp);
+    inp.focus();
+    var finished = false;
+    function finish(keep){
+      if (finished) return;
+      finished = true;
+      var v = inp.value.trim();
+      if (keep && v && v !== tk.text){ tk.text = v; save(); }
+      render();
+    }
+    inp.addEventListener("keydown", function(e){
+      if (e.key === "Enter"){ e.preventDefault(); finish(true); }
+      else if (e.key === "Escape"){ finish(false); }
+    });
+    inp.addEventListener("blur", function(){ finish(true); });
+  }
+
+  function removeTask(id){
+    var i = tasks.findIndex(function(x){ return x.id === id; });
+    if (i < 0) return;
+    var removed = tasks.splice(i, 1)[0];
+    save(); render();
+    toast("Task deleted", "Undo", function(){
+      tasks.splice(Math.min(i, tasks.length), 0, removed);
+      save(); render();
+    });
+  }
+
+  // ---------- Add ----------
+  var prioSelect = $("prioSelect");
+  try { var lp = localStorage.getItem(PRIO_KEY); if (PRIO[lp]) prioSelect.value = lp; else prioSelect.value = "3"; }
+  catch(e){ prioSelect.value = "3"; }
+  function paintSelect(){ prioSelect.className = "p" + prioSelect.value; }
+  prioSelect.addEventListener("change", paintSelect);
+  paintSelect();
+
+  $("addForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var input = $("taskInput");
+    var text = input.value.trim();
+    if (!text){ input.focus(); return; }
+    var prio = Number(prioSelect.value);
+    tasks.push({ id: uid(), text: text, prio: prio, date: selected, done: false, created: Date.now() });
+    save();
+    try { localStorage.setItem(PRIO_KEY, String(prio)); } catch(err){}
+    input.value = "";
+    input.focus();
+    render();
+  });
+
+  // ---------- Overdue + header ----------
+  function renderOverdue(){
+    var t = todayKey();
+    var od = tasks.filter(function(x){ return !x.done && x.date < t; });
+    $("overdue").hidden = od.length === 0;
+    $("overdueText").textContent = od.length + " unfinished task" + (od.length > 1 ? "s" : "") + " from earlier days";
+
+    var today = tasks.filter(function(x){ return x.date === t; });
+    var done = today.filter(function(x){ return x.done; }).length;
+    $("todaySummary").textContent = today.length ? "Today: " + done + "/" + today.length + " done" : "";
+  }
+  $("moveAllBtn").onclick = function(){
+    var t = todayKey(), n = 0;
+    tasks.forEach(function(x){ if (!x.done && x.date < t){ x.date = t; n++; } });
+    save();
+    var d = new Date();
+    selected = t;
+    view = { y: d.getFullYear(), m: d.getMonth() };
+    render();
+    toast("Moved " + n + " task" + (n > 1 ? "s" : "") + " to today");
+  };
+
+  // ---------- Backup ----------
+  $("exportBtn").onclick = function(){
+    var data = JSON.stringify({ app: "todo-calendar", version: 1, exported: new Date().toISOString(), tasks: tasks }, null, 2);
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([data], { type: "application/json" }));
+    a.download = "todo-backup-" + todayKey() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+  };
+  $("importInput").onchange = function(){
+    var f = this.files[0], input = this;
+    if (!f) return;
+    f.text().then(function(raw){
+      var data = JSON.parse(raw);
+      var list = Array.isArray(data) ? data : data && data.tasks;
+      if (!Array.isArray(list)) throw new Error("bad file");
+      var ids = {}; tasks.forEach(function(x){ ids[x.id] = true; });
+      var n = 0;
+      list.forEach(function(x){
+        if (!x || typeof x.text !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(x.date) || (x.id && ids[x.id])) return;
+        var p = Number(x.prio);
+        tasks.push({ id: x.id || uid(), text: x.text.slice(0, 200), prio: PRIO[p] ? p : 3, date: x.date, done: !!x.done, created: Number(x.created) || Date.now() });
+        n++;
+      });
+      save(); render();
+      toast("Imported " + n + " task" + (n === 1 ? "" : "s"));
+    }).catch(function(){ toast("That file isn't a valid backup"); })
+      .then(function(){ input.value = ""; });
+  };
+
+  // ---------- Toast ----------
+  var toastTimer = null, toastAction = null;
+  function toast(msg, actionLabel, action){
+    $("toastMsg").textContent = msg;
+    $("toastBtn").textContent = actionLabel || "";
+    toastAction = action || null;
+    $("toast").classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ $("toast").classList.remove("show"); toastAction = null; }, 5000);
+  }
+  $("toastBtn").onclick = function(){
+    if (toastAction) toastAction();
+    toastAction = null;
+    $("toast").classList.remove("show");
+  };
+
+  function render(){ renderOverdue(); renderCalendar(); renderDay(); }
+
+  // refresh when coming back to the tab (date may have changed)
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) render(); });
+  // keep tabs in sync
+  window.addEventListener("storage", function(e){ if (e.key === KEY){ tasks = load(); render(); } });
+
+  render();
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
+  }
+})();
+</script>
+</body>
+</html>
