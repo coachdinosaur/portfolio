@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Todo List</title>
-<meta name="description" content="A simple todo list with priorities and a pull-up calendar.">
+<meta name="description" content="A simple todo list with urgency levels, critical alerts and a pull-up calendar.">
 <meta name="theme-color" content="#4f46e5">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -13,13 +13,13 @@
   :root{
     --bg:#f5f6fa; --card:#ffffff; --text:#1c1f2a; --muted:#6b7280; --line:#e5e7ef;
     --accent:#4f46e5; --accent-soft:#eef0ff; --on-accent:#ffffff;
-    --p1:#dc2626; --p2:#ea580c; --p3:#2563eb; --p4:#6b7280;
+    --p1:#dc2626; --p2:#ea580c; --p3:#2563eb; --p4:#6b7280; --p1-soft:#fdecec;
   }
   @media (prefers-color-scheme: dark){
     :root{
       --bg:#0f1117; --card:#181b24; --text:#e8eaf0; --muted:#9aa1b2; --line:#2a2f3c;
       --accent:#818cf8; --accent-soft:#232846; --on-accent:#0f1117;
-      --p1:#f87171; --p2:#fb923c; --p3:#60a5fa; --p4:#9ca3af;
+      --p1:#f87171; --p2:#fb923c; --p3:#60a5fa; --p4:#9ca3af; --p1-soft:#3a1f24;
     }
   }
   *{box-sizing:border-box}
@@ -37,11 +37,13 @@
   /* Header */
   .top{display:flex;align-items:center;gap:8px;margin:2px 0 10px}
   .date-btn{flex:1;min-width:0;text-align:left;background:none;border:none;padding:4px 2px;display:flex;flex-direction:column;align-items:flex-start}
-  .date-main{font-size:1.55rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;display:inline-flex;align-items:center;gap:8px}
+  .date-main{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;display:inline-flex;align-items:center;gap:8px}
   .date-main::after{content:"";width:7px;height:7px;border:solid var(--muted);border-width:0 2px 2px 0;transform:translateY(-3px) rotate(45deg)}
-  .date-sub{font-size:.88rem;color:var(--muted)}
-  .chip{height:38px;padding:0 14px;border-radius:999px;border:none;background:var(--accent-soft);color:var(--accent);font-weight:700;white-space:nowrap}
-  .icon-btn{flex:none;width:46px;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--accent)}
+  .date-sub{font-size:.85rem;color:var(--muted)}
+  .chip{height:36px;padding:0 13px;border-radius:999px;border:none;background:var(--accent-soft);color:var(--accent);font-weight:700;white-space:nowrap}
+  .icon-btn{flex:none;position:relative;width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--accent)}
+  .badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--p1);color:#fff;
+         font-size:.7rem;font-weight:800;display:grid;place-items:center;border:2px solid var(--bg)}
   .progress{display:flex;align-items:center;gap:10px;margin:0 2px 12px;font-size:.8rem;color:var(--muted)}
   .bar{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
   .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:width .25s}
@@ -63,9 +65,9 @@
 
   /* List */
   .list{list-style:none;margin:0;padding:0}
-  .task{display:flex;align-items:center;gap:10px;padding:11px 2px;border-top:1px solid var(--line)}
+  .task{display:flex;align-items:center;gap:8px;padding:11px 2px;border-top:1px solid var(--line)}
   .task:first-child{border-top:none}
-  .check{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center}
+  .check{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center;margin-right:2px}
   .task.done .check{background:var(--muted);border-color:var(--muted)}
   .task.done .check::after{content:"";width:6px;height:11px;border:solid var(--card);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
   .text{flex:1;min-width:0;overflow-wrap:anywhere;cursor:text}
@@ -73,7 +75,8 @@
   .edit{flex:1;min-width:0;height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:16px}
   .pill{flex:none;font-size:.7rem;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid var(--pc);background:transparent;color:var(--pc)}
   .task.done .pill{opacity:.5}
-  .del{flex:none;width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-size:1.35rem;line-height:1}
+  .rem{flex:none;width:32px;height:32px;border:none;border-radius:8px;background:var(--p1-soft);color:var(--p1);display:grid;place-items:center;padding:0}
+  .del{flex:none;width:30px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-size:1.35rem;line-height:1;padding:0}
   .del:hover{background:var(--bg)}
   .empty{color:var(--muted);text-align:center;font-size:.92rem;margin:10px 0}
   .hint{color:var(--muted);font-size:.75rem;text-align:center;margin:10px 0 0}
@@ -82,10 +85,10 @@
   footer button,footer label{border:none;background:none;color:var(--accent);font-weight:600;padding:6px 8px;cursor:pointer}
   footer input{display:none}
 
-  /* Pull-up calendar */
+  /* Pull-up sheets (calendar + alerts) */
   .backdrop{position:fixed;inset:0;background:rgba(10,12,20,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
   .backdrop.open{opacity:1;pointer-events:auto}
-  .sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;background:var(--card);
+  .sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;max-height:88vh;overflow-y:auto;background:var(--card);
          border-radius:22px 22px 0 0;padding:0 14px calc(14px + env(safe-area-inset-bottom));
          transform:translateY(calc(100% + 50px));transition:transform .25s cubic-bezier(.2,.8,.2,1);z-index:21;
          box-shadow:0 -10px 30px rgba(0,0,0,.18)}
@@ -93,6 +96,7 @@
   .sheet-top{touch-action:none}
   .grab{display:flex;justify-content:center;padding:10px 0 8px;cursor:pointer}
   .grab span{width:42px;height:5px;border-radius:99px;background:var(--line)}
+  .sheet-title{font-size:1.1rem;margin:0 0 4px}
   .cal-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
   .cal-head h2{flex:1;font-size:1.05rem;margin:0;text-align:center}
   .nav-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:1.3rem;line-height:1}
@@ -117,6 +121,25 @@
   .legend i{width:8px;height:8px;border-radius:50%;background:var(--pc)}
   .sheet-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.8rem;color:var(--muted)}
 
+  /* Alerts sheet */
+  .sec{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:12px 0 6px}
+  .crit-list{list-style:none;margin:0;padding:0;max-height:32vh;overflow-y:auto}
+  .crit-list button{width:100%;display:flex;align-items:center;gap:10px;text-align:left;background:var(--p1-soft);border:none;
+                    border-left:4px solid var(--p1);border-radius:10px;padding:10px 12px;margin-bottom:6px}
+  .crit-list .when{flex:none;font-size:.75rem;font-weight:700;color:var(--p1)}
+  .crit-list .ct{flex:1;min-width:0;overflow-wrap:anywhere}
+  .setting{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+  .setting .sub{display:block;margin-top:2px;font-size:.8rem;color:var(--muted)}
+  .switch{flex:none;appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:background .2s;margin:0}
+  .switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .switch:checked{background:var(--accent)}
+  .switch:checked::after{transform:translateX(20px)}
+  .time-input{height:42px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:16px}
+  .status{font-size:.82rem;margin:4px 0 8px;padding:10px 12px;border-radius:10px;background:var(--accent-soft)}
+  .status.warn{background:var(--p1-soft)}
+  .link-btn{border:none;background:none;color:var(--accent);font-weight:650;padding:4px 0;font-size:.88rem}
+  .note{font-size:.8rem;color:var(--muted);margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+
   .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,200%);
          background:#1c1f2a;color:#fff;padding:10px 16px;border-radius:12px;display:flex;gap:16px;align-items:center;
          box-shadow:0 6px 24px rgba(0,0,0,.25);transition:transform .2s ease;z-index:30;font-size:.9rem;max-width:calc(100% - 24px)}
@@ -132,9 +155,13 @@
       <span class="date-main" id="dateMain">Today</span>
       <span class="date-sub" id="dateSub"></span>
     </button>
-    <button class="chip" id="todayChip" type="button" hidden>Back to today</button>
+    <button class="chip" id="todayChip" type="button" hidden>Today</button>
+    <button class="icon-btn" id="alertBtn" type="button" aria-label="Critical alerts">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      <span class="badge" id="bellBadge" hidden></span>
+    </button>
     <button class="icon-btn" id="calBtn" type="button" aria-label="Open calendar">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
     </button>
   </header>
 
@@ -176,9 +203,11 @@
 </div>
 
 <div class="backdrop" id="backdrop"></div>
-<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Calendar" aria-hidden="true">
-  <div class="sheet-top" id="sheetTop">
-    <div class="grab" id="grab" aria-hidden="true"><span></span></div>
+
+<!-- Calendar sheet -->
+<div class="sheet" id="calSheet" role="dialog" aria-modal="true" aria-label="Calendar" aria-hidden="true">
+  <div class="sheet-top">
+    <div class="grab" aria-hidden="true"><span></span></div>
     <div class="cal-head">
       <button class="nav-btn" id="prevBtn" type="button" aria-label="Previous month">‹</button>
       <h2 id="monthLabel"></h2>
@@ -197,14 +226,41 @@
   </div>
 </div>
 
+<!-- Alerts sheet -->
+<div class="sheet" id="alertSheet" role="dialog" aria-modal="true" aria-labelledby="alertTitle" aria-hidden="true">
+  <div class="sheet-top">
+    <div class="grab" aria-hidden="true"><span></span></div>
+    <h2 class="sheet-title" id="alertTitle">Critical alerts</h2>
+  </div>
+  <p class="sec">Unfinished critical tasks</p>
+  <ul class="crit-list" id="critList"></ul>
+  <p class="empty" id="critEmpty">No unfinished Critical tasks 👍</p>
+
+  <div class="setting">
+    <div><b>Daily reminder</b><span class="sub">A phone notification once a day while Critical tasks are unfinished</span></div>
+    <input type="checkbox" class="switch" id="alertToggle" aria-label="Daily reminder">
+  </div>
+  <div class="setting">
+    <label for="alertTime"><b>Remind me from</b><span class="sub">Also the default time for Google Calendar reminders</span></label>
+    <input type="time" class="time-input" id="alertTime" value="08:00">
+  </div>
+  <p class="status" id="alertStatus" hidden></p>
+  <button class="link-btn" id="testBtn" type="button" hidden>Send a test notification</button>
+  <p class="note"><b>Need an exact time?</b> Tap the bell button next to a Critical task to add it to Google Calendar. Calendar will alert you on time, even when this app is closed.</p>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastBtn"></button></div>
 
 <script>
 (function(){
   "use strict";
-  var KEY = "todo-calendar-v1", PRIO_KEY = "todo-calendar-last-prio";
+  var KEY = "todo-calendar-v1", PRIO_KEY = "todo-calendar-last-prio", ALERT_KEY = "todo-calendar-alerts";
+  var DATA_CACHE = "todo-data";
+  var DATA_URL = new URL("__alerts.json", location.href).href;
   var PRIO = {1:"Critical", 2:"High", 3:"Medium", 4:"Low"};
+  var BELL_SVG = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
   var $ = function(id){ return document.getElementById(id); };
+  var noop = function(){};
   var pad = function(n){ return String(n).padStart(2, "0"); };
   var keyOf = function(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
   var dateOf = function(k){ var p = k.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); };
@@ -219,12 +275,12 @@
   function save(){
     try { localStorage.setItem(KEY, JSON.stringify(tasks)); }
     catch(e){ toast("Couldn't save — browser storage is blocked or full"); }
+    syncAlerts();
   }
 
   var tasks = load();
   var selected = todayKey();       // the day whose list is shown (and where new tasks go)
   var view = null;                 // month shown in the calendar sheet
-  var sheetOpen = false;
 
   // open tasks first, then by urgency, then oldest first
   function sortTasks(a, b){ return (a.done - b.done) || (a.prio - b.prio) || (a.created - b.created); }
@@ -234,6 +290,10 @@
     return diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : diff === -1 ? "Yesterday" : "";
   }
   function shortDate(k){ return dateOf(k).toLocaleDateString(undefined, { month: "short", day: "numeric" }); }
+  function fmtTime(hhmm){
+    var p = hhmm.split(":").map(Number);
+    return new Date(2000, 0, 1, p[0], p[1]).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  }
 
   function selectDay(k){
     selected = k;
@@ -316,14 +376,27 @@
       pill.setAttribute("aria-label", "Urgency " + PRIO[tk.prio] + ", tap to change");
       pill.onclick = function(){ tk.prio = tk.prio % 4 + 1; save(); render(); };
 
+      li.append(check, text, pill);
+
+      if (tk.prio === 1 && !tk.done){
+        var rem = document.createElement("button");
+        rem.type = "button";
+        rem.className = "rem";
+        rem.innerHTML = BELL_SVG;
+        rem.setAttribute("aria-label", "Add a reminder in Google Calendar");
+        rem.title = "Remind me (Google Calendar)";
+        rem.onclick = function(){ window.open(calendarLink(tk), "_blank", "noopener"); };
+        li.append(rem);
+      }
+
       var del = document.createElement("button");
       del.type = "button";
       del.className = "del";
       del.textContent = "×";
       del.setAttribute("aria-label", "Delete task");
       del.onclick = function(){ removeTask(tk.id); };
+      li.append(del);
 
-      li.append(check, text, pill, del);
       list.appendChild(li);
     });
   }
@@ -381,11 +454,74 @@
     input.value = "";
     input.focus();
     render();
+    if (prio === 1 && !settings.enabled && !hintedAlerts){
+      hintedAlerts = true;
+      toast("Want a reminder for Critical tasks?", "Set up", function(){ openSheet(alertSheet); });
+    }
+  });
+  var hintedAlerts = false;
+
+  // ---------- Sheets ----------
+  var backdrop = $("backdrop"), calSheet = $("calSheet"), alertSheet = $("alertSheet");
+  var openEl = null;
+
+  function openSheet(el){
+    if (openEl) closeSheet(true);
+    openEl = el;
+    if (el === calSheet){
+      var d = dateOf(selected);
+      view = { y: d.getFullYear(), m: d.getMonth() };
+      renderCalendar();
+    } else {
+      renderAlerts();
+    }
+    el.classList.add("open");
+    backdrop.classList.add("open");
+    el.setAttribute("aria-hidden", "false");
+    el.inert = false;
+    el.scrollTop = 0;
+    document.body.classList.add("lock");
+    // let the phone's Back button close the sheet
+    if (!(history.state && history.state.sheet)){ try { history.pushState({ sheet: true }, ""); } catch(e){} }
+  }
+  function closeSheet(keepHistory){
+    var el = openEl;
+    if (!el) return;
+    openEl = null;
+    el.classList.remove("open");
+    backdrop.classList.remove("open");
+    el.setAttribute("aria-hidden", "true");
+    el.inert = true;
+    document.body.classList.remove("lock");
+    if (el === calSheet) view = null;
+    if (!keepHistory && history.state && history.state.sheet){ try { history.back(); } catch(e){} }
+  }
+  calSheet.inert = true;
+  alertSheet.inert = true;
+  window.addEventListener("popstate", function(){ if (openEl) closeSheet(true); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeSheet(); });
+  backdrop.onclick = function(){ closeSheet(); };
+  document.querySelectorAll(".grab").forEach(function(g){ g.onclick = function(){ closeSheet(); }; });
+
+  // drag the top of a sheet down to close it
+  document.querySelectorAll(".sheet-top").forEach(function(top){
+    var sheet = top.parentElement, start = null, dy = 0;
+    top.addEventListener("touchstart", function(e){ start = e.touches[0].clientY; dy = 0; sheet.style.transition = "none"; }, { passive: true });
+    top.addEventListener("touchmove", function(e){
+      if (start === null) return;
+      dy = Math.max(0, e.touches[0].clientY - start);
+      sheet.style.transform = "translateY(" + dy + "px)";
+    }, { passive: true });
+    top.addEventListener("touchend", function(){
+      if (start === null) return;
+      start = null;
+      sheet.style.transition = "";
+      sheet.style.transform = "";
+      if (dy > 70) closeSheet();
+    });
   });
 
-  // ---------- Pull-up calendar ----------
-  var sheet = $("sheet"), backdrop = $("backdrop");
-
+  // ---------- Calendar ----------
   function renderCalendar(){
     if (!view) return;
     var t = todayKey();
@@ -435,38 +571,8 @@
     }
   }
 
-  function openSheet(){
-    if (sheetOpen) return;
-    sheetOpen = true;
-    var d = dateOf(selected);
-    view = { y: d.getFullYear(), m: d.getMonth() };
-    renderCalendar();
-    sheet.classList.add("open");
-    backdrop.classList.add("open");
-    sheet.setAttribute("aria-hidden", "false");
-    sheet.inert = false;
-    document.body.classList.add("lock");
-    // let the phone's Back button close the calendar
-    try { history.pushState({ sheet: true }, ""); } catch(e){}
-  }
-  function closeSheet(fromHistory){
-    if (!sheetOpen) return;
-    sheetOpen = false;
-    sheet.classList.remove("open");
-    backdrop.classList.remove("open");
-    sheet.setAttribute("aria-hidden", "true");
-    sheet.inert = true;
-    document.body.classList.remove("lock");
-    if (!fromHistory && history.state && history.state.sheet){ try { history.back(); } catch(e){} }
-  }
-  sheet.inert = true;
-  window.addEventListener("popstate", function(){ if (sheetOpen) closeSheet(true); });
-  document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeSheet(); });
-
-  $("calBtn").onclick = openSheet;
-  $("dateBtn").onclick = openSheet;
-  backdrop.onclick = function(){ closeSheet(); };
-  $("grab").onclick = function(){ closeSheet(); };
+  $("calBtn").onclick = function(){ openSheet(calSheet); };
+  $("dateBtn").onclick = function(){ openSheet(calSheet); };
   $("todayChip").onclick = function(){ selectDay(todayKey()); };
   $("sheetToday").onclick = function(){ closeSheet(); selectDay(todayKey()); };
 
@@ -495,22 +601,179 @@
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) shiftMonth(dx < 0 ? 1 : -1);
   });
 
-  // drag the top of the sheet down to close it
-  var dragStart = null, dragDy = 0;
-  var top = $("sheetTop");
-  top.addEventListener("touchstart", function(e){ dragStart = e.touches[0].clientY; dragDy = 0; sheet.style.transition = "none"; }, { passive: true });
-  top.addEventListener("touchmove", function(e){
-    if (dragStart === null) return;
-    dragDy = Math.max(0, e.touches[0].clientY - dragStart);
-    sheet.style.transform = "translateY(" + dragDy + "px)";
-  }, { passive: true });
-  top.addEventListener("touchend", function(){
-    if (dragStart === null) return;
-    dragStart = null;
-    sheet.style.transition = "";
-    sheet.style.transform = "";
-    if (dragDy > 70) closeSheet();
-  });
+  // ---------- Critical alerts ----------
+  var settings = (function(){
+    try {
+      var s = JSON.parse(localStorage.getItem(ALERT_KEY));
+      if (s && typeof s === "object") return { enabled: !!s.enabled, time: /^\d\d:\d\d$/.test(s.time) ? s.time : "08:00" };
+    } catch(e){}
+    return { enabled: false, time: "08:00" };
+  })();
+  function saveSettings(){ try { localStorage.setItem(ALERT_KEY, JSON.stringify(settings)); } catch(e){} }
+  var canNotify = "Notification" in window && "serviceWorker" in navigator;
+  var bgState = "unknown";   // "on" | "needs-install" | "unsupported"
+  var permitted = function(){ return canNotify && Notification.permission === "granted"; };
+
+  function openCritical(){
+    return tasks.filter(function(x){ return !x.done && x.prio === 1; })
+      .sort(function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : a.created - b.created; });
+  }
+
+  // share settings + open Critical tasks with the service worker (it can't read localStorage)
+  function syncAlerts(){
+    if (!("caches" in window)) return Promise.resolve();
+    var payload = JSON.stringify({
+      enabled: settings.enabled, time: settings.time,
+      tasks: openCritical().map(function(x){ return { text: x.text, date: x.date }; })
+    });
+    return caches.open(DATA_CACHE)
+      .then(function(c){ return c.put(DATA_URL, new Response(payload, { headers: { "Content-Type": "application/json" } })); })
+      .catch(noop);
+  }
+
+  // ask the service worker to notify if it's time (it remembers if it already did today)
+  function checkNow(){
+    if (!settings.enabled || !permitted()) return;
+    syncAlerts()
+      .then(function(){ return navigator.serviceWorker.ready; })
+      .then(function(reg){ if (reg.active) reg.active.postMessage("check-critical"); })
+      .catch(noop);
+  }
+
+  function registerBackground(){
+    if (!("serviceWorker" in navigator)){ bgState = "unsupported"; return Promise.resolve(); }
+    return navigator.serviceWorker.ready.then(function(reg){
+      if (!("periodicSync" in reg)){ bgState = "unsupported"; return; }
+      return navigator.permissions.query({ name: "periodic-background-sync" }).then(function(st){
+        if (st.state !== "granted"){ bgState = "needs-install"; return; }
+        return reg.periodicSync.register("critical-check", { minInterval: 60 * 60 * 1000 })
+          .then(function(){ bgState = "on"; });
+      });
+    }).catch(function(){ bgState = "unsupported"; });
+  }
+  function unregisterBackground(){
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.ready
+      .then(function(reg){ if ("periodicSync" in reg) return reg.periodicSync.unregister("critical-check"); })
+      .catch(noop);
+  }
+
+  function renderAlerts(){
+    var t = todayKey(), crit = openCritical();
+    var list = $("critList");
+    list.innerHTML = "";
+    crit.forEach(function(tk){
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.type = "button";
+      var when = document.createElement("span");
+      when.className = "when";
+      when.textContent = tk.date < t ? "Overdue · " + shortDate(tk.date)
+        : relative(tk.date) || dateOf(tk.date).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+      var ct = document.createElement("span");
+      ct.className = "ct";
+      ct.textContent = tk.text;
+      b.append(ct, when);
+      b.onclick = function(){ closeSheet(); selectDay(tk.date); };
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+    $("critEmpty").hidden = crit.length > 0;
+    updateAlertSettingsUI();
+  }
+
+  function updateAlertSettingsUI(){
+    var on = settings.enabled && permitted();
+    $("alertToggle").checked = on;
+    $("alertTime").value = settings.time;
+    $("testBtn").hidden = !on;
+    var msg = "", warn = false, time = fmtTime(settings.time);
+    if (!canNotify){ msg = "This browser can't show notifications. Use the bell button on a Critical task to get a Google Calendar reminder instead."; warn = true; }
+    else if (Notification.permission === "denied"){ msg = "Notifications are blocked for this site. In Chrome tap ⋮ → Settings → Site settings → Notifications and allow this site, then turn this on again."; warn = true; }
+    else if (on){
+      if (bgState === "on") msg = "On. You'll get one notification a day, some time after " + time + ", while Critical tasks are unfinished — even with the app closed. Your phone decides the exact moment, so it can come late.";
+      else if (bgState === "needs-install") msg = "On while the app is open (from " + time + "). To also get it when the app is closed, install it: Chrome ⋮ → Add to Home screen, then open it once from your home screen.";
+      else msg = "On while the app is open (from " + time + "). This browser can't check in the background, so use the bell button on a Critical task for an exact-time reminder.";
+    }
+    var st = $("alertStatus");
+    st.hidden = !msg;
+    st.textContent = msg;
+    st.classList.toggle("warn", warn);
+  }
+
+  $("alertBtn").onclick = function(){ openSheet(alertSheet); };
+
+  $("alertToggle").onchange = function(){
+    var box = this;
+    if (!box.checked){
+      settings.enabled = false;
+      saveSettings(); syncAlerts(); unregisterBackground(); updateAlertSettingsUI();
+      return;
+    }
+    if (!canNotify){ box.checked = false; updateAlertSettingsUI(); return; }
+    var ask = Notification.permission === "default" ? Notification.requestPermission() : Promise.resolve(Notification.permission);
+    ask.then(function(perm){
+      if (perm !== "granted"){ settings.enabled = false; saveSettings(); updateAlertSettingsUI(); return; }
+      settings.enabled = true;
+      saveSettings();
+      return syncAlerts().then(registerBackground).then(function(){ updateAlertSettingsUI(); checkNow(); });
+    }).catch(function(){ box.checked = false; updateAlertSettingsUI(); });
+  };
+
+  $("alertTime").onchange = function(){
+    if (!/^\d\d:\d\d$/.test(this.value)) return;
+    settings.time = this.value;
+    saveSettings(); updateAlertSettingsUI(); checkNow();
+  };
+
+  $("testBtn").onclick = function(){
+    if (!permitted()) return;
+    var crit = openCritical();
+    navigator.serviceWorker.ready.then(function(reg){
+      return reg.showNotification("🔔 Alerts are working", {
+        body: crit.length ? "You have " + plural(crit.length, "unfinished Critical task") + "." : "You'll be reminded when Critical tasks are unfinished.",
+        icon: "icon-192.png", badge: "badge-96.png", tag: "test"
+      });
+    }).catch(function(){ toast("Couldn't show a notification"); });
+  };
+
+  // Google Calendar link: the task on its date at the reminder time (or the next full hour if that's passed)
+  function calendarLink(tk){
+    var p = settings.time.split(":").map(Number);
+    var start = dateOf(tk.date);
+    start.setHours(p[0], p[1], 0, 0);
+    var now = new Date();
+    if (start < now){ start = new Date(now); start.setMinutes(0, 0, 0); start.setHours(start.getHours() + 1); }
+    var end = new Date(start.getTime() + 30 * 60000);
+    var f = function(d){ return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "T" + pad(d.getHours()) + pad(d.getMinutes()) + "00"; };
+    var tz = "";
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch(e){}
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+      "&text=" + encodeURIComponent("🔴 " + tk.text) +
+      "&dates=" + f(start) + "/" + f(end) +
+      (tz ? "&ctz=" + encodeURIComponent(tz) : "") +
+      "&details=" + encodeURIComponent("Critical task from your Todo List");
+  }
+
+  // red count on the bell, tab title and home-screen icon
+  function updateBell(){
+    var t = todayKey();
+    var due = openCritical().filter(function(x){ return x.date <= t; }).length;
+    var badge = $("bellBadge");
+    badge.hidden = !due;
+    badge.textContent = due > 9 ? "9+" : String(due);
+    $("alertBtn").setAttribute("aria-label", "Critical alerts" + (due ? ", " + due + " unfinished" : ""));
+    document.title = due ? "(" + due + ") Todo List" : "Todo List";
+    if ("setAppBadge" in navigator){
+      (due ? navigator.setAppBadge(due) : navigator.clearAppBadge()).catch(noop);
+    }
+    // nothing critical left today: clear the reminder from the notification shade
+    if (!due && permitted()){
+      navigator.serviceWorker.getRegistration().then(function(reg){
+        if (reg) return reg.getNotifications({ tag: "critical-daily" }).then(function(ns){ ns.forEach(function(n){ n.close(); }); });
+      }).catch(noop);
+    }
+  }
 
   // ---------- Backup ----------
   $("exportBtn").onclick = function(){
@@ -555,12 +818,16 @@
     toastTimer = setTimeout(function(){ $("toast").classList.remove("show"); toastAction = null; }, 5000);
   }
   $("toastBtn").onclick = function(){
-    if (toastAction) toastAction();
+    var act = toastAction;
     toastAction = null;
     $("toast").classList.remove("show");
+    if (act) act();
   };
 
-  function render(){ renderHeader(); renderOverdue(); renderList(); renderCalendar(); }
+  function render(){
+    renderHeader(); renderOverdue(); renderList(); renderCalendar(); updateBell();
+    if (openEl === alertSheet) renderAlerts();
+  }
 
   // if the app stays open past midnight, follow the new day when it was showing "today"
   var shownToday = todayKey();
@@ -569,10 +836,12 @@
     var t = todayKey();
     if (t !== shownToday){ if (selected === shownToday) selected = t; shownToday = t; }
     render();
+    checkNow();
   });
   window.addEventListener("storage", function(e){ if (e.key === KEY){ tasks = load(); render(); } });
 
   render();
+  syncAlerts();
 
   if ("serviceWorker" in navigator){
     var hadController = !!navigator.serviceWorker.controller, reloaded = false;
@@ -580,7 +849,12 @@
     navigator.serviceWorker.addEventListener("controllerchange", function(){
       if (hadController && !reloaded){ reloaded = true; location.reload(); }
     });
-    window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
+    window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(noop); });
+    if (settings.enabled && permitted()){
+      registerBackground().then(updateAlertSettingsUI);
+      checkNow();
+    }
+    setInterval(checkNow, 60000);
   }
 })();
 </script>

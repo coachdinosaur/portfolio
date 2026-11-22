@@ -20,6 +20,11 @@ pick a day, then add tasks for that date.
 - Today's list is the main screen; the calendar slides up only when you need it
   (close it by tapping outside, dragging it down, or the phone's Back button)
 - Coloured dots on the calendar show which days have unfinished tasks
+- **Critical alerts:** the bell at the top shows how many Critical tasks are unfinished (today + overdue)
+  and lists them. Turn on *Daily reminder* to get a phone notification once a day, after the time you pick,
+  while Critical tasks are unfinished. When the app is installed (Add to Home screen) this also works with the
+  app closed, using Chrome's periodic background sync; Chrome decides the exact moment, so it can come late.
+- Bell button on each Critical task: adds it to Google Calendar for an exact-time alert
 - Tap a task to edit it, tap its label to change urgency, × to delete (with undo)
 - "Move to today" for unfinished tasks from earlier days
 - Works offline and can be installed to the home screen (Chrome menu → *Add to Home screen*)
