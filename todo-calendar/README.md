@@ -29,6 +29,9 @@ the calendar, pick a day, then add tasks for that date.
 - Bell button on each Critical task: adds it to Google Calendar for an exact-time alert
 - Tap a task to edit its text, change urgency, move it to another date or delete it (with undo)
 - Finished tasks move to a collapsible *Completed* section
+- **Repeating tasks:** open a task and pick Daily, Weekdays, Weekly, Monthly, Quarterly or Yearly. When you tick it off,
+  the next one is added automatically (overdue ones skip ahead so the next isn't already late; month-based repeats keep
+  their day, e.g. the 31st becomes the 28th in February and back to the 31st in March). Un-ticking takes the next copy back.
 - "Move to today" for unfinished tasks from earlier days
 - Works offline; an **Install** button appears when Chrome allows installing it (or Chrome ⋮ → *Add to Home screen*). It shows up as "Todo List" in your apps
 - ⋮ Settings: theme (Auto / Light / Dark), accent colour, and export / import a JSON backup

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Todo List</title>
 <meta name="description" content="A simple todo list with urgency levels, critical alerts and a pull-up calendar.">
-<meta name="theme-color" content="#4f46e5">
+<meta name="theme-color" content="#f5f6fa">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -42,7 +42,7 @@
     root.style.setProperty("--accent-soft", mix(c, dark ? "#181b24" : "#ffffff", dark ? 0.22 : 0.1));
     root.style.setProperty("--on-accent", dark ? "#0f1117" : "#ffffff");
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", dark ? "#0f1117" : ACCENTS[t.accent].light);
+    if (meta) meta.setAttribute("content", dark ? "#0f1117" : "#f5f6fa");   // top bar blends with the app
     t.dark = dark;
     return t;
   }
@@ -135,7 +135,8 @@
   .body{flex:1;min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:3px;text-align:left;
         background:none;border:none;padding:12px 0}
   .text{font-size:1.02rem;overflow-wrap:anywhere}
-  .meta{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:650;color:var(--pc)}
+  .meta{display:inline-flex;flex-wrap:wrap;align-items:center;gap:2px 6px;font-size:.74rem;font-weight:650;color:var(--pc)}
+  .meta .rep{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-weight:650}
   .meta i{width:7px;height:7px;border-radius:50%;background:var(--pc)}
   .meta .cat{color:var(--muted);font-weight:600}
   .task.done .text{text-decoration:line-through;color:var(--muted)}
@@ -216,6 +217,10 @@
   .sheet-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.8rem;color:var(--muted)}
 
   /* Edit sheet */
+  .rchips{display:flex;flex-wrap:wrap;gap:6px}
+  .rchip{height:34px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--text);font-weight:650;font-size:.82rem}
+  .rchip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .repeat-note{font-size:.8rem;color:var(--muted);margin:8px 2px 0}
   .field{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:16px;resize:none}
   .field:focus{outline:2px solid var(--accent);outline-offset:-1px}
   .edit-actions{display:flex;gap:10px;margin-top:18px}
@@ -311,7 +316,7 @@
   <main>
     <div class="sec-head" id="todoHead"><span>To do</span><span id="todoCount"></span></div>
     <ul class="list card" id="list"></ul>
-    <p class="hint" id="hint" hidden>Tap a task to edit it, change its urgency or move it to another day</p>
+    <p class="hint" id="hint" hidden>Tap a task to edit it, change its urgency, move it to another day or make it repeat</p>
 
     <div class="empty-state" id="empty" hidden>
       <div class="big"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
@@ -403,6 +408,17 @@
   </div>
   <p class="sec">Date</p>
   <input type="date" class="field" id="editDate" aria-label="Date">
+  <p class="sec">Repeat</p>
+  <div class="rchips" id="editRepeat" role="radiogroup" aria-label="Repeat">
+    <button type="button" class="rchip" data-r="none" role="radio">Never</button>
+    <button type="button" class="rchip" data-r="daily" role="radio">Daily</button>
+    <button type="button" class="rchip" data-r="weekdays" role="radio">Weekdays</button>
+    <button type="button" class="rchip" data-r="weekly" role="radio">Weekly</button>
+    <button type="button" class="rchip" data-r="monthly" role="radio">Monthly</button>
+    <button type="button" class="rchip" data-r="quarterly" role="radio">Quarterly</button>
+    <button type="button" class="rchip" data-r="yearly" role="radio">Yearly</button>
+  </div>
+  <p class="repeat-note" id="repeatNote" hidden></p>
   <button type="button" class="remind-btn" id="editRemind" hidden>
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
     Remind me in Google Calendar
@@ -476,6 +492,13 @@
   var PRIO = {1:"Critical", 2:"High", 3:"Medium", 4:"Low"};
   var CATS = { work: "Work", personal: "Personal" };
   var normCat = function(c){ return c === "work" ? "work" : "personal"; };
+  var REPEAT = { daily: "Daily", weekdays: "Weekdays", weekly: "Weekly", monthly: "Monthly", quarterly: "Quarterly", yearly: "Yearly" };
+  var REPEAT_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>';
+  function normRepeat(x){
+    if (!REPEAT[x.repeat]){ delete x.repeat; delete x.repeatDay; return; }
+    var d = Number(x.repeatDay);
+    x.repeatDay = d >= 1 && d <= 31 ? d : Number(x.date.slice(8, 10));
+  }
   var BELL_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
   var $ = function(id){ return document.getElementById(id); };
   var noop = function(){};
@@ -491,7 +514,7 @@
     try {
       var v = JSON.parse(localStorage.getItem(KEY));
       if (!Array.isArray(v)) return [];
-      v.forEach(function(x){ x.cat = normCat(x.cat); });   // older tasks had no category
+      v.forEach(function(x){ x.cat = normCat(x.cat); normRepeat(x); });   // older tasks had no category
       return v;
     }
     catch(e){ return []; }
@@ -522,6 +545,65 @@
   function fmtTime(hhmm){
     var p = hhmm.split(":").map(Number);
     return new Date(2000, 0, 1, p[0], p[1]).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  }
+
+  // ---------- Repeating tasks ----------
+  // month-based repeats keep their original day (e.g. the 31st), clamped to short months
+  function addMonths(k, months, anchor){
+    var d = dateOf(k);
+    var t = new Date(d.getFullYear(), d.getMonth() + months, 1);
+    var dim = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate();
+    t.setDate(Math.min(anchor || d.getDate(), dim));
+    return keyOf(t);
+  }
+  function nextOccurrence(k, rule, anchor){
+    var d = dateOf(k);
+    if (rule === "daily"){ d.setDate(d.getDate() + 1); return keyOf(d); }
+    if (rule === "weekdays"){ do { d.setDate(d.getDate() + 1); } while (d.getDay() === 0 || d.getDay() === 6); return keyOf(d); }
+    if (rule === "weekly"){ d.setDate(d.getDate() + 7); return keyOf(d); }
+    if (rule === "monthly") return addMonths(k, 1, anchor);
+    if (rule === "quarterly") return addMonths(k, 3, anchor);
+    if (rule === "yearly") return addMonths(k, 12, anchor);
+    return null;
+  }
+  // next date after this one; if the task was overdue, skip ahead so the next one isn't already in the past
+  function nextDue(tk){
+    var t = todayKey(), n = nextOccurrence(tk.date, tk.repeat, tk.repeatDay), guard = 0;
+    while (n && n < t && guard++ < 2000) n = nextOccurrence(n, tk.repeat, tk.repeatDay);
+    return n;
+  }
+  function ordinal(n){ var s = ["th","st","nd","rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+  function describeRepeat(rule, k, anchor){
+    var d = dateOf(k), day = anchor || d.getDate();
+    if (rule === "daily") return "Every day";
+    if (rule === "weekdays") return "Every Monday to Friday";
+    if (rule === "weekly") return "Every " + d.toLocaleDateString(undefined, { weekday: "long" });
+    if (rule === "monthly") return "Every month on the " + ordinal(day);
+    if (rule === "quarterly") return "Every 3 months on the " + ordinal(day);
+    if (rule === "yearly") return "Every year on " + d.toLocaleDateString(undefined, { month: "long", day: "numeric" });
+    return "";
+  }
+
+  function toggleDone(tk){
+    tk.done = !tk.done;
+    var next = null;
+    if (tk.done && REPEAT[tk.repeat] && !tk.spawnedId){
+      next = { id: uid(), text: tk.text, prio: tk.prio, cat: tk.cat, date: nextDue(tk), done: false,
+               created: Date.now(), repeat: tk.repeat, repeatDay: tk.repeatDay };
+      tasks.push(next);
+      tk.spawnedId = next.id;
+    } else if (!tk.done && tk.spawnedId){
+      // un-ticked: take back the next copy if it hasn't been done yet
+      var i = tasks.findIndex(function(x){ return x.id === tk.spawnedId && !x.done; });
+      if (i >= 0) tasks.splice(i, 1);
+      delete tk.spawnedId;
+    }
+    save();
+    render();
+    if (next){
+      var nd = next.date;
+      toast("Done. Next one: " + chipDate(nd), "View", function(){ selectDay(nd); });
+    }
   }
 
   function selectDay(k){
@@ -577,7 +659,7 @@
     check.type = "button";
     check.className = "check";
     check.setAttribute("aria-label", tk.done ? "Mark as not done" : "Mark as done");
-    check.onclick = function(){ tk.done = !tk.done; save(); render(); };
+    check.onclick = function(){ toggleDone(tk); };
 
     var body = document.createElement("button");
     body.type = "button";
@@ -595,6 +677,13 @@
       cat.className = "cat";
       cat.textContent = " · " + CATS[tk.cat];
       meta.append(cat);
+    }
+    if (REPEAT[tk.repeat]){
+      var rp = document.createElement("span");
+      rp.className = "rep";
+      rp.innerHTML = REPEAT_SVG;
+      rp.append(REPEAT[tk.repeat]);
+      meta.append(rp);
     }
     body.append(text, meta);
     body.onclick = function(){ openEdit(tk); };
@@ -776,11 +865,12 @@
   });
 
   // ---------- Edit sheet ----------
-  var editing = null, editPrio = 3, editCat = "personal";
+  var editing = null, editPrio = 3, editCat = "personal", editRepeat = "none";
   function openEdit(tk){
     editing = tk;
     editPrio = tk.prio;
     editCat = tk.cat;
+    editRepeat = REPEAT[tk.repeat] ? tk.repeat : "none";
     $("editText").value = tk.text;
     $("editDate").value = tk.date;
     $("editTitle").textContent = tk.done ? "Edit task (done)" : "Edit task";
@@ -791,6 +881,17 @@
   function paintEdit(){
     paintChips($("editChips"), editPrio);
     paintSeg($("editCat"), editCat);
+    $("editRepeat").querySelectorAll(".rchip").forEach(function(b){
+      var on = b.dataset.r === editRepeat;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-checked", String(on));
+    });
+    var dk = isDateKey($("editDate").value) ? $("editDate").value : (editing ? editing.date : todayKey());
+    var sameDate = editing && dk === editing.date && editing.repeat === editRepeat;
+    var note = $("repeatNote");
+    note.hidden = editRepeat === "none";
+    note.textContent = editRepeat === "none" ? "" :
+      describeRepeat(editRepeat, dk, sameDate ? editing.repeatDay : 0) + ". When you tick it off, the next one is added.";
     $("editRemind").hidden = !(editPrio === 1 && editing && !editing.done);
   }
   $("editChips").addEventListener("click", function(e){
@@ -805,6 +906,13 @@
     editCat = b.dataset.c;
     paintEdit();
   });
+  $("editRepeat").addEventListener("click", function(e){
+    var b = e.target.closest(".rchip");
+    if (!b) return;
+    editRepeat = b.dataset.r;
+    paintEdit();
+  });
+  $("editDate").addEventListener("change", paintEdit);
   function saveEdit(){
     if (!editing) return;
     var tk = editing;
@@ -815,6 +923,12 @@
     tk.text = text;
     tk.prio = editPrio;
     tk.cat = editCat;
+    if (editRepeat === "none"){ delete tk.repeat; delete tk.repeatDay; }
+    else {
+      // keep the original day for month-based repeats unless the date or rule changed
+      if (tk.repeat !== editRepeat || moved || !tk.repeatDay) tk.repeatDay = dateOf(newDate).getDate();
+      tk.repeat = editRepeat;
+    }
     tk.date = newDate;
     save();
     closeSheet();
@@ -1227,7 +1341,9 @@
       list.forEach(function(x){
         if (!x || typeof x.text !== "string" || !isDateKey(x.date) || (x.id && ids[x.id])) return;
         var p = Number(x.prio);
-        tasks.push({ id: x.id || uid(), text: x.text.slice(0, 200), prio: PRIO[p] ? p : 3, cat: normCat(x.cat), date: x.date, done: !!x.done, created: Number(x.created) || Date.now() });
+        var it = { id: x.id || uid(), text: x.text.slice(0, 200), prio: PRIO[p] ? p : 3, cat: normCat(x.cat), date: x.date, done: !!x.done, created: Number(x.created) || Date.now(), repeat: x.repeat, repeatDay: x.repeatDay };
+        normRepeat(it);
+        tasks.push(it);
         n++;
       });
       save(); render();
