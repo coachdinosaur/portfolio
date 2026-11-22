@@ -4,7 +4,8 @@ A simple todo list with urgency levels and Work / Personal categories. The list 
 in the bar at the bottom (pick Work or Personal and Critical / High / Medium / Low above it). New tasks go on today's list.
 Use the All / Work / Personal tabs to see only one kind of task.
 To check or plan another day, tap the date at the top ("Today ▾") or the date pill in the bottom bar to pull up
-the calendar, pick a day, then add tasks for that date.
+the calendar, pick a day, then add tasks for that date. Tap **All tasks** in the calendar to see every task from every
+date, grouped by date (Overdue, Today, Tomorrow, later), with finished ones under Completed.
 
 **Live:** https://coachdinosaur.github.io/portfolio/todo-calendar/
 

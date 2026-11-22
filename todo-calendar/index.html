@@ -248,7 +248,14 @@
   .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:10px;font-size:.75rem;color:var(--muted)}
   .legend span{display:inline-flex;align-items:center;gap:5px}
   .legend i{width:8px;height:8px;border-radius:50%;background:var(--pc)}
-  .sheet-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.8rem;color:var(--muted)}
+  .sheet-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;font-size:.8rem;color:var(--muted)}
+  .sheet-foot .foot-btns{display:flex;gap:6px;flex:none}
+  .group-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:12px 10px 4px 0;
+              font-size:.74rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  .group-head.od{color:var(--p1)}
+  .group-head.td{color:var(--accent)}
+  .group-head + .task{border-top:none}
+  .task + .group-head{border-top:1px solid var(--line);margin-top:2px}
 
   /* Edit sheet */
   .sub-edit{list-style:none;margin:0 0 8px;padding:0}
@@ -438,8 +445,11 @@
     <span class="p3"><i></i>Medium</span><span class="p4"><i></i>Low</span>
   </div>
   <div class="sheet-foot">
-    <span>Pick a day to see or add its tasks</span>
-    <button class="chip" id="sheetToday" type="button">Today</button>
+    <span>Pick a day, or see everything</span>
+    <span class="foot-btns">
+      <button class="chip" id="sheetAll" type="button">All tasks</button>
+      <button class="chip" id="sheetToday" type="button">Today</button>
+    </span>
   </div>
 </div>
 
@@ -629,7 +639,11 @@
   function saveUi(){ try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch(e){} }
 
   var tasks = load();
-  var selected = todayKey();       // the day whose list is shown (and where new tasks go)
+  var ALL = "all";                 // special value: show tasks from every date
+  var selected = todayKey();       // the day whose list is shown (and where new tasks go), or ALL
+  var isAll = function(){ return selected === ALL; };
+  var onScreen = function(x){ return (isAll() || x.date === selected) && matches(x); };
+  var addDate = function(){ return isAll() ? todayKey() : selected; };   // new tasks in the All view go on today
   var view = null;                 // month shown in the calendar sheet
   var justAdded = null;            // id of the task to highlight
   var filter = ui.filter === "work" || ui.filter === "personal" ? ui.filter : "all";
@@ -717,7 +731,21 @@
 
   // ---------- Header ----------
   function renderHeader(){
-    var d = dateOf(selected), t = todayKey();
+    var t = todayKey();
+    if (isAll()){
+      var openN = tasks.filter(function(x){ return !x.done && matches(x); }).length;
+      $("dateMain").textContent = "All tasks";
+      $("dateSub").textContent = openN ? plural(openN, "unfinished task") + " across all dates" : "Every date";
+      $("todayChip").hidden = false;
+      var all = tasks.filter(matches), allDone = all.filter(function(x){ return x.done; }).length;
+      $("bar").style.width = all.length ? (allDone / all.length * 100) + "%" : "0";
+      $("progressText").textContent = !all.length ? "No tasks yet" : allDone === all.length ? "All done ✓" : allDone + " of " + all.length + " done";
+      $("addDateLabel").textContent = "Today";
+      composer.classList.remove("other-day");
+      $("taskInput").placeholder = "Add a task for today";
+      return;
+    }
+    var d = dateOf(selected);
     var rel = relative(selected);
     var sameYear = d.getFullYear() === new Date().getFullYear();
     $("dateMain").textContent = rel || d.toLocaleDateString(undefined, { weekday: "long" });
@@ -741,14 +769,14 @@
   function renderOverdue(){
     var t = todayKey();
     var od = tasks.filter(function(x){ return !x.done && x.date < t; });
-    $("overdue").hidden = od.length === 0 || selected !== t;
+    $("overdue").hidden = od.length === 0 || (selected !== t && !isAll());
     $("overdueText").textContent = plural(od.length, "unfinished task") + " from earlier days";
   }
   $("moveAllBtn").onclick = function(){
     var t = todayKey(), n = 0;
     tasks.forEach(function(x){ if (!x.done && x.date < t){ x.date = t; n++; } });
     save();
-    selectDay(t);
+    if (isAll()) render(); else selectDay(t);
     toast("Moved " + plural(n, "task") + " to today");
   };
 
@@ -878,7 +906,7 @@
   }
 
   function renderFilter(){
-    var day = tasks.filter(function(x){ return x.date === selected && !x.done; });
+    var day = tasks.filter(function(x){ return (isAll() || x.date === selected) && !x.done; });
     var n = function(c){ return day.filter(function(x){ return x.cat === c; }).length; };
     var counts = { all: day.length, work: n("work"), personal: n("personal") };
     $("nAll").textContent = counts.all || "";
@@ -907,21 +935,26 @@
   });
 
   function renderList(){
-    var items = tasks.filter(function(x){ return x.date === selected && matches(x); });
-    var open = items.filter(function(x){ return !x.done; }).sort(sortOpen);
-    var done = items.filter(function(x){ return x.done; }).sort(function(a, b){ return a.created - b.created; });
+    var items = tasks.filter(onScreen);
+    var byDate = function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; };
+    var open = items.filter(function(x){ return !x.done; }).sort(function(a, b){ return (isAll() && byDate(a, b)) || sortOpen(a, b); });
+    var done = items.filter(function(x){ return x.done; }).sort(function(a, b){ return (isAll() && -byDate(a, b)) || a.created - b.created; });
 
     $("todoHead").hidden = open.length === 0;
     $("todoCount").textContent = open.length;
     var list = $("list");
     list.innerHTML = "";
-    open.forEach(function(tk){ list.appendChild(taskRow(tk)); });
+    appendRows(list, open, true);
     list.hidden = open.length === 0;
     $("hint").hidden = open.length === 0 || !!ui.editedOnce;
 
     var isToday = selected === todayKey();
     $("empty").hidden = open.length > 0;
-    if (open.length === 0){
+    if (open.length === 0 && isAll()){
+      var w = filter === "all" ? "" : CATS[filter].toLowerCase() + " ";
+      $("emptyTitle").textContent = done.length ? "Everything is done 🎉" : "No " + w + "tasks yet";
+      $("emptySub").textContent = done.length ? "No unfinished " + w + "tasks on any date." : "Type a task in the box below to add it.";
+    } else if (open.length === 0){
       if (done.length){
         $("emptyTitle").textContent = "All done" + (isToday ? " for today" : "") + " 🎉";
         $("emptySub").textContent = "Nice work. Add more below if something comes up.";
@@ -941,7 +974,7 @@
     $("doneLabel").textContent = "Completed · " + done.length;
     var dl = $("doneList");
     dl.innerHTML = "";
-    done.forEach(function(tk){ dl.appendChild(taskRow(tk)); });
+    appendRows(dl, done, false);
     dl.hidden = done.length === 0 || collapsed;
 
     if (justAdded){
@@ -952,12 +985,40 @@
   }
   $("doneToggle").onclick = function(){ ui.doneCollapsed = !ui.doneCollapsed; saveUi(); renderList(); };
 
+  // rows for one list; in the All view a small date heading goes above each date's tasks
+  function groupLabel(k, isOpen){
+    var t = todayKey();
+    var long = dateOf(k).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric",
+      year: dateOf(k).getFullYear() === new Date().getFullYear() ? undefined : "numeric" });
+    if (isOpen && k < t) return { text: "Overdue · " + long, cls: "od" };
+    var rel = relative(k);
+    return { text: rel ? rel + " · " + long : long, cls: k === t ? "td" : "" };
+  }
+  function appendRows(ul, rows, isOpen){
+    var last = null;
+    rows.forEach(function(tk){
+      if (isAll() && tk.date !== last){
+        last = tk.date;
+        var g = groupLabel(tk.date, isOpen);
+        var n = rows.filter(function(x){ return x.date === tk.date; }).length;
+        var h = document.createElement("li");
+        h.className = "group-head" + (g.cls ? " " + g.cls : "");
+        h.setAttribute("role", "presentation");
+        var a = document.createElement("span"); a.textContent = g.text;
+        var b = document.createElement("span"); b.textContent = n;
+        h.append(a, b);
+        ul.appendChild(h);
+      }
+      ul.appendChild(taskRow(tk));
+    });
+  }
+
   // ---------- Deleting several tasks ----------
   var selecting = false, selectedIds = {}, suppressClick = 0, suppressId = null;
 
   function visibleTasks(){
     return tasks.filter(function(x){
-      return x.date === selected && matches(x) && (!x.done || !ui.doneCollapsed);
+      return onScreen(x) && (!x.done || !ui.doneCollapsed);
     });
   }
   function enterSelect(id){
@@ -1024,7 +1085,7 @@
     removeMany(ids);
   };
   $("clearDone").onclick = function(){
-    var ids = tasks.filter(function(x){ return x.date === selected && matches(x) && x.done; }).map(function(x){ return x.id; });
+    var ids = tasks.filter(function(x){ return onScreen(x) && x.done; }).map(function(x){ return x.id; });
     removeMany(ids, "Cleared " + plural(ids.length, "completed task"));
   };
 
@@ -1153,7 +1214,7 @@
     e.preventDefault();
     var text = input.value.trim();
     if (!text){ input.focus(); return; }
-    var tk = { id: uid(), text: text, prio: addPrio, cat: addCat, date: selected, done: false, created: Date.now() };
+    var tk = { id: uid(), text: text, prio: addPrio, cat: addCat, date: addDate(), done: false, created: Date.now() };
     tasks.push(tk);
     justAdded = tk.id;
     save();
@@ -1264,7 +1325,7 @@
     save();
     closeSheet();
     render();
-    if (moved && newDate !== selected){
+    if (moved && newDate !== selected && !isAll()){
       toast("Moved to " + chipDate(newDate), "View", function(){ selectDay(newDate); });
     } else if (!matches(tk)){
       toast("Moved to " + CATS[tk.cat] + " (hidden by the " + CATS[filter] + " filter)", "Show all", function(){ setFilter("all"); });
@@ -1294,7 +1355,7 @@
     if (openEl) closeSheet(true);
     openEl = el;
     if (el === calSheet){
-      var d = dateOf(selected);
+      var d = dateOf(addDate());
       view = { y: d.getFullYear(), m: d.getMonth() };
       renderCalendar();
     } else if (el === alertSheet){
@@ -1414,6 +1475,7 @@
   $("dateSub").onclick = function(){ openSheet(calSheet); };
   $("todayChip").onclick = function(){ selectDay(todayKey()); };
   $("sheetToday").onclick = function(){ closeSheet(); selectDay(todayKey()); };
+  $("sheetAll").onclick = function(){ closeSheet(); selectDay(ALL); };
 
   $("grid").addEventListener("click", function(e){
     var btn = e.target.closest(".day");
