@@ -1,9 +1,10 @@
 # Todo List
 
-A simple todo list with urgency levels. The list is the main screen; type new tasks in the bar at the bottom
-(pick Critical / High / Medium / Low above it). New tasks go on today's list.
-To check or plan another day, tap the calendar button (or the date at the top, or the date pill in the bottom bar)
-to pull up the calendar, pick a day, then add tasks for that date.
+A simple todo list with urgency levels and Work / Personal categories. The list is the main screen; type new tasks
+in the bar at the bottom (pick Work or Personal and Critical / High / Medium / Low above it). New tasks go on today's list.
+Use the All / Work / Personal tabs to see only one kind of task.
+To check or plan another day, tap the date at the top ("Today ▾") or the date pill in the bottom bar to pull up
+the calendar, pick a day, then add tasks for that date.
 
 **Live:** https://coachdinosaur.github.io/portfolio/todo-calendar/
 
@@ -30,7 +31,7 @@ to pull up the calendar, pick a day, then add tasks for that date.
 - Finished tasks move to a collapsible *Completed* section
 - "Move to today" for unfinished tasks from earlier days
 - Works offline; an **Install** button appears when Chrome allows installing it (or Chrome ⋮ → *Add to Home screen*). It shows up as "Todo List" in your apps
-- Export / import a JSON backup
+- ⋮ menu: export / import a JSON backup
 
 Tasks are stored in the browser's `localStorage`, so they stay on the device you use.
 No build step: it's plain HTML, CSS and JavaScript in `index.html`.

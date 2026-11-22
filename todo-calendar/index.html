@@ -36,10 +36,14 @@
 
   /* Header */
   .top{display:flex;align-items:center;gap:8px;margin:2px 0 10px}
-  .date-btn{flex:1;min-width:0;text-align:left;background:none;border:none;padding:4px 2px;display:flex;flex-direction:column;align-items:flex-start}
-  .date-main{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;display:inline-flex;align-items:center;gap:8px}
-  .date-main::after{content:"";width:7px;height:7px;border:solid var(--muted);border-width:0 2px 2px 0;transform:translateY(-3px) rotate(45deg)}
-  .date-sub{font-size:.85rem;color:var(--muted)}
+  .head-left{flex:1;min-width:0;padding:2px}
+  .date-btn{max-width:100%;text-align:left;background:none;border:none;padding:2px 0;display:flex}
+  .date-sub-row{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}
+  .link-chip{border:none;background:none;padding:0;color:var(--accent);font-weight:700;font-size:.85rem}
+  .date-main{font-size:clamp(1.35rem, 7vw, 1.6rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+  .date-main::after{content:"";width:8px;height:8px;border:solid var(--accent);border-width:0 2.5px 2.5px 0;transform:translateY(-3px) rotate(45deg)}
+  .date-sub{font-size:.85rem;color:var(--muted);background:none;border:none;padding:0;text-align:left}
+  .date-btn:active .date-main,.date-sub:active{opacity:.6}
   .chip{height:36px;padding:0 13px;border-radius:999px;border:none;background:var(--accent-soft);color:var(--accent);font-weight:700;white-space:nowrap}
   .icon-btn{flex:none;position:relative;width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--accent)}
   .badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--p1);color:#fff;
@@ -47,6 +51,20 @@
   .progress{display:flex;align-items:center;gap:10px;margin:0 2px 14px;font-size:.8rem;color:var(--muted)}
   .bar{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
   .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:width .25s}
+
+  /* Segmented controls (filter + category pickers) */
+  .seg{display:flex;gap:3px;padding:3px;border-radius:12px;background:var(--line)}
+  .seg button{flex:1;height:36px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:650;font-size:.88rem;
+              display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 6px}
+  .seg button.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .seg .n{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .filter{margin:0 0 14px}
+  .seg.small{flex:none;width:184px}
+  @media (prefers-color-scheme: dark){
+    .seg{background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)}
+    .seg button.on{background:var(--accent-soft);color:var(--text);box-shadow:none}
+  }
+  .seg.small button{height:30px;font-size:.8rem}
 
   /* Banners */
   .banner{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:12px}
@@ -73,6 +91,7 @@
   .text{font-size:1.02rem;overflow-wrap:anywhere}
   .meta{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:650;color:var(--pc)}
   .meta i{width:7px;height:7px;border-radius:50%;background:var(--pc)}
+  .meta .cat{color:var(--muted);font-weight:600}
   .task.done .text{text-decoration:line-through;color:var(--muted)}
   .task.done .meta{display:none}
   .rem{flex:none;width:38px;height:38px;border:none;border-radius:10px;background:var(--p1-soft);color:var(--p1);display:grid;place-items:center;padding:0;margin-right:6px}
@@ -84,27 +103,24 @@
   .empty-state b{display:block;color:var(--text);font-size:1.05rem;margin-bottom:4px}
   .empty-state span{font-size:.9rem}
 
-  footer{text-align:center;font-size:.78rem;color:var(--muted);margin-top:26px}
-  footer button,footer label{border:none;background:none;color:var(--accent);font-weight:600;padding:6px 8px;cursor:pointer}
-  footer input{display:none}
 
   /* Bottom composer */
   .composer{position:fixed;left:0;right:0;bottom:0;z-index:15;margin:0 auto;max-width:560px;background:var(--card);
             border-top:1px solid var(--line);border-radius:20px 20px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.07);
             padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
   .composer-opts{margin-bottom:10px}
+  .opts-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
   .composer-opts .chips{width:100%}
   .composer-opts .uchip{flex:1;padding:0 4px}
   .composer:not(.active) .composer-opts{display:none}
   .composer-row{display:flex;align-items:center;gap:8px}
-  .composer-input{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:50px;padding:0 8px 0 14px;border-radius:14px;background:var(--bg);border:1.5px solid transparent;cursor:text}
+  .composer-input{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:50px;padding:0 14px;border-radius:14px;background:var(--bg);border:1.5px solid transparent;cursor:text}
   .composer.active .composer-input{border-color:var(--accent)}
   .composer-input .dotp{flex:none;width:12px;height:12px;border-radius:50%;background:var(--pc)}
   .composer-input input{flex:1;min-width:0;border:none;background:transparent;outline:none;font-size:16px;height:100%}
   .send{flex:none;width:50px;height:50px;border-radius:14px;border:none;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;transition:opacity .15s}
   .send:disabled{opacity:.35;cursor:default}
   .date-chip{flex:none;display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--accent);font-weight:650;font-size:.78rem;white-space:nowrap}
-  .composer:not(.active):not(.other-day) .date-chip{display:none}
 
   /* Urgency chips */
   .chips{display:flex;gap:6px;flex-wrap:nowrap}
@@ -160,6 +176,13 @@
   .btn.danger{background:var(--p1-soft);color:var(--p1)}
   .remind-btn{display:flex;align-items:center;gap:8px;width:100%;margin-top:14px;padding:12px 14px;border-radius:12px;border:none;background:var(--p1-soft);color:var(--p1);font-weight:650;text-align:left}
 
+  /* Menu sheet */
+  .menu-note{font-size:.85rem;color:var(--muted);margin:0 0 14px}
+  .menu-item{display:flex;align-items:center;gap:14px;width:100%;padding:14px;margin-bottom:10px;border-radius:14px;border:1px solid var(--line);
+             background:var(--bg);text-align:left;cursor:pointer;font-size:1rem}
+  .menu-item .ico{flex:none;width:42px;height:42px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+  .menu-item .sub{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
+
   /* Alerts sheet */
   .crit-list{list-style:none;margin:0;padding:0;max-height:32vh;overflow-y:auto}
   .crit-list button{width:100%;display:flex;align-items:center;gap:10px;text-align:left;background:var(--p1-soft);border:none;
@@ -191,17 +214,21 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <button class="date-btn" id="dateBtn" type="button" aria-label="Open calendar">
-      <span class="date-main" id="dateMain">Today</span>
-      <span class="date-sub" id="dateSub"></span>
-    </button>
-    <button class="chip" id="todayChip" type="button" hidden>Today</button>
+    <div class="head-left">
+      <button class="date-btn" id="dateBtn" type="button" aria-label="Open calendar">
+        <span class="date-main" id="dateMain">Today</span>
+      </button>
+      <div class="date-sub-row">
+        <button class="date-sub" id="dateSub" type="button" aria-label="Open calendar"></button>
+        <button class="link-chip" id="todayChip" type="button" hidden>Back to today</button>
+      </div>
+    </div>
     <button class="icon-btn" id="alertBtn" type="button" aria-label="Critical alerts">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
       <span class="badge" id="bellBadge" hidden></span>
     </button>
-    <button class="icon-btn" id="calBtn" type="button" aria-label="Open calendar">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+    <button class="icon-btn" id="menuBtn" type="button" aria-label="Menu: backup and restore">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
     </button>
   </header>
 
@@ -220,6 +247,12 @@
     <button id="moveAllBtn" type="button">Move to today</button>
   </section>
 
+  <div class="seg filter" id="filterSeg" role="tablist" aria-label="Show tasks">
+    <button type="button" data-f="all" role="tab">All <span class="n" id="nAll"></span></button>
+    <button type="button" data-f="work" role="tab">Work <span class="n" id="nWork"></span></button>
+    <button type="button" data-f="personal" role="tab">Personal <span class="n" id="nPersonal"></span></button>
+  </div>
+
   <main>
     <div class="sec-head" id="todoHead"><span>To do</span><span id="todoCount"></span></div>
     <ul class="list card" id="list"></ul>
@@ -237,16 +270,21 @@
     <ul class="list card" id="doneList"></ul>
   </main>
 
-  <footer>
-    Tasks are saved on this device only.<br>
-    <button type="button" id="exportBtn">Export backup</button>·<label for="importInput">Import backup</label>
-    <input type="file" id="importInput" accept="application/json,.json">
-  </footer>
 </div>
 
 <!-- Bottom composer -->
 <form class="composer" id="composer" autocomplete="off">
   <div class="composer-opts">
+    <div class="opts-row">
+      <div class="seg small" id="addCat" role="radiogroup" aria-label="Category">
+        <button type="button" data-c="work" role="radio">Work</button>
+        <button type="button" data-c="personal" role="radio">Personal</button>
+      </div>
+      <button type="button" class="date-chip" id="addDate" aria-label="Change date">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+        <span id="addDateLabel">Today</span>
+      </button>
+    </div>
     <div class="chips" id="addChips" role="radiogroup" aria-label="Urgency">
       <button type="button" class="uchip p1" data-p="1" role="radio">Critical</button>
       <button type="button" class="uchip p2" data-p="2" role="radio">High</button>
@@ -258,10 +296,6 @@
     <div class="composer-input p3" id="composerInput">
       <span class="dotp" aria-hidden="true"></span>
       <input id="taskInput" type="text" placeholder="Add a task" maxlength="200" aria-label="New task" enterkeyhint="done">
-      <button type="button" class="date-chip" id="addDate" aria-label="Change date">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
-        <span id="addDateLabel">Today</span>
-      </button>
     </div>
     <button type="submit" class="send" id="sendBtn" aria-label="Add task" disabled>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
@@ -307,6 +341,11 @@
     <button type="button" class="uchip p3" data-p="3" role="radio">Medium</button>
     <button type="button" class="uchip p4" data-p="4" role="radio">Low</button>
   </div>
+  <p class="sec">Category</p>
+  <div class="seg" id="editCat" role="radiogroup" aria-label="Category">
+    <button type="button" data-c="work" role="radio">Work</button>
+    <button type="button" data-c="personal" role="radio">Personal</button>
+  </div>
   <p class="sec">Date</p>
   <input type="date" class="field" id="editDate" aria-label="Date">
   <button type="button" class="remind-btn" id="editRemind" hidden>
@@ -317,6 +356,24 @@
     <button type="button" class="btn danger" id="editDelete">Delete</button>
     <button type="button" class="btn primary" id="editSave">Save</button>
   </div>
+</div>
+
+<!-- Menu sheet -->
+<div class="sheet" id="menuSheet" role="dialog" aria-modal="true" aria-labelledby="menuTitle" aria-hidden="true">
+  <div class="sheet-top">
+    <div class="grab" aria-hidden="true"><span></span></div>
+    <h2 class="sheet-title" id="menuTitle">Backup &amp; restore</h2>
+  </div>
+  <p class="menu-note">Your tasks are saved on this phone only. Export a backup now and then so you can get them back if you clear your browser data or change phones.</p>
+  <button type="button" class="menu-item" id="exportBtn">
+    <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span>
+    <span><b>Export backup</b><span class="sub" id="lastBackup"></span></span>
+  </button>
+  <label class="menu-item" for="importInput">
+    <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M5 21h14"/></svg></span>
+    <span><b>Import backup</b><span class="sub">Adds tasks from a backup file. Nothing gets deleted.</span></span>
+  </label>
+  <input type="file" id="importInput" accept="application/json,.json" hidden>
 </div>
 
 <!-- Alerts sheet -->
@@ -352,6 +409,8 @@
   var DATA_CACHE = "todo-data";
   var DATA_URL = new URL("__alerts.json", location.href).href;
   var PRIO = {1:"Critical", 2:"High", 3:"Medium", 4:"Low"};
+  var CATS = { work: "Work", personal: "Personal" };
+  var normCat = function(c){ return c === "work" ? "work" : "personal"; };
   var BELL_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
   var $ = function(id){ return document.getElementById(id); };
   var noop = function(){};
@@ -364,7 +423,12 @@
   var isDateKey = function(k){ return /^\d{4}-\d{2}-\d{2}$/.test(k); };
 
   function load(){
-    try { var v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v : []; }
+    try {
+      var v = JSON.parse(localStorage.getItem(KEY));
+      if (!Array.isArray(v)) return [];
+      v.forEach(function(x){ x.cat = normCat(x.cat); });   // older tasks had no category
+      return v;
+    }
     catch(e){ return []; }
   }
   function save(){
@@ -379,6 +443,8 @@
   var selected = todayKey();       // the day whose list is shown (and where new tasks go)
   var view = null;                 // month shown in the calendar sheet
   var justAdded = null;            // id of the task to highlight
+  var filter = ui.filter === "work" || ui.filter === "personal" ? ui.filter : "all";
+  var matches = function(x){ return filter === "all" || x.cat === filter; };
 
   function sortOpen(a, b){ return (a.prio - b.prio) || (a.created - b.created); }
 
@@ -410,7 +476,7 @@
       : d.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
     $("todayChip").hidden = selected === t;
 
-    var items = tasks.filter(function(x){ return x.date === selected; });
+    var items = tasks.filter(function(x){ return x.date === selected && matches(x); });
     var done = items.filter(function(x){ return x.done; }).length;
     $("progress").hidden = items.length === 0;
     $("bar").style.width = items.length ? (done / items.length * 100) + "%" : "0";
@@ -459,6 +525,12 @@
     meta.className = "meta";
     meta.innerHTML = "<i></i>";
     meta.append(PRIO[tk.prio]);
+    if (filter === "all"){
+      var cat = document.createElement("span");
+      cat.className = "cat";
+      cat.textContent = " · " + CATS[tk.cat];
+      meta.append(cat);
+    }
     body.append(text, meta);
     body.onclick = function(){ openEdit(tk); };
 
@@ -476,8 +548,33 @@
     return li;
   }
 
+  function renderFilter(){
+    var day = tasks.filter(function(x){ return x.date === selected && !x.done; });
+    var n = function(c){ return day.filter(function(x){ return x.cat === c; }).length; };
+    var counts = { all: day.length, work: n("work"), personal: n("personal") };
+    $("nAll").textContent = counts.all || "";
+    $("nWork").textContent = counts.work || "";
+    $("nPersonal").textContent = counts.personal || "";
+    $("filterSeg").querySelectorAll("button").forEach(function(b){
+      var on = b.dataset.f === filter;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-selected", String(on));
+    });
+  }
+  function setFilter(f){
+    filter = f;
+    ui.filter = f; saveUi();
+    if (f !== "all"){ addCat = f; }
+    paintComposer();
+    render();
+  }
+  $("filterSeg").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if (b) setFilter(b.dataset.f);
+  });
+
   function renderList(){
-    var items = tasks.filter(function(x){ return x.date === selected; });
+    var items = tasks.filter(function(x){ return x.date === selected && matches(x); });
     var open = items.filter(function(x){ return !x.done; }).sort(sortOpen);
     var done = items.filter(function(x){ return x.done; }).sort(function(a, b){ return a.created - b.created; });
 
@@ -496,7 +593,8 @@
         $("emptyTitle").textContent = "All done" + (isToday ? " for today" : "") + " 🎉";
         $("emptySub").textContent = "Nice work. Add more below if something comes up.";
       } else {
-        $("emptyTitle").textContent = isToday ? "Nothing on your list yet" : "Nothing planned for " + shortDate(selected);
+        var what = filter === "all" ? "" : CATS[filter].toLowerCase() + " ";
+        $("emptyTitle").textContent = isToday ? (what ? "No " + what + "tasks today" : "Nothing on your list yet") : "No " + what + "tasks on " + shortDate(selected);
         $("emptySub").textContent = "Type a task in the box below to add it.";
       }
     }
@@ -544,9 +642,18 @@
   var composer = $("composer"), input = $("taskInput");
   var addPrio = 3;
   try { var lp = Number(localStorage.getItem(PRIO_KEY)); if (PRIO[lp]) addPrio = lp; } catch(e){}
+  var addCat = filter !== "all" ? filter : normCat(ui.lastCat);
+  function paintSeg(group, c){
+    group.querySelectorAll("button").forEach(function(b){
+      var on = b.dataset.c === c;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-checked", String(on));
+    });
+  }
 
   function paintComposer(){
     paintChips($("addChips"), addPrio);
+    paintSeg($("addCat"), addCat);
     $("composerInput").className = "composer-input p" + addPrio;
     $("sendBtn").disabled = !input.value.trim();
   }
@@ -559,7 +666,7 @@
   input.addEventListener("input", paintComposer);
 
   // tapping chips keeps the keyboard open
-  composer.querySelectorAll(".uchip, .send").forEach(function(b){
+  composer.querySelectorAll(".uchip, .send, #addCat button").forEach(function(b){
     b.addEventListener("mousedown", function(e){ e.preventDefault(); });
   });
   $("addChips").addEventListener("click", function(e){
@@ -569,6 +676,13 @@
     try { localStorage.setItem(PRIO_KEY, String(addPrio)); } catch(err){}
     paintComposer();
   });
+  $("addCat").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if (!b) return;
+    addCat = b.dataset.c;
+    ui.lastCat = addCat; saveUi();
+    paintComposer();
+  });
   $("addDate").onclick = function(){ openSheet(calSheet); };
   $("composerInput").addEventListener("click", function(e){ if (!e.target.closest("button")) input.focus(); });
 
@@ -576,7 +690,7 @@
     e.preventDefault();
     var text = input.value.trim();
     if (!text){ input.focus(); return; }
-    var tk = { id: uid(), text: text, prio: addPrio, date: selected, done: false, created: Date.now() };
+    var tk = { id: uid(), text: text, prio: addPrio, cat: addCat, date: selected, done: false, created: Date.now() };
     tasks.push(tk);
     justAdded = tk.id;
     save();
@@ -584,17 +698,20 @@
     paintComposer();
     input.focus();
     render();
-    if (addPrio === 1 && !settings.enabled && !ui.alertHinted){
+    if (!matches(tk)){
+      toast("Added to " + CATS[tk.cat] + " (hidden by the " + CATS[filter] + " filter)", "Show all", function(){ setFilter("all"); });
+    } else if (addPrio === 1 && !settings.enabled && !ui.alertHinted){
       ui.alertHinted = true; saveUi();
       toast("Want a reminder for Critical tasks?", "Set up", function(){ input.blur(); openSheet(alertSheet); });
     }
   });
 
   // ---------- Edit sheet ----------
-  var editing = null, editPrio = 3;
+  var editing = null, editPrio = 3, editCat = "personal";
   function openEdit(tk){
     editing = tk;
     editPrio = tk.prio;
+    editCat = tk.cat;
     $("editText").value = tk.text;
     $("editDate").value = tk.date;
     $("editTitle").textContent = tk.done ? "Edit task (done)" : "Edit task";
@@ -604,12 +721,19 @@
   }
   function paintEdit(){
     paintChips($("editChips"), editPrio);
+    paintSeg($("editCat"), editCat);
     $("editRemind").hidden = !(editPrio === 1 && editing && !editing.done);
   }
   $("editChips").addEventListener("click", function(e){
     var c = e.target.closest(".uchip");
     if (!c) return;
     editPrio = Number(c.dataset.p);
+    paintEdit();
+  });
+  $("editCat").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if (!b) return;
+    editCat = b.dataset.c;
     paintEdit();
   });
   function saveEdit(){
@@ -621,12 +745,15 @@
     var moved = newDate !== tk.date;
     tk.text = text;
     tk.prio = editPrio;
+    tk.cat = editCat;
     tk.date = newDate;
     save();
     closeSheet();
     render();
     if (moved && newDate !== selected){
       toast("Moved to " + chipDate(newDate), "View", function(){ selectDay(newDate); });
+    } else if (!matches(tk)){
+      toast("Moved to " + CATS[tk.cat] + " (hidden by the " + CATS[filter] + " filter)", "Show all", function(){ setFilter("all"); });
     }
   }
   $("editSave").onclick = saveEdit;
@@ -646,7 +773,7 @@
   };
 
   // ---------- Sheets ----------
-  var backdrop = $("backdrop"), calSheet = $("calSheet"), alertSheet = $("alertSheet"), editSheet = $("editSheet");
+  var backdrop = $("backdrop"), calSheet = $("calSheet"), alertSheet = $("alertSheet"), editSheet = $("editSheet"), menuSheet = $("menuSheet");
   var openEl = null;
 
   function openSheet(el){
@@ -658,6 +785,8 @@
       renderCalendar();
     } else if (el === alertSheet){
       renderAlerts();
+    } else if (el === menuSheet){
+      renderMenu();
     }
     el.classList.add("open");
     backdrop.classList.add("open");
@@ -682,7 +811,7 @@
     if (el === editSheet) editing = null;
     if (!keepHistory && history.state && history.state.sheet){ try { history.back(); } catch(e){} }
   }
-  [calSheet, alertSheet, editSheet].forEach(function(s){ s.inert = true; });
+  [calSheet, alertSheet, editSheet, menuSheet].forEach(function(s){ s.inert = true; });
   window.addEventListener("popstate", function(){ if (openEl) closeSheet(true); });
   document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeSheet(); });
   backdrop.onclick = function(){ closeSheet(); };
@@ -714,7 +843,7 @@
     $("monthLabel").textContent = first.toLocaleDateString(undefined, { month: "long", year: "numeric" });
 
     var open = {};
-    tasks.forEach(function(x){ if (!x.done) (open[x.date] = open[x.date] || []).push(x.prio); });
+    tasks.forEach(function(x){ if (!x.done && matches(x)) (open[x.date] = open[x.date] || []).push(x.prio); });
 
     var daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
     var cells = Math.ceil((first.getDay() + daysInMonth) / 7) * 7;
@@ -756,8 +885,8 @@
     }
   }
 
-  $("calBtn").onclick = function(){ openSheet(calSheet); };
   $("dateBtn").onclick = function(){ openSheet(calSheet); };
+  $("dateSub").onclick = function(){ openSheet(calSheet); };
   $("todayChip").onclick = function(){ selectDay(todayKey()); };
   $("sheetToday").onclick = function(){ closeSheet(); selectDay(todayKey()); };
 
@@ -962,6 +1091,12 @@
   }
 
   // ---------- Backup ----------
+  function renderMenu(){
+    $("lastBackup").textContent = ui.lastExport
+      ? "Last exported " + (relative(ui.lastExport) ? relative(ui.lastExport).toLowerCase() : "on " + shortDate(ui.lastExport)) + " · saves a file to Downloads"
+      : "Saves a file to your Downloads";
+  }
+  $("menuBtn").onclick = function(){ openSheet(menuSheet); };
   $("exportBtn").onclick = function(){
     var data = JSON.stringify({ app: "todo-calendar", version: 1, exported: new Date().toISOString(), tasks: tasks }, null, 2);
     var a = document.createElement("a");
@@ -971,6 +1106,9 @@
     a.click();
     a.remove();
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+    ui.lastExport = todayKey(); saveUi();
+    renderMenu();
+    toast("Backup saved: " + a.download);
   };
   $("importInput").onchange = function(){
     var f = this.files[0], fileInput = this;
@@ -984,11 +1122,12 @@
       list.forEach(function(x){
         if (!x || typeof x.text !== "string" || !isDateKey(x.date) || (x.id && ids[x.id])) return;
         var p = Number(x.prio);
-        tasks.push({ id: x.id || uid(), text: x.text.slice(0, 200), prio: PRIO[p] ? p : 3, date: x.date, done: !!x.done, created: Number(x.created) || Date.now() });
+        tasks.push({ id: x.id || uid(), text: x.text.slice(0, 200), prio: PRIO[p] ? p : 3, cat: normCat(x.cat), date: x.date, done: !!x.done, created: Number(x.created) || Date.now() });
         n++;
       });
       save(); render();
-      toast("Imported " + plural(n, "task"));
+      closeSheet();
+      toast(n ? "Imported " + plural(n, "task") : "No new tasks in that file");
     }).catch(function(){ toast("That file isn't a valid backup"); })
       .then(function(){ fileInput.value = ""; });
   };
@@ -1029,7 +1168,7 @@
   };
 
   function render(){
-    renderHeader(); renderOverdue(); renderList(); renderCalendar(); updateBell();
+    renderHeader(); renderOverdue(); renderFilter(); renderList(); renderCalendar(); updateBell();
     if (openEl === alertSheet) renderAlerts();
   }
 
