@@ -255,6 +255,9 @@
   .group-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:12px 10px 4px 0;
               font-size:.74rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
   .group-head.od{color:var(--p1)}
+  .group-head .gh-btn{border:none;background:var(--p1-soft);color:var(--p1);font-weight:800;font-size:.72rem;letter-spacing:.02em;
+                      text-transform:none;padding:5px 10px;border-radius:999px}
+  .meta .late{display:inline-flex;align-items:center;gap:4px;color:var(--p1);font-weight:750}
   .group-head.td{color:var(--accent)}
   .group-head + .task{border-top:none}
   .task + .group-head{border-top:1px solid var(--line);margin-top:2px}
@@ -854,7 +857,9 @@
   var ALL = "all";                 // special value: show tasks from every date
   var selected = todayKey();       // the day whose list is shown (and where new tasks go), or ALL
   var isAll = function(){ return selected === ALL; };
-  var onScreen = function(x){ return (isAll() || x.date === selected) && matches(x); };
+  // on Today, unfinished tasks from earlier days are shown too (as Overdue), keeping their own date
+  var inView = function(x){ return isAll() || x.date === selected || (!x.done && selected === todayKey() && x.date < selected); };
+  var onScreen = function(x){ return inView(x) && matches(x); };
   var addDate = function(){ return isAll() ? todayKey() : selected; };   // new tasks in the All view go on today
   var view = null;                 // month shown in the calendar sheet
   var justAdded = null;            // id of the task to highlight
@@ -932,6 +937,8 @@
     if (next){
       var nd = next.date;
       toast("Done. Next one: " + chipDate(nd), "View", function(){ selectDay(nd); });
+    } else if (tk.done && tk.date < todayKey() && selected === todayKey()){
+      toast("Done. It stays on " + dateOf(tk.date).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) + ", the day it was due.");
     }
   }
 
@@ -978,19 +985,16 @@
   }
 
   // ---------- Overdue ----------
-  function renderOverdue(){
-    var t = todayKey();
-    var od = tasks.filter(function(x){ return !x.done && x.date < t; });
-    $("overdue").hidden = od.length === 0 || (selected !== t && !isAll());
-    $("overdueText").textContent = plural(od.length, "unfinished task") + " from earlier days";
-  }
-  $("moveAllBtn").onclick = function(){
+  function renderOverdue(){ $("overdue").hidden = true; }   // late tasks now show in an Overdue section instead
+  function moveLateToToday(){
     var t = todayKey(), n = 0;
-    tasks.forEach(function(x){ if (!x.done && x.date < t){ x.date = t; n++; } });
+    tasks.forEach(function(x){ if (!x.done && x.date < t && matches(x)){ x.date = t; n++; } });
     save();
     if (isAll()) render(); else selectDay(t);
     toast("Moved " + plural(n, "task") + " to today");
-  };
+  }
+  $("moveAllBtn").onclick = moveLateToToday;
+  function daysLate(k){ return Math.round((dateOf(todayKey()) - dateOf(k)) / 86400000); }
 
   // ---------- List ----------
   var PLUS_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
@@ -1056,6 +1060,14 @@
     var meta = document.createElement("span");
     meta.className = "meta";
     meta.innerHTML = "<i></i>";
+    if (!tk.done && tk.date < todayKey()){
+      var n = daysLate(tk.date);
+      var lt = document.createElement("span");
+      lt.className = "late";
+      lt.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+      lt.append((isAll() ? "" : shortDate(tk.date) + " · ") + (n === 1 ? "1 day late" : n + " days late"));
+      meta.insertBefore(lt, meta.firstChild);
+    }
     meta.append(PRIO[tk.prio]);
     if (filter === "all"){
       var cat = document.createElement("span");
@@ -1134,7 +1146,7 @@
   }
 
   function renderFilter(){
-    var day = tasks.filter(function(x){ return (isAll() || x.date === selected) && !x.done; });
+    var day = tasks.filter(function(x){ return inView(x) && !x.done; });
     var n = function(c){ return day.filter(function(x){ return x.cat === c; }).length; };
     var counts = { all: day.length, work: n("work"), personal: n("personal") };
     $("nAll").textContent = counts.all || "";
@@ -1172,7 +1184,33 @@
     $("todoCount").textContent = open.length;
     var list = $("list");
     list.innerHTML = "";
-    appendRows(list, open, true);
+    var tday = todayKey();
+    var late = !isAll() && selected === tday ? open.filter(function(x){ return x.date < tday; }) : [];
+    if (late.length){
+      late.sort(function(a, b){ return byDate(a, b) || sortOpen(a, b); });
+      var h = document.createElement("li");
+      h.className = "group-head od";
+      h.setAttribute("role", "presentation");
+      var a = document.createElement("span"); a.textContent = "Overdue · " + late.length;
+      var mv = document.createElement("button");
+      mv.type = "button"; mv.className = "gh-btn"; mv.textContent = "Move all to today";
+      mv.onclick = moveLateToToday;
+      h.append(a, mv);
+      list.appendChild(h);
+      late.forEach(function(tk){ list.appendChild(taskRow(tk)); });
+      var rest = open.filter(function(x){ return x.date >= tday; });
+      if (rest.length){
+        var h2 = document.createElement("li");
+        h2.className = "group-head td";
+        h2.setAttribute("role", "presentation");
+        var a2 = document.createElement("span"); a2.textContent = "Today · " + rest.length;
+        h2.append(a2);
+        list.appendChild(h2);
+        rest.forEach(function(tk){ list.appendChild(taskRow(tk)); });
+      }
+    } else {
+      appendRows(list, open, true);
+    }
     list.hidden = open.length === 0;
     $("hint").hidden = open.length === 0 || !!ui.editedOnce;
 

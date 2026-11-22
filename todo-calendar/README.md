@@ -42,13 +42,14 @@ date, grouped by date (Overdue, Today, Tomorrow, later), with finished ones unde
   from the PIN with PBKDF2) and the diary locks when you leave it or switch apps. A forgotten PIN can't be recovered;
   the only way back in is to erase the diary. Diary entries are kept apart from tasks and included in backups
   (still encrypted when a PIN is set).
+- **Overdue tasks** show on Today under *Overdue*, keeping their original date with a red "Nov 20 · 3 days late"
+  label. *Move all to today* on that heading reschedules them if you want; ticking one off records it on its own date.
 - Finished tasks move to a collapsible *Completed* section
 - **Deleting:** delete one task from its edit panel; long-press a task (or tap *Select*) to pick several and delete
   them together; *Clear* on the Completed section removes all finished tasks for that day. Every delete has Undo.
 - **Repeating tasks:** open a task and pick Daily, Weekdays, Weekly, Monthly, Quarterly or Yearly. When you tick it off,
   the next one is added automatically (overdue ones skip ahead so the next isn't already late; month-based repeats keep
   their day, e.g. the 31st becomes the 28th in February and back to the 31st in March). Un-ticking takes the next copy back.
-- "Move to today" for unfinished tasks from earlier days
 - Works offline; an **Install** button appears when Chrome allows installing it (or Chrome ⋮ → *Add to Home screen*). It shows up as "Todo List" in your apps
 - ⋮ Settings: theme (Auto / Light / Dark), accent colour, export / import a JSON backup, and About
 
