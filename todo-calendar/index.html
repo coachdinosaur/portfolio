@@ -48,6 +48,12 @@
   .bar{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
   .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:width .25s}
 
+  /* Install banner */
+  .install{display:flex;align-items:center;gap:10px;padding:10px 12px;border-color:var(--accent)}
+  .install p{margin:0;flex:1;font-size:.9rem}
+  .install p span{display:block;font-size:.78rem;color:var(--muted)}
+  .install button{border:none;border-radius:10px;padding:9px 16px;background:var(--accent);color:var(--on-accent);font-weight:700}
+
   /* Overdue banner */
   .overdue{display:flex;align-items:center;gap:10px;border-color:var(--p1);padding:10px 12px}
   .overdue p{margin:0;flex:1;font-size:.9rem}
@@ -169,6 +175,11 @@
     <div class="bar"><i id="bar"></i></div>
     <span id="progressText"></span>
   </div>
+
+  <section class="card install" id="installCard" hidden>
+    <p><b>Put this app on your home screen</b><span>Opens like a normal app and works offline</span></p>
+    <button id="installBtn" type="button">Install</button>
+  </section>
 
   <section class="card overdue" id="overdue" hidden>
     <p id="overdueText"></p>
@@ -806,6 +817,23 @@
     }).catch(function(){ toast("That file isn't a valid backup"); })
       .then(function(){ input.value = ""; });
   };
+
+  // ---------- Install to home screen ----------
+  var installEvent = null;
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();               // show our own button instead of Chrome's small bar
+    installEvent = e;
+    $("installCard").hidden = false;
+  });
+  $("installBtn").onclick = function(){
+    if (!installEvent) return;
+    installEvent.prompt();
+    installEvent.userChoice.then(function(){ installEvent = null; $("installCard").hidden = true; }).catch(noop);
+  };
+  window.addEventListener("appinstalled", function(){
+    $("installCard").hidden = true;
+    toast("Installed. Look for \"Todo List\" in your apps");
+  });
 
   // ---------- Toast ----------
   var toastTimer = null, toastAction = null;

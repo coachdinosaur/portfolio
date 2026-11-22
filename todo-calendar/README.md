@@ -27,7 +27,7 @@ pick a day, then add tasks for that date.
 - Bell button on each Critical task: adds it to Google Calendar for an exact-time alert
 - Tap a task to edit it, tap its label to change urgency, × to delete (with undo)
 - "Move to today" for unfinished tasks from earlier days
-- Works offline and can be installed to the home screen (Chrome menu → *Add to Home screen*)
+- Works offline; an **Install** button appears when Chrome allows installing it (or Chrome ⋮ → *Add to Home screen*). It shows up as "Todo List" in your apps
 - Export / import a JSON backup
 
 Tasks are stored in the browser's `localStorage`, so they stay on the device you use.
