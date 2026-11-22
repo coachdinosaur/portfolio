@@ -1412,6 +1412,26 @@
   function setActive(on){ composer.classList.toggle("active", on); }
 
   input.addEventListener("focus", function(){ setActive(true); });
+
+  // On Android, Back hides the keyboard but the box stays focused, so the add bar would stay open.
+  // Watch the screen height: when the keyboard goes away while typing, close the add bar too.
+  (function(){
+    var vv = window.visualViewport;
+    var h = function(){ return Math.round(vv ? vv.height : window.innerHeight); };
+    var full = h(), kbOpen = false;
+    function onResize(){
+      var now = h();
+      if (now > full) full = now;                       // learn the height without a keyboard
+      if (now < full - 120){ kbOpen = true; return; }   // keyboard showing
+      if (kbOpen){
+        kbOpen = false;                                 // keyboard just went away
+        if (document.activeElement === input) input.blur();
+      }
+    }
+    (vv || window).addEventListener("resize", onResize);
+    if (vv) window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", function(){ setTimeout(function(){ full = h(); kbOpen = false; }, 400); });
+  })();
   input.addEventListener("blur", function(){
     setTimeout(function(){
       if (document.activeElement !== input && !input.value.trim()){
@@ -1454,11 +1474,11 @@
     save();
     input.value = "";
     paintComposer();
-    input.focus();
+    input.blur();                      // done: close the keyboard and the urgency/category row
     render();
     if (!matches(tk)){
       toast("Added to " + CATS[tk.cat] + " (hidden by the " + CATS[filter] + " filter)", "Show all", function(){ setFilter("all"); });
-    } else if (addPrio === 1 && !settings.enabled && !ui.alertHinted){
+    } else if (tk.prio === 1 && !settings.enabled && !ui.alertHinted){
       ui.alertHinted = true; saveUi();
       toast("Want a reminder for Critical tasks?", "Set up", function(){ input.blur(); openSheet(alertSheet); });
     }
