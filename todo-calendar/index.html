@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Todo List</title>
 <meta name="description" content="A simple todo list with urgency levels, critical alerts and a pull-up calendar.">
 <meta name="theme-color" content="#4f46e5">
@@ -11,13 +11,13 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root{
-    --bg:#f5f6fa; --card:#ffffff; --text:#1c1f2a; --muted:#6b7280; --line:#e5e7ef;
+    --bg:#f5f6fa; --card:#ffffff; --text:#1c1f2a; --muted:#6b7280; --line:#e8eaf1;
     --accent:#4f46e5; --accent-soft:#eef0ff; --on-accent:#ffffff;
     --p1:#dc2626; --p2:#ea580c; --p3:#2563eb; --p4:#6b7280; --p1-soft:#fdecec;
   }
   @media (prefers-color-scheme: dark){
     :root{
-      --bg:#0f1117; --card:#181b24; --text:#e8eaf0; --muted:#9aa1b2; --line:#2a2f3c;
+      --bg:#0f1117; --card:#181b24; --text:#e8eaf0; --muted:#9aa1b2; --line:#272c38;
       --accent:#818cf8; --accent-soft:#232846; --on-accent:#0f1117;
       --p1:#f87171; --p2:#fb923c; --p3:#60a5fa; --p4:#9ca3af; --p1-soft:#3a1f24;
     }
@@ -28,81 +28,105 @@
   body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);
        -webkit-tap-highlight-color:transparent;line-height:1.4}
   body.lock{overflow:hidden}
-  button,input,select{font:inherit;color:inherit}
+  button,input,select,textarea{font:inherit;color:inherit}
   button{cursor:pointer}
-  .wrap{max-width:560px;margin:0 auto;padding:14px 12px calc(28px + env(safe-area-inset-bottom))}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+  .wrap{max-width:560px;margin:0 auto;padding:14px 14px calc(150px + env(safe-area-inset-bottom))}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px}
   .p1{--pc:var(--p1)} .p2{--pc:var(--p2)} .p3{--pc:var(--p3)} .p4{--pc:var(--p4)}
 
   /* Header */
   .top{display:flex;align-items:center;gap:8px;margin:2px 0 10px}
   .date-btn{flex:1;min-width:0;text-align:left;background:none;border:none;padding:4px 2px;display:flex;flex-direction:column;align-items:flex-start}
-  .date-main{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;display:inline-flex;align-items:center;gap:8px}
+  .date-main{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;display:inline-flex;align-items:center;gap:8px}
   .date-main::after{content:"";width:7px;height:7px;border:solid var(--muted);border-width:0 2px 2px 0;transform:translateY(-3px) rotate(45deg)}
   .date-sub{font-size:.85rem;color:var(--muted)}
   .chip{height:36px;padding:0 13px;border-radius:999px;border:none;background:var(--accent-soft);color:var(--accent);font-weight:700;white-space:nowrap}
   .icon-btn{flex:none;position:relative;width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--accent)}
   .badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--p1);color:#fff;
          font-size:.7rem;font-weight:800;display:grid;place-items:center;border:2px solid var(--bg)}
-  .progress{display:flex;align-items:center;gap:10px;margin:0 2px 12px;font-size:.8rem;color:var(--muted)}
+  .progress{display:flex;align-items:center;gap:10px;margin:0 2px 14px;font-size:.8rem;color:var(--muted)}
   .bar{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
   .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:width .25s}
 
-  /* Install banner */
-  .install{display:flex;align-items:center;gap:10px;padding:10px 12px;border-color:var(--accent)}
-  .install p{margin:0;flex:1;font-size:.9rem}
-  .install p span{display:block;font-size:.78rem;color:var(--muted)}
-  .install button{border:none;border-radius:10px;padding:9px 16px;background:var(--accent);color:var(--on-accent);font-weight:700}
+  /* Banners */
+  .banner{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:12px}
+  .banner p{margin:0;flex:1;font-size:.9rem}
+  .banner p span{display:block;font-size:.78rem;color:var(--muted)}
+  .banner button{border:none;border-radius:10px;padding:9px 14px;font-weight:700;white-space:nowrap}
+  .install{border-color:var(--accent)} .install button{background:var(--accent);color:var(--on-accent)}
+  .overdue{border-color:var(--p1)} .overdue button{background:var(--p1);color:#fff}
 
-  /* Overdue banner */
-  .overdue{display:flex;align-items:center;gap:10px;border-color:var(--p1);padding:10px 12px}
-  .overdue p{margin:0;flex:1;font-size:.9rem}
-  .overdue button{border:none;border-radius:10px;padding:8px 12px;background:var(--p1);color:#fff;font-weight:650;white-space:nowrap}
-
-  /* Add form */
-  .add{display:flex;flex-wrap:wrap;gap:8px}
-  .add input{flex:1 1 100%;min-width:0;height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:16px}
-  .add input:focus,.add select:focus,.edit:focus{outline:2px solid var(--accent);outline-offset:-1px}
-  .add select{flex:1;height:44px;padding:0 10px;border-radius:12px;border:1px solid var(--line);border-left:6px solid var(--pc);background:var(--bg);font-size:16px}
-  .add button{height:44px;padding:0 22px;border:none;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:700}
-  .for-date{width:100%;font-size:.8rem;color:var(--muted);margin:2px 2px 0}
-  .for-date b{color:var(--accent)}
-  @media (min-width:520px){ .add input{flex:1 1 200px} }
-
-  /* List */
-  .list{list-style:none;margin:0;padding:0}
-  .task{display:flex;align-items:center;gap:8px;padding:11px 2px;border-top:1px solid var(--line)}
+  /* Task list */
+  .sec-head{display:flex;align-items:center;justify-content:space-between;width:100%;margin:4px 2px 8px;padding:0;background:none;border:none;
+            font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .sec-head.toggle{margin-top:18px;justify-content:flex-start;gap:8px}
+  .chev{width:7px;height:7px;border:solid var(--muted);border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px);transition:transform .2s}
+  .collapsed .chev{transform:rotate(-45deg)}
+  .list{list-style:none;margin:0;padding:0 4px 0 14px}
+  .task{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);min-height:62px}
   .task:first-child{border-top:none}
-  .check{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center;margin-right:2px}
+  .check{flex:none;width:26px;height:26px;border-radius:50%;border:2.2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center;transition:background .15s}
   .task.done .check{background:var(--muted);border-color:var(--muted)}
   .task.done .check::after{content:"";width:6px;height:11px;border:solid var(--card);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
-  .text{flex:1;min-width:0;overflow-wrap:anywhere;cursor:text}
+  .body{flex:1;min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:3px;text-align:left;
+        background:none;border:none;padding:12px 0}
+  .text{font-size:1.02rem;overflow-wrap:anywhere}
+  .meta{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:650;color:var(--pc)}
+  .meta i{width:7px;height:7px;border-radius:50%;background:var(--pc)}
   .task.done .text{text-decoration:line-through;color:var(--muted)}
-  .edit{flex:1;min-width:0;height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:16px}
-  .pill{flex:none;font-size:.7rem;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid var(--pc);background:transparent;color:var(--pc)}
-  .task.done .pill{opacity:.5}
-  .rem{flex:none;width:32px;height:32px;border:none;border-radius:8px;background:var(--p1-soft);color:var(--p1);display:grid;place-items:center;padding:0}
-  .del{flex:none;width:30px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-size:1.35rem;line-height:1;padding:0}
-  .del:hover{background:var(--bg)}
-  .empty{color:var(--muted);text-align:center;font-size:.92rem;margin:10px 0}
-  .hint{color:var(--muted);font-size:.75rem;text-align:center;margin:10px 0 0}
+  .task.done .meta{display:none}
+  .rem{flex:none;width:38px;height:38px;border:none;border-radius:10px;background:var(--p1-soft);color:var(--p1);display:grid;place-items:center;padding:0;margin-right:6px}
+  .task.new{animation:flash 1.2s ease}
+  @keyframes flash{0%{background:var(--accent-soft)}100%{background:transparent}}
+  .hint{color:var(--muted);font-size:.78rem;text-align:center;margin:10px 0 0}
+  .empty-state{text-align:center;padding:42px 20px 30px;color:var(--muted)}
+  .empty-state .big{width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+  .empty-state b{display:block;color:var(--text);font-size:1.05rem;margin-bottom:4px}
+  .empty-state span{font-size:.9rem}
 
-  footer{text-align:center;font-size:.8rem;color:var(--muted);margin-top:6px}
+  footer{text-align:center;font-size:.78rem;color:var(--muted);margin-top:26px}
   footer button,footer label{border:none;background:none;color:var(--accent);font-weight:600;padding:6px 8px;cursor:pointer}
   footer input{display:none}
 
-  /* Pull-up sheets (calendar + alerts) */
+  /* Bottom composer */
+  .composer{position:fixed;left:0;right:0;bottom:0;z-index:15;margin:0 auto;max-width:560px;background:var(--card);
+            border-top:1px solid var(--line);border-radius:20px 20px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.07);
+            padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+  .composer-opts{margin-bottom:10px}
+  .composer-opts .chips{width:100%}
+  .composer-opts .uchip{flex:1;padding:0 4px}
+  .composer:not(.active) .composer-opts{display:none}
+  .composer-row{display:flex;align-items:center;gap:8px}
+  .composer-input{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:50px;padding:0 8px 0 14px;border-radius:14px;background:var(--bg);border:1.5px solid transparent;cursor:text}
+  .composer.active .composer-input{border-color:var(--accent)}
+  .composer-input .dotp{flex:none;width:12px;height:12px;border-radius:50%;background:var(--pc)}
+  .composer-input input{flex:1;min-width:0;border:none;background:transparent;outline:none;font-size:16px;height:100%}
+  .send{flex:none;width:50px;height:50px;border-radius:14px;border:none;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;transition:opacity .15s}
+  .send:disabled{opacity:.35;cursor:default}
+  .date-chip{flex:none;display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--accent);font-weight:650;font-size:.78rem;white-space:nowrap}
+  .composer:not(.active):not(.other-day) .date-chip{display:none}
+
+  /* Urgency chips */
+  .chips{display:flex;gap:6px;flex-wrap:nowrap}
+  .uchip{flex:none;height:34px;padding:0 12px;border-radius:999px;border:1.5px solid var(--pc);background:transparent;color:var(--pc);font-weight:700;font-size:.82rem;white-space:nowrap}
+  .uchip.on{background:var(--pc);color:#fff}
+  @media (prefers-color-scheme: dark){ .uchip.on{color:#0f1117} }
+
+  /* Pull-up sheets */
   .backdrop{position:fixed;inset:0;background:rgba(10,12,20,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
   .backdrop.open{opacity:1;pointer-events:auto}
   .sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;max-height:88vh;overflow-y:auto;background:var(--card);
-         border-radius:22px 22px 0 0;padding:0 14px calc(14px + env(safe-area-inset-bottom));
+         border-radius:22px 22px 0 0;padding:0 16px calc(16px + env(safe-area-inset-bottom));
          transform:translateY(calc(100% + 50px));transition:transform .25s cubic-bezier(.2,.8,.2,1);z-index:21;
          box-shadow:0 -10px 30px rgba(0,0,0,.18)}
   .sheet.open{transform:translateY(0)}
   .sheet-top{touch-action:none}
   .grab{display:flex;justify-content:center;padding:10px 0 8px;cursor:pointer}
   .grab span{width:42px;height:5px;border-radius:99px;background:var(--line)}
-  .sheet-title{font-size:1.1rem;margin:0 0 4px}
+  .sheet-title{font-size:1.1rem;margin:0 0 6px}
+  .sec{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:14px 0 8px}
+
+  /* Calendar sheet */
   .cal-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
   .cal-head h2{flex:1;font-size:1.05rem;margin:0;text-align:center}
   .nav-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:1.3rem;line-height:1}
@@ -127,13 +151,22 @@
   .legend i{width:8px;height:8px;border-radius:50%;background:var(--pc)}
   .sheet-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.8rem;color:var(--muted)}
 
+  /* Edit sheet */
+  .field{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:16px;resize:none}
+  .field:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  .edit-actions{display:flex;gap:10px;margin-top:18px}
+  .btn{height:48px;border-radius:12px;border:none;font-weight:700;padding:0 18px}
+  .btn.primary{flex:1;background:var(--accent);color:var(--on-accent)}
+  .btn.danger{background:var(--p1-soft);color:var(--p1)}
+  .remind-btn{display:flex;align-items:center;gap:8px;width:100%;margin-top:14px;padding:12px 14px;border-radius:12px;border:none;background:var(--p1-soft);color:var(--p1);font-weight:650;text-align:left}
+
   /* Alerts sheet */
-  .sec{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:12px 0 6px}
   .crit-list{list-style:none;margin:0;padding:0;max-height:32vh;overflow-y:auto}
   .crit-list button{width:100%;display:flex;align-items:center;gap:10px;text-align:left;background:var(--p1-soft);border:none;
                     border-left:4px solid var(--p1);border-radius:10px;padding:10px 12px;margin-bottom:6px}
   .crit-list .when{flex:none;font-size:.75rem;font-weight:700;color:var(--p1)}
   .crit-list .ct{flex:1;min-width:0;overflow-wrap:anywhere}
+  .muted-note{color:var(--muted);text-align:center;font-size:.9rem;margin:8px 0}
   .setting{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
   .setting .sub{display:block;margin-top:2px;font-size:.8rem;color:var(--muted)}
   .switch{flex:none;appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:background .2s;margin:0}
@@ -146,11 +179,12 @@
   .link-btn{border:none;background:none;color:var(--accent);font-weight:650;padding:4px 0;font-size:.88rem}
   .note{font-size:.8rem;color:var(--muted);margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line)}
 
-  .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,200%);
-         background:#1c1f2a;color:#fff;padding:10px 16px;border-radius:12px;display:flex;gap:16px;align-items:center;
-         box-shadow:0 6px 24px rgba(0,0,0,.25);transition:transform .2s ease;z-index:30;font-size:.9rem;max-width:calc(100% - 24px)}
-  .toast.show{transform:translate(-50%,0)}
-  .toast button{background:none;border:none;color:#a5b4fc;font-weight:700;padding:0}
+  .toast{position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top));margin:0 auto;width:fit-content;max-width:520px;
+         transform:translateY(-16px);opacity:0;pointer-events:none;
+         background:#1c1f2a;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:16px;align-items:center;
+         box-shadow:0 6px 24px rgba(0,0,0,.25);transition:transform .2s ease,opacity .2s ease;z-index:30;font-size:.9rem}
+  .toast.show{transform:none;opacity:1;pointer-events:auto}
+  .toast button{background:none;border:none;color:#a5b4fc;font-weight:700;padding:0;white-space:nowrap}
   .toast button:empty{display:none}
 </style>
 </head>
@@ -176,35 +210,32 @@
     <span id="progressText"></span>
   </div>
 
-  <section class="card install" id="installCard" hidden>
+  <section class="card banner install" id="installCard" hidden>
     <p><b>Put this app on your home screen</b><span>Opens like a normal app and works offline</span></p>
     <button id="installBtn" type="button">Install</button>
   </section>
 
-  <section class="card overdue" id="overdue" hidden>
+  <section class="card banner overdue" id="overdue" hidden>
     <p id="overdueText"></p>
     <button id="moveAllBtn" type="button">Move to today</button>
   </section>
 
-  <section class="card">
-    <form class="add" id="addForm" autocomplete="off">
-      <input id="taskInput" type="text" placeholder="Add a task…" maxlength="200" aria-label="Task">
-      <select id="prioSelect" aria-label="Urgency">
-        <option value="1">Critical</option>
-        <option value="2">High</option>
-        <option value="3">Medium</option>
-        <option value="4">Low</option>
-      </select>
-      <button type="submit">Add</button>
-      <p class="for-date" id="forDate" hidden></p>
-    </form>
-  </section>
+  <main>
+    <div class="sec-head" id="todoHead"><span>To do</span><span id="todoCount"></span></div>
+    <ul class="list card" id="list"></ul>
+    <p class="hint" id="hint" hidden>Tap a task to edit it, change its urgency or move it to another day</p>
 
-  <section class="card">
-    <ul class="list" id="list"></ul>
-    <p class="empty" id="empty"></p>
-    <p class="hint" id="hint" hidden>Tap a task to edit · tap its label to change urgency</p>
-  </section>
+    <div class="empty-state" id="empty" hidden>
+      <div class="big"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <b id="emptyTitle"></b>
+      <span id="emptySub"></span>
+    </div>
+
+    <button class="sec-head toggle" id="doneToggle" type="button" hidden aria-expanded="true">
+      <span id="doneLabel"></span><i class="chev"></i>
+    </button>
+    <ul class="list card" id="doneList"></ul>
+  </main>
 
   <footer>
     Tasks are saved on this device only.<br>
@@ -212,6 +243,31 @@
     <input type="file" id="importInput" accept="application/json,.json">
   </footer>
 </div>
+
+<!-- Bottom composer -->
+<form class="composer" id="composer" autocomplete="off">
+  <div class="composer-opts">
+    <div class="chips" id="addChips" role="radiogroup" aria-label="Urgency">
+      <button type="button" class="uchip p1" data-p="1" role="radio">Critical</button>
+      <button type="button" class="uchip p2" data-p="2" role="radio">High</button>
+      <button type="button" class="uchip p3" data-p="3" role="radio">Medium</button>
+      <button type="button" class="uchip p4" data-p="4" role="radio">Low</button>
+    </div>
+  </div>
+  <div class="composer-row">
+    <div class="composer-input p3" id="composerInput">
+      <span class="dotp" aria-hidden="true"></span>
+      <input id="taskInput" type="text" placeholder="Add a task" maxlength="200" aria-label="New task" enterkeyhint="done">
+      <button type="button" class="date-chip" id="addDate" aria-label="Change date">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+        <span id="addDateLabel">Today</span>
+      </button>
+    </div>
+    <button type="submit" class="send" id="sendBtn" aria-label="Add task" disabled>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+</form>
 
 <div class="backdrop" id="backdrop"></div>
 
@@ -237,6 +293,32 @@
   </div>
 </div>
 
+<!-- Edit sheet -->
+<div class="sheet" id="editSheet" role="dialog" aria-modal="true" aria-labelledby="editTitle" aria-hidden="true">
+  <div class="sheet-top">
+    <div class="grab" aria-hidden="true"><span></span></div>
+    <h2 class="sheet-title" id="editTitle">Edit task</h2>
+  </div>
+  <textarea class="field" id="editText" rows="2" maxlength="200" aria-label="Task" enterkeyhint="done"></textarea>
+  <p class="sec">Urgency</p>
+  <div class="chips" id="editChips" role="radiogroup" aria-label="Urgency">
+    <button type="button" class="uchip p1" data-p="1" role="radio">Critical</button>
+    <button type="button" class="uchip p2" data-p="2" role="radio">High</button>
+    <button type="button" class="uchip p3" data-p="3" role="radio">Medium</button>
+    <button type="button" class="uchip p4" data-p="4" role="radio">Low</button>
+  </div>
+  <p class="sec">Date</p>
+  <input type="date" class="field" id="editDate" aria-label="Date">
+  <button type="button" class="remind-btn" id="editRemind" hidden>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+    Remind me in Google Calendar
+  </button>
+  <div class="edit-actions">
+    <button type="button" class="btn danger" id="editDelete">Delete</button>
+    <button type="button" class="btn primary" id="editSave">Save</button>
+  </div>
+</div>
+
 <!-- Alerts sheet -->
 <div class="sheet" id="alertSheet" role="dialog" aria-modal="true" aria-labelledby="alertTitle" aria-hidden="true">
   <div class="sheet-top">
@@ -245,7 +327,7 @@
   </div>
   <p class="sec">Unfinished critical tasks</p>
   <ul class="crit-list" id="critList"></ul>
-  <p class="empty" id="critEmpty">No unfinished Critical tasks 👍</p>
+  <p class="muted-note" id="critEmpty">No unfinished Critical tasks 👍</p>
 
   <div class="setting">
     <div><b>Daily reminder</b><span class="sub">A phone notification once a day while Critical tasks are unfinished</span></div>
@@ -257,7 +339,7 @@
   </div>
   <p class="status" id="alertStatus" hidden></p>
   <button class="link-btn" id="testBtn" type="button" hidden>Send a test notification</button>
-  <p class="note"><b>Need an exact time?</b> Tap the bell button next to a Critical task to add it to Google Calendar. Calendar will alert you on time, even when this app is closed.</p>
+  <p class="note"><b>Need an exact time?</b> Open a Critical task and tap <i>Remind me in Google Calendar</i>, or tap the bell next to it. Calendar will alert you on time, even when this app is closed.</p>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastBtn"></button></div>
@@ -266,10 +348,11 @@
 (function(){
   "use strict";
   var KEY = "todo-calendar-v1", PRIO_KEY = "todo-calendar-last-prio", ALERT_KEY = "todo-calendar-alerts";
+  var UI_KEY = "todo-calendar-ui";
   var DATA_CACHE = "todo-data";
   var DATA_URL = new URL("__alerts.json", location.href).href;
   var PRIO = {1:"Critical", 2:"High", 3:"Medium", 4:"Low"};
-  var BELL_SVG = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
+  var BELL_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
   var $ = function(id){ return document.getElementById(id); };
   var noop = function(){};
   var pad = function(n){ return String(n).padStart(2, "0"); };
@@ -278,6 +361,7 @@
   var todayKey = function(){ return keyOf(new Date()); };
   var uid = function(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); };
   var plural = function(n, w){ return n + " " + w + (n === 1 ? "" : "s"); };
+  var isDateKey = function(k){ return /^\d{4}-\d{2}-\d{2}$/.test(k); };
 
   function load(){
     try { var v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v : []; }
@@ -288,19 +372,22 @@
     catch(e){ toast("Couldn't save — browser storage is blocked or full"); }
     syncAlerts();
   }
+  var ui = (function(){ try { return JSON.parse(localStorage.getItem(UI_KEY)) || {}; } catch(e){ return {}; } })();
+  function saveUi(){ try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch(e){} }
 
   var tasks = load();
   var selected = todayKey();       // the day whose list is shown (and where new tasks go)
   var view = null;                 // month shown in the calendar sheet
+  var justAdded = null;            // id of the task to highlight
 
-  // open tasks first, then by urgency, then oldest first
-  function sortTasks(a, b){ return (a.done - b.done) || (a.prio - b.prio) || (a.created - b.created); }
+  function sortOpen(a, b){ return (a.prio - b.prio) || (a.created - b.created); }
 
   function relative(k){
     var diff = Math.round((dateOf(k) - dateOf(todayKey())) / 86400000);
     return diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : diff === -1 ? "Yesterday" : "";
   }
   function shortDate(k){ return dateOf(k).toLocaleDateString(undefined, { month: "short", day: "numeric" }); }
+  function chipDate(k){ return relative(k) || dateOf(k).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }); }
   function fmtTime(hhmm){
     var p = hhmm.split(":").map(Number);
     return new Date(2000, 0, 1, p[0], p[1]).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
@@ -309,6 +396,7 @@
   function selectDay(k){
     selected = k;
     render();
+    window.scrollTo(0, 0);
   }
 
   // ---------- Header ----------
@@ -328,16 +416,9 @@
     $("bar").style.width = items.length ? (done / items.length * 100) + "%" : "0";
     $("progressText").textContent = done === items.length && items.length ? "All done ✓" : done + " of " + items.length + " done";
 
-    $("taskInput").placeholder = selected === t ? "Add a task…" : "Add a task for " + shortDate(selected) + "…";
-    var fd = $("forDate");
-    fd.hidden = selected === t;
-    if (selected !== t){
-      fd.textContent = "";
-      fd.append("Adding to ");
-      var b = document.createElement("b");
-      b.textContent = d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
-      fd.append(b);
-    }
+    $("addDateLabel").textContent = chipDate(selected);
+    composer.classList.toggle("other-day", selected !== t);
+    $("taskInput").placeholder = selected === t ? "Add a task" : "Add a task for " + shortDate(selected);
   }
 
   // ---------- Overdue ----------
@@ -356,83 +437,88 @@
   };
 
   // ---------- List ----------
-  function renderList(){
-    var items = tasks.filter(function(x){ return x.date === selected; }).sort(sortTasks);
-    var empty = $("empty");
-    empty.hidden = items.length > 0;
-    empty.textContent = selected === todayKey() ? "Nothing to do yet today. Add a task above." : "No tasks on " + shortDate(selected) + ".";
-    $("hint").hidden = items.length === 0;
+  function taskRow(tk){
+    var li = document.createElement("li");
+    li.className = "task p" + tk.prio + (tk.done ? " done" : "") + (tk.id === justAdded ? " new" : "");
+    li.dataset.id = tk.id;
 
+    var check = document.createElement("button");
+    check.type = "button";
+    check.className = "check";
+    check.setAttribute("aria-label", tk.done ? "Mark as not done" : "Mark as done");
+    check.onclick = function(){ tk.done = !tk.done; save(); render(); };
+
+    var body = document.createElement("button");
+    body.type = "button";
+    body.className = "body";
+    body.setAttribute("aria-label", tk.text + ", " + PRIO[tk.prio] + ". Tap to edit");
+    var text = document.createElement("span");
+    text.className = "text";
+    text.textContent = tk.text;
+    var meta = document.createElement("span");
+    meta.className = "meta";
+    meta.innerHTML = "<i></i>";
+    meta.append(PRIO[tk.prio]);
+    body.append(text, meta);
+    body.onclick = function(){ openEdit(tk); };
+
+    li.append(check, body);
+
+    if (tk.prio === 1 && !tk.done){
+      var rem = document.createElement("button");
+      rem.type = "button";
+      rem.className = "rem";
+      rem.innerHTML = BELL_SVG;
+      rem.setAttribute("aria-label", "Add a reminder in Google Calendar");
+      rem.onclick = function(){ window.open(calendarLink(tk), "_blank", "noopener"); };
+      li.append(rem);
+    }
+    return li;
+  }
+
+  function renderList(){
+    var items = tasks.filter(function(x){ return x.date === selected; });
+    var open = items.filter(function(x){ return !x.done; }).sort(sortOpen);
+    var done = items.filter(function(x){ return x.done; }).sort(function(a, b){ return a.created - b.created; });
+
+    $("todoHead").hidden = open.length === 0;
+    $("todoCount").textContent = open.length;
     var list = $("list");
     list.innerHTML = "";
-    items.forEach(function(tk){
-      var li = document.createElement("li");
-      li.className = "task p" + tk.prio + (tk.done ? " done" : "");
+    open.forEach(function(tk){ list.appendChild(taskRow(tk)); });
+    list.hidden = open.length === 0;
+    $("hint").hidden = open.length === 0 || !!ui.editedOnce;
 
-      var check = document.createElement("button");
-      check.type = "button";
-      check.className = "check";
-      check.setAttribute("aria-label", tk.done ? "Mark as not done" : "Mark as done");
-      check.onclick = function(){ tk.done = !tk.done; save(); render(); };
-
-      var text = document.createElement("span");
-      text.className = "text";
-      text.textContent = tk.text;
-      text.onclick = function(){ startEdit(text, tk); };
-
-      var pill = document.createElement("button");
-      pill.type = "button";
-      pill.className = "pill";
-      pill.textContent = PRIO[tk.prio];
-      pill.setAttribute("aria-label", "Urgency " + PRIO[tk.prio] + ", tap to change");
-      pill.onclick = function(){ tk.prio = tk.prio % 4 + 1; save(); render(); };
-
-      li.append(check, text, pill);
-
-      if (tk.prio === 1 && !tk.done){
-        var rem = document.createElement("button");
-        rem.type = "button";
-        rem.className = "rem";
-        rem.innerHTML = BELL_SVG;
-        rem.setAttribute("aria-label", "Add a reminder in Google Calendar");
-        rem.title = "Remind me (Google Calendar)";
-        rem.onclick = function(){ window.open(calendarLink(tk), "_blank", "noopener"); };
-        li.append(rem);
+    var isToday = selected === todayKey();
+    $("empty").hidden = open.length > 0;
+    if (open.length === 0){
+      if (done.length){
+        $("emptyTitle").textContent = "All done" + (isToday ? " for today" : "") + " 🎉";
+        $("emptySub").textContent = "Nice work. Add more below if something comes up.";
+      } else {
+        $("emptyTitle").textContent = isToday ? "Nothing on your list yet" : "Nothing planned for " + shortDate(selected);
+        $("emptySub").textContent = "Type a task in the box below to add it.";
       }
-
-      var del = document.createElement("button");
-      del.type = "button";
-      del.className = "del";
-      del.textContent = "×";
-      del.setAttribute("aria-label", "Delete task");
-      del.onclick = function(){ removeTask(tk.id); };
-      li.append(del);
-
-      list.appendChild(li);
-    });
-  }
-
-  function startEdit(span, tk){
-    var inp = document.createElement("input");
-    inp.className = "edit";
-    inp.value = tk.text;
-    inp.maxLength = 200;
-    span.replaceWith(inp);
-    inp.focus();
-    var finished = false;
-    function finish(keep){
-      if (finished) return;
-      finished = true;
-      var v = inp.value.trim();
-      if (keep && v && v !== tk.text){ tk.text = v; save(); }
-      render();
     }
-    inp.addEventListener("keydown", function(e){
-      if (e.key === "Enter"){ e.preventDefault(); finish(true); }
-      else if (e.key === "Escape"){ finish(false); }
-    });
-    inp.addEventListener("blur", function(){ finish(true); });
+
+    var collapsed = !!ui.doneCollapsed;
+    var toggle = $("doneToggle");
+    toggle.hidden = done.length === 0;
+    toggle.classList.toggle("collapsed", collapsed);
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+    $("doneLabel").textContent = "Completed · " + done.length;
+    var dl = $("doneList");
+    dl.innerHTML = "";
+    done.forEach(function(tk){ dl.appendChild(taskRow(tk)); });
+    dl.hidden = done.length === 0 || collapsed;
+
+    if (justAdded){
+      var row = list.querySelector('[data-id="' + justAdded + '"]');
+      if (row) row.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      justAdded = null;
+    }
   }
+  $("doneToggle").onclick = function(){ ui.doneCollapsed = !ui.doneCollapsed; saveUi(); renderList(); };
 
   function removeTask(id){
     var i = tasks.findIndex(function(x){ return x.id === id; });
@@ -445,35 +531,122 @@
     });
   }
 
-  // ---------- Add ----------
-  var prioSelect = $("prioSelect");
-  try { var lp = localStorage.getItem(PRIO_KEY); prioSelect.value = PRIO[lp] ? lp : "3"; }
-  catch(e){ prioSelect.value = "3"; }
-  function paintSelect(){ prioSelect.className = "p" + prioSelect.value; }
-  prioSelect.addEventListener("change", paintSelect);
-  paintSelect();
+  // ---------- Urgency chips ----------
+  function paintChips(group, p){
+    group.querySelectorAll(".uchip").forEach(function(c){
+      var on = Number(c.dataset.p) === p;
+      c.classList.toggle("on", on);
+      c.setAttribute("aria-checked", String(on));
+    });
+  }
 
-  $("addForm").addEventListener("submit", function(e){
+  // ---------- Composer ----------
+  var composer = $("composer"), input = $("taskInput");
+  var addPrio = 3;
+  try { var lp = Number(localStorage.getItem(PRIO_KEY)); if (PRIO[lp]) addPrio = lp; } catch(e){}
+
+  function paintComposer(){
+    paintChips($("addChips"), addPrio);
+    $("composerInput").className = "composer-input p" + addPrio;
+    $("sendBtn").disabled = !input.value.trim();
+  }
+  function setActive(on){ composer.classList.toggle("active", on); }
+
+  input.addEventListener("focus", function(){ setActive(true); });
+  input.addEventListener("blur", function(){
+    setTimeout(function(){ if (document.activeElement !== input && !input.value.trim()) setActive(false); }, 150);
+  });
+  input.addEventListener("input", paintComposer);
+
+  // tapping chips keeps the keyboard open
+  composer.querySelectorAll(".uchip, .send").forEach(function(b){
+    b.addEventListener("mousedown", function(e){ e.preventDefault(); });
+  });
+  $("addChips").addEventListener("click", function(e){
+    var c = e.target.closest(".uchip");
+    if (!c) return;
+    addPrio = Number(c.dataset.p);
+    try { localStorage.setItem(PRIO_KEY, String(addPrio)); } catch(err){}
+    paintComposer();
+  });
+  $("addDate").onclick = function(){ openSheet(calSheet); };
+  $("composerInput").addEventListener("click", function(e){ if (!e.target.closest("button")) input.focus(); });
+
+  composer.addEventListener("submit", function(e){
     e.preventDefault();
-    var input = $("taskInput");
     var text = input.value.trim();
     if (!text){ input.focus(); return; }
-    var prio = Number(prioSelect.value);
-    tasks.push({ id: uid(), text: text, prio: prio, date: selected, done: false, created: Date.now() });
+    var tk = { id: uid(), text: text, prio: addPrio, date: selected, done: false, created: Date.now() };
+    tasks.push(tk);
+    justAdded = tk.id;
     save();
-    try { localStorage.setItem(PRIO_KEY, String(prio)); } catch(err){}
     input.value = "";
+    paintComposer();
     input.focus();
     render();
-    if (prio === 1 && !settings.enabled && !hintedAlerts){
-      hintedAlerts = true;
-      toast("Want a reminder for Critical tasks?", "Set up", function(){ openSheet(alertSheet); });
+    if (addPrio === 1 && !settings.enabled && !ui.alertHinted){
+      ui.alertHinted = true; saveUi();
+      toast("Want a reminder for Critical tasks?", "Set up", function(){ input.blur(); openSheet(alertSheet); });
     }
   });
-  var hintedAlerts = false;
+
+  // ---------- Edit sheet ----------
+  var editing = null, editPrio = 3;
+  function openEdit(tk){
+    editing = tk;
+    editPrio = tk.prio;
+    $("editText").value = tk.text;
+    $("editDate").value = tk.date;
+    $("editTitle").textContent = tk.done ? "Edit task (done)" : "Edit task";
+    paintEdit();
+    if (!ui.editedOnce){ ui.editedOnce = true; saveUi(); }
+    openSheet(editSheet);
+  }
+  function paintEdit(){
+    paintChips($("editChips"), editPrio);
+    $("editRemind").hidden = !(editPrio === 1 && editing && !editing.done);
+  }
+  $("editChips").addEventListener("click", function(e){
+    var c = e.target.closest(".uchip");
+    if (!c) return;
+    editPrio = Number(c.dataset.p);
+    paintEdit();
+  });
+  function saveEdit(){
+    if (!editing) return;
+    var tk = editing;
+    var text = $("editText").value.trim();
+    if (!text){ $("editText").focus(); return; }
+    var newDate = isDateKey($("editDate").value) ? $("editDate").value : tk.date;
+    var moved = newDate !== tk.date;
+    tk.text = text;
+    tk.prio = editPrio;
+    tk.date = newDate;
+    save();
+    closeSheet();
+    render();
+    if (moved && newDate !== selected){
+      toast("Moved to " + chipDate(newDate), "View", function(){ selectDay(newDate); });
+    }
+  }
+  $("editSave").onclick = saveEdit;
+  $("editText").addEventListener("keydown", function(e){
+    if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); saveEdit(); }
+  });
+  $("editDelete").onclick = function(){
+    if (!editing) return;
+    var id = editing.id;
+    closeSheet();
+    removeTask(id);
+  };
+  $("editRemind").onclick = function(){
+    if (!editing) return;
+    var date = isDateKey($("editDate").value) ? $("editDate").value : editing.date;
+    window.open(calendarLink({ text: $("editText").value.trim() || editing.text, date: date }), "_blank", "noopener");
+  };
 
   // ---------- Sheets ----------
-  var backdrop = $("backdrop"), calSheet = $("calSheet"), alertSheet = $("alertSheet");
+  var backdrop = $("backdrop"), calSheet = $("calSheet"), alertSheet = $("alertSheet"), editSheet = $("editSheet");
   var openEl = null;
 
   function openSheet(el){
@@ -483,7 +656,7 @@
       var d = dateOf(selected);
       view = { y: d.getFullYear(), m: d.getMonth() };
       renderCalendar();
-    } else {
+    } else if (el === alertSheet){
       renderAlerts();
     }
     el.classList.add("open");
@@ -503,12 +676,13 @@
     backdrop.classList.remove("open");
     el.setAttribute("aria-hidden", "true");
     el.inert = true;
+    if (document.activeElement && el.contains(document.activeElement)) document.activeElement.blur();
     document.body.classList.remove("lock");
     if (el === calSheet) view = null;
+    if (el === editSheet) editing = null;
     if (!keepHistory && history.state && history.state.sheet){ try { history.back(); } catch(e){} }
   }
-  calSheet.inert = true;
-  alertSheet.inert = true;
+  [calSheet, alertSheet, editSheet].forEach(function(s){ s.inert = true; });
   window.addEventListener("popstate", function(){ if (openEl) closeSheet(true); });
   document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeSheet(); });
   backdrop.onclick = function(){ closeSheet(); };
@@ -592,6 +766,8 @@
     if (!btn) return;
     closeSheet();
     selectDay(btn.dataset.key);
+    // if a task was half-typed, go straight back to it
+    if (input.value.trim()) setTimeout(function(){ input.focus(); }, 280);
   });
 
   function shiftMonth(n){
@@ -679,8 +855,7 @@
       b.type = "button";
       var when = document.createElement("span");
       when.className = "when";
-      when.textContent = tk.date < t ? "Overdue · " + shortDate(tk.date)
-        : relative(tk.date) || dateOf(tk.date).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+      when.textContent = tk.date < t ? "Overdue · " + shortDate(tk.date) : chipDate(tk.date);
       var ct = document.createElement("span");
       ct.className = "ct";
       ct.textContent = tk.text;
@@ -699,12 +874,12 @@
     $("alertTime").value = settings.time;
     $("testBtn").hidden = !on;
     var msg = "", warn = false, time = fmtTime(settings.time);
-    if (!canNotify){ msg = "This browser can't show notifications. Use the bell button on a Critical task to get a Google Calendar reminder instead."; warn = true; }
-    else if (Notification.permission === "denied"){ msg = "Notifications are blocked for this site. In Chrome tap ⋮ → Settings → Site settings → Notifications and allow this site, then turn this on again."; warn = true; }
+    if (!canNotify){ msg = "This browser can't show notifications. Use Google Calendar reminders on Critical tasks instead."; warn = true; }
+    else if (Notification.permission === "denied"){ msg = "Notifications are blocked for this app. Allow them in your phone's app or Chrome site settings, then turn this on again."; warn = true; }
     else if (on){
       if (bgState === "on") msg = "On. You'll get one notification a day, some time after " + time + ", while Critical tasks are unfinished — even with the app closed. Your phone decides the exact moment, so it can come late.";
-      else if (bgState === "needs-install") msg = "On while the app is open (from " + time + "). To also get it when the app is closed, install it: Chrome ⋮ → Add to Home screen, then open it once from your home screen.";
-      else msg = "On while the app is open (from " + time + "). This browser can't check in the background, so use the bell button on a Critical task for an exact-time reminder.";
+      else if (bgState === "needs-install") msg = "On while the app is open (from " + time + "). To also get it when the app is closed, install the app to your home screen and open it from there once.";
+      else msg = "On while the app is open (from " + time + "). This browser can't check in the background, so use Google Calendar reminders for exact times.";
     }
     var st = $("alertStatus");
     st.hidden = !msg;
@@ -798,7 +973,7 @@
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
   };
   $("importInput").onchange = function(){
-    var f = this.files[0], input = this;
+    var f = this.files[0], fileInput = this;
     if (!f) return;
     f.text().then(function(raw){
       var data = JSON.parse(raw);
@@ -807,7 +982,7 @@
       var ids = {}; tasks.forEach(function(x){ ids[x.id] = true; });
       var n = 0;
       list.forEach(function(x){
-        if (!x || typeof x.text !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(x.date) || (x.id && ids[x.id])) return;
+        if (!x || typeof x.text !== "string" || !isDateKey(x.date) || (x.id && ids[x.id])) return;
         var p = Number(x.prio);
         tasks.push({ id: x.id || uid(), text: x.text.slice(0, 200), prio: PRIO[p] ? p : 3, date: x.date, done: !!x.done, created: Number(x.created) || Date.now() });
         n++;
@@ -815,7 +990,7 @@
       save(); render();
       toast("Imported " + plural(n, "task"));
     }).catch(function(){ toast("That file isn't a valid backup"); })
-      .then(function(){ input.value = ""; });
+      .then(function(){ fileInput.value = ""; });
   };
 
   // ---------- Install to home screen ----------
@@ -845,6 +1020,7 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function(){ $("toast").classList.remove("show"); toastAction = null; }, 5000);
   }
+  $("toastBtn").addEventListener("mousedown", function(e){ e.preventDefault(); });
   $("toastBtn").onclick = function(){
     var act = toastAction;
     toastAction = null;
@@ -868,6 +1044,7 @@
   });
   window.addEventListener("storage", function(e){ if (e.key === KEY){ tasks = load(); render(); } });
 
+  paintComposer();
   render();
   syncAlerts();
 

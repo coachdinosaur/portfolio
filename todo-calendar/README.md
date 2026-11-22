@@ -1,8 +1,9 @@
 # Todo List
 
-A simple todo list with urgency levels. New tasks go on today's list.
-To check or plan another day, tap the calendar button (or the date at the top) to pull up the calendar,
-pick a day, then add tasks for that date.
+A simple todo list with urgency levels. The list is the main screen; type new tasks in the bar at the bottom
+(pick Critical / High / Medium / Low above it). New tasks go on today's list.
+To check or plan another day, tap the calendar button (or the date at the top, or the date pill in the bottom bar)
+to pull up the calendar, pick a day, then add tasks for that date.
 
 **Live:** https://coachdinosaur.github.io/portfolio/todo-calendar/
 
@@ -25,7 +26,8 @@ pick a day, then add tasks for that date.
   while Critical tasks are unfinished. When the app is installed (Add to Home screen) this also works with the
   app closed, using Chrome's periodic background sync; Chrome decides the exact moment, so it can come late.
 - Bell button on each Critical task: adds it to Google Calendar for an exact-time alert
-- Tap a task to edit it, tap its label to change urgency, × to delete (with undo)
+- Tap a task to edit its text, change urgency, move it to another date or delete it (with undo)
+- Finished tasks move to a collapsible *Completed* section
 - "Move to today" for unfinished tasks from earlier days
 - Works offline; an **Install** button appears when Chrome allows installing it (or Chrome ⋮ → *Add to Home screen*). It shows up as "Todo List" in your apps
 - Export / import a JSON backup
