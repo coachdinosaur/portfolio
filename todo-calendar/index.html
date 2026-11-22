@@ -127,9 +127,9 @@
   .chev{width:7px;height:7px;border:solid var(--muted);border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px);transition:transform .2s}
   .collapsed .chev{transform:rotate(-45deg)}
   .list{list-style:none;margin:0;padding:0 4px 0 14px}
-  .task{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);min-height:62px}
+  .task{display:flex;align-items:flex-start;gap:12px;border-top:1px solid var(--line);min-height:62px}
   .task:first-child{border-top:none}
-  .check{flex:none;width:26px;height:26px;border-radius:50%;border:2.2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center;transition:background .15s}
+  .check{flex:none;width:26px;height:26px;margin-top:19px;border-radius:50%;border:2.2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center;transition:background .15s}
   .task.done .check{background:var(--muted);border-color:var(--muted)}
   .task.done .check::after{content:"";width:6px;height:11px;border:solid var(--card);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
   .body{flex:1;min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:3px;text-align:left;
@@ -141,7 +141,17 @@
   .meta .cat{color:var(--muted);font-weight:600}
   .task.done .text{text-decoration:line-through;color:var(--muted)}
   .task.done .meta{display:none}
-  .rem{flex:none;width:38px;height:38px;border:none;border-radius:10px;background:var(--p1-soft);color:var(--p1);display:grid;place-items:center;padding:0;margin-right:6px}
+  .rem{flex:none;width:38px;height:38px;margin-top:13px;border:none;border-radius:10px;background:var(--p1-soft);color:var(--p1);display:grid;place-items:center;padding:0;margin-right:6px}
+  .addsub{flex:none;width:38px;height:38px;margin:11px 6px 0 0;border:none;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;padding:0}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .subs{list-style:none;margin:-4px 0 10px;padding:0}
+  .sub{display:flex;align-items:center;gap:10px;width:100%;min-height:34px;padding:4px 0;border:none;background:none;text-align:left}
+  .subcheck{flex:none;width:18px;height:18px;border-radius:5px;border:2px solid var(--muted);display:grid;place-items:center}
+  .sub.done .subcheck{background:var(--accent);border-color:var(--accent)}
+  .sub.done .subcheck::after{content:"";width:4px;height:8px;border:solid var(--on-accent);border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+  .sub .st{font-size:.9rem;overflow-wrap:anywhere}
+  .sub.done .st{text-decoration:line-through;color:var(--muted)}
+  .meta .subn{display:inline-flex;align-items:center;gap:3px;color:var(--muted);font-weight:650}
   .task.new{animation:flash 1.2s ease}
   main.switching{animation:tabfade .18s ease}
   @keyframes tabfade{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -217,6 +227,13 @@
   .sheet-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.8rem;color:var(--muted)}
 
   /* Edit sheet */
+  .sub-edit{list-style:none;margin:0 0 8px;padding:0}
+  .sub-edit li{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line)}
+  .sub-edit .sub{flex:1;min-width:0}
+  .sub-edit .x{flex:none;width:36px;height:36px;border:none;background:none;color:var(--muted);font-size:1.35rem;line-height:1;border-radius:8px}
+  .sub-add{display:flex;gap:8px}
+  .sub-add .field{flex:1;min-width:0;padding:10px 12px}
+  .btn.soft{height:46px;padding:0 16px;background:var(--accent-soft);color:var(--accent)}
   .rchips{display:flex;flex-wrap:wrap;gap:6px}
   .rchip{height:34px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--text);font-weight:650;font-size:.82rem}
   .rchip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
@@ -316,7 +333,7 @@
   <main>
     <div class="sec-head" id="todoHead"><span>To do</span><span id="todoCount"></span></div>
     <ul class="list card" id="list"></ul>
-    <p class="hint" id="hint" hidden>Tap a task to edit it, change its urgency, move it to another day or make it repeat</p>
+    <p class="hint" id="hint" hidden>Tap a task to edit it, add sub-tasks, change its urgency, move it or make it repeat</p>
 
     <div class="empty-state" id="empty" hidden>
       <div class="big"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
@@ -394,6 +411,12 @@
     <h2 class="sheet-title" id="editTitle">Edit task</h2>
   </div>
   <textarea class="field" id="editText" rows="2" maxlength="200" aria-label="Task" enterkeyhint="done"></textarea>
+  <p class="sec">Sub-tasks</p>
+  <ul class="sub-edit" id="editSubs"></ul>
+  <form class="sub-add" id="subForm" autocomplete="off">
+    <input class="field" id="subInput" type="text" maxlength="200" placeholder="Add a sub-task" aria-label="New sub-task" enterkeyhint="done">
+    <button type="submit" class="btn soft">Add</button>
+  </form>
   <p class="sec">Urgency</p>
   <div class="chips" id="editChips" role="radiogroup" aria-label="Urgency">
     <button type="button" class="uchip p1" data-p="1" role="radio">Critical</button>
@@ -494,6 +517,12 @@
   var normCat = function(c){ return c === "work" ? "work" : "personal"; };
   var REPEAT = { daily: "Daily", weekdays: "Weekdays", weekly: "Weekly", monthly: "Monthly", quarterly: "Quarterly", yearly: "Yearly" };
   var REPEAT_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>';
+  function normSubs(x){
+    if (!Array.isArray(x.subs)){ delete x.subs; return; }
+    x.subs = x.subs.filter(function(s){ return s && typeof s.text === "string" && s.text.trim(); }).slice(0, 50)
+      .map(function(s){ return { id: typeof s.id === "string" ? s.id : Math.random().toString(36).slice(2, 10), text: s.text.slice(0, 200), done: !!s.done }; });
+    if (!x.subs.length) delete x.subs;
+  }
   function normRepeat(x){
     if (!REPEAT[x.repeat]){ delete x.repeat; delete x.repeatDay; return; }
     var d = Number(x.repeatDay);
@@ -514,7 +543,7 @@
     try {
       var v = JSON.parse(localStorage.getItem(KEY));
       if (!Array.isArray(v)) return [];
-      v.forEach(function(x){ x.cat = normCat(x.cat); normRepeat(x); });   // older tasks had no category
+      v.forEach(function(x){ x.cat = normCat(x.cat); normRepeat(x); normSubs(x); });   // older tasks had no category
       return v;
     }
     catch(e){ return []; }
@@ -586,10 +615,12 @@
 
   function toggleDone(tk){
     tk.done = !tk.done;
+    if (tk.done && tk.subs) tk.subs.forEach(function(s){ s.done = true; });
     var next = null;
     if (tk.done && REPEAT[tk.repeat] && !tk.spawnedId){
       next = { id: uid(), text: tk.text, prio: tk.prio, cat: tk.cat, date: nextDue(tk), done: false,
                created: Date.now(), repeat: tk.repeat, repeatDay: tk.repeatDay };
+      if (tk.subs) next.subs = tk.subs.map(function(s){ return { id: uid(), text: s.text, done: false }; });
       tasks.push(next);
       tk.spawnedId = next.id;
     } else if (!tk.done && tk.spawnedId){
@@ -650,6 +681,44 @@
   };
 
   // ---------- List ----------
+  var PLUS_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+  function subRow(tk, sb, inEditor){
+    var li = document.createElement("li");
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "sub" + (sb.done ? " done" : "");
+    b.setAttribute("aria-label", sb.text + (sb.done ? ", done. Tap to undo" : ". Tap to mark done"));
+    var box = document.createElement("span");
+    box.className = "subcheck";
+    var st = document.createElement("span");
+    st.className = "st";
+    st.textContent = sb.text;
+    b.append(box, st);
+    b.onclick = function(){ toggleSub(tk, sb); };
+    li.append(b);
+    if (inEditor){
+      var x = document.createElement("button");
+      x.type = "button";
+      x.className = "x";
+      x.textContent = "×";
+      x.setAttribute("aria-label", "Remove sub-task " + sb.text);
+      x.onclick = function(){
+        tk.subs = (tk.subs || []).filter(function(s){ return s !== sb; });
+        if (!tk.subs.length) delete tk.subs;
+        save(); render(); renderEditSubs();
+      };
+      li.append(x);
+    }
+    return li;
+  }
+  function toggleSub(tk, sb){
+    sb.done = !sb.done;
+    // a sub-task un-ticked on a finished task means it isn't finished any more
+    if (!sb.done && tk.done){ tk.done = false; toast("Moved back to To do"); }
+    save(); render();
+    if (editing === tk) renderEditSubs();
+  }
+
   function taskRow(tk){
     var li = document.createElement("li");
     li.className = "task p" + tk.prio + (tk.done ? " done" : "") + (tk.id === justAdded ? " new" : "");
@@ -661,10 +730,13 @@
     check.setAttribute("aria-label", tk.done ? "Mark as not done" : "Mark as done");
     check.onclick = function(){ toggleDone(tk); };
 
+    var subs = tk.subs || [];
+    var subsDone = subs.filter(function(s){ return s.done; }).length;
     var body = document.createElement("button");
     body.type = "button";
     body.className = "body";
-    body.setAttribute("aria-label", tk.text + ", " + PRIO[tk.prio] + ". Tap to edit");
+    body.setAttribute("aria-label", tk.text + ", " + PRIO[tk.prio] +
+      (subs.length ? ", " + subsDone + " of " + subs.length + " sub-tasks done" : "") + ". Tap to edit");
     var text = document.createElement("span");
     text.className = "text";
     text.textContent = tk.text;
@@ -685,10 +757,37 @@
       rp.append(REPEAT[tk.repeat]);
       meta.append(rp);
     }
+    if (subs.length){
+      var sn = document.createElement("span");
+      sn.className = "subn";
+      sn.textContent = subsDone + "/" + subs.length;
+      meta.append(sn);
+    }
     body.append(text, meta);
     body.onclick = function(){ openEdit(tk); };
 
-    li.append(check, body);
+    var main = document.createElement("div");
+    main.className = "main";
+    main.append(body);
+    if (subs.length && !tk.done){
+      var ul = document.createElement("ul");
+      ul.className = "subs";
+      subs.forEach(function(sb){ ul.appendChild(subRow(tk, sb, false)); });
+      main.append(ul);
+    }
+
+    li.append(check, main);
+
+    if (tk.done){
+      var add = document.createElement("button");
+      add.type = "button";
+      add.className = "addsub";
+      add.innerHTML = PLUS_SVG;
+      add.setAttribute("aria-label", "Add a follow-up to " + tk.text);
+      add.title = "Add a follow-up";
+      add.onclick = function(){ openEdit(tk, true); };
+      li.append(add);
+    }
 
     if (tk.prio === 1 && !tk.done){
       var rem = document.createElement("button");
@@ -866,8 +965,33 @@
 
   // ---------- Edit sheet ----------
   var editing = null, editPrio = 3, editCat = "personal", editRepeat = "none";
-  function openEdit(tk){
+  function renderEditSubs(){
+    var ul = $("editSubs");
+    ul.innerHTML = "";
+    if (!editing) return;
+    (editing.subs || []).forEach(function(sb){ ul.appendChild(subRow(editing, sb, true)); });
+    $("editTitle").textContent = editing.done ? "Edit task (done)" : "Edit task";
+  }
+  $("subForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    if (!editing) return;
+    var inp = $("subInput"), text = inp.value.trim();
+    if (!text){ inp.focus(); return; }
+    var tk = editing;
+    (tk.subs = tk.subs || []).push({ id: uid(), text: text, done: false });
+    var reopened = false;
+    if (tk.done){ tk.done = false; reopened = true; }   // new work on a finished task puts it back in To do
+    inp.value = "";
+    save(); render(); renderEditSubs();
+    inp.focus();
+    if (reopened) toast("Moved back to To do with the new sub-task");
+  });
+  $("subInput").addEventListener("keydown", function(e){ e.stopPropagation(); });
+
+  function openEdit(tk, focusSub){
     editing = tk;
+    $("subInput").value = "";
+    renderEditSubs();
     editPrio = tk.prio;
     editCat = tk.cat;
     editRepeat = REPEAT[tk.repeat] ? tk.repeat : "none";
@@ -877,6 +1001,7 @@
     paintEdit();
     if (!ui.editedOnce){ ui.editedOnce = true; saveUi(); }
     openSheet(editSheet);
+    if (focusSub) setTimeout(function(){ $("subInput").focus(); }, 260);
   }
   function paintEdit(){
     paintChips($("editChips"), editPrio);
@@ -1342,7 +1467,9 @@
         if (!x || typeof x.text !== "string" || !isDateKey(x.date) || (x.id && ids[x.id])) return;
         var p = Number(x.prio);
         var it = { id: x.id || uid(), text: x.text.slice(0, 200), prio: PRIO[p] ? p : 3, cat: normCat(x.cat), date: x.date, done: !!x.done, created: Number(x.created) || Date.now(), repeat: x.repeat, repeatDay: x.repeatDay };
+        if (Array.isArray(x.subs)) it.subs = x.subs;
         normRepeat(it);
+        normSubs(it);
         tasks.push(it);
         n++;
       });

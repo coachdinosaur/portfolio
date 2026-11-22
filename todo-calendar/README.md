@@ -28,6 +28,9 @@ the calendar, pick a day, then add tasks for that date.
   app closed, using Chrome's periodic background sync; Chrome decides the exact moment, so it can come late.
 - Bell button on each Critical task: adds it to Google Calendar for an exact-time alert
 - Tap a task to edit its text, change urgency, move it to another date or delete it (with undo)
+- **Sub-tasks:** open a task to add a checklist under it; tick sub-tasks right in the list. Finished tasks have a **+**
+  button to add a follow-up, which puts the task back in *To do*. Ticking a task ticks its sub-tasks; repeating tasks
+  get a fresh checklist each time.
 - Finished tasks move to a collapsible *Completed* section
 - **Repeating tasks:** open a task and pick Daily, Weekdays, Weekly, Monthly, Quarterly or Yearly. When you tick it off,
   the next one is added automatically (overdue ones skip ahead so the next isn't already late; month-based repeats keep
