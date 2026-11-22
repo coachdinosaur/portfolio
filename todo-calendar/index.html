@@ -318,6 +318,54 @@
   .meta .clip{display:inline-flex;align-items:center;gap:3px;color:var(--muted);font-weight:650}
   .meta .pics{display:inline-flex;align-items:center;gap:3px;color:var(--muted);font-weight:650}
 
+  /* Diary (full screen) */
+  .diary{position:fixed;inset:0;z-index:35;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .d-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;max-width:560px;margin:0 auto;
+          padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:var(--bg)}
+  .d-head h2{flex:1;margin:0;font-size:1.4rem;font-weight:800;letter-spacing:-.01em}
+  .d-view{max-width:560px;margin:0 auto;padding:4px 14px calc(110px + env(safe-area-inset-bottom))}
+  .d-month{font-size:.74rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:14px 2px 8px}
+  .d-entry{display:flex;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+  .d-mood{flex:none;width:38px;height:38px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:1.25rem}
+  .d-body{flex:1;min-width:0}
+  .d-when{display:block;font-size:.78rem;color:var(--muted);font-weight:650}
+  .d-prev{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;font-size:.95rem;margin-top:2px}
+  .d-empty{text-align:center;color:var(--muted);padding:46px 20px 10px}
+  .d-empty b{display:block;color:var(--text);font-size:1.05rem;margin-bottom:4px}
+  .d-new{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));z-index:3;margin:0 auto;width:calc(100% - 28px);max-width:532px;
+         height:54px;border:none;border-radius:16px;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:1rem;
+         display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+  .d-lockcard{padding:14px;margin-top:24px}
+  .d-lockrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .d-lockstate{font-size:.8rem;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--line);color:var(--muted)}
+  .d-lockstate.on{background:var(--accent-soft);color:var(--accent)}
+  .d-lockdesc{font-size:.85rem;color:var(--muted);margin:6px 0 12px}
+  .d-lockbtns{display:flex;gap:8px}
+  .d-lockbtns .btn{flex:1}
+  .d-pinform{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .d-pinform-title{margin:0;font-weight:700;font-size:.9rem}
+  .pin{text-align:center;letter-spacing:.35em;font-size:1.2rem}
+  .d-err{color:var(--p1);font-size:.85rem;min-height:1.2em;margin:2px 0}
+  .d-privacy{font-size:.78rem;color:var(--muted);text-align:center;margin:14px 8px 0}
+  .d-locked{text-align:center;padding-top:36px}
+  .d-lockicon{width:74px;height:74px;border-radius:22px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px}
+  .d-locked h3{margin:0 0 4px;font-size:1.2rem}
+  .d-locked .sub{display:block;color:var(--muted);font-size:.9rem;margin:0;text-align:center}
+  .d-unlock{display:flex;gap:8px;max-width:320px;margin:18px auto 4px}
+  .d-unlock .field{flex:1;min-width:0}
+  .d-unlock .btn{flex:none;padding:0 20px}
+  .d-forgot{max-width:340px;margin:14px auto 0;padding:12px;border-radius:12px;background:var(--p1-soft);font-size:.85rem;text-align:left}
+  .d-meta-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .d-date{height:40px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:0 10px;font-size:15px;color:var(--text)}
+  .d-time{font-size:.8rem;color:var(--muted)}
+  .moods{display:flex;gap:8px;margin:12px 0}
+  .moods button{width:46px;height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);font-size:1.35rem;padding:0;filter:grayscale(.6);opacity:.8}
+  .moods button.on{border-color:var(--accent);background:var(--accent-soft);filter:none;opacity:1}
+  .d-editor textarea{display:block;width:100%;min-height:calc(100vh - 250px);border:1px solid var(--line);border-radius:14px;background:var(--card);
+                     padding:16px;font-size:1.05rem;line-height:1.65;resize:none;outline:none;color:var(--text)}
+  .d-editor textarea:focus{border-color:var(--accent)}
+  .d-status{font-size:.78rem;color:var(--muted);margin:8px 2px 0;text-align:right;min-height:1.1em}
+
   /* Full-screen photo viewer */
   .viewer{position:fixed;inset:0;z-index:40;background:#000;display:flex;align-items:center;justify-content:center;touch-action:pan-y pinch-zoom}
   .viewer img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:none}
@@ -383,6 +431,9 @@
     <button class="icon-btn" id="alertBtn" type="button" aria-label="Critical alerts">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
       <span class="badge" id="bellBadge" hidden></span>
+    </button>
+    <button class="icon-btn" id="diaryBtn" type="button" aria-label="Diary">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h7M9 11h5"/></svg>
     </button>
     <button class="icon-btn" id="menuBtn" type="button" aria-label="Settings: theme and backup">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
@@ -577,7 +628,7 @@
   <div class="swatches" id="swatches" role="radiogroup" aria-label="Accent colour"></div>
   <div class="menu-sep"></div>
   <p class="sec">Backup &amp; restore</p>
-  <p class="menu-note">Your tasks are saved on this phone only. Export a backup now and then (photos and files included) so you can get them back if you clear your browser data or change phones.</p>
+  <p class="menu-note">Your tasks are saved on this phone only. Export a backup now and then (photos, files and diary included) so you can get them back if you clear your browser data or change phones.</p>
   <button type="button" class="menu-item" id="exportBtn">
     <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span>
     <span><b>Export backup</b><span class="sub" id="lastBackup"></span></span>
@@ -593,6 +644,79 @@
     <span><b>About</b><span class="sub">Version, credits and copyright</span></span>
   </button>
 </div>
+
+<!-- Private diary (full screen) -->
+<section class="diary" id="diary" hidden aria-label="Diary">
+  <div class="d-head">
+    <button type="button" class="icon-btn" id="dBack" aria-label="Back">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h2 id="dTitle">Diary</h2>
+    <button type="button" class="icon-btn" id="dLockNow" aria-label="Lock the diary now" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button>
+    <button type="button" class="icon-btn" id="dDelete" aria-label="Delete this entry" hidden>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg>
+    </button>
+  </div>
+
+  <div class="d-view d-locked" id="dLocked" hidden>
+    <div class="d-lockicon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h3>Your diary is locked</h3>
+    <p class="sub">Enter your PIN to read and write.</p>
+    <form class="d-unlock" id="dUnlockForm" autocomplete="off">
+      <input class="field pin" id="dPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="PIN" aria-label="PIN" autocomplete="current-password">
+      <button type="submit" class="btn primary">Unlock</button>
+    </form>
+    <p class="d-err" id="dPinErr"></p>
+    <button type="button" class="link-btn" id="dForgot">Forgot PIN?</button>
+    <div class="d-forgot" id="dForgotBox" hidden>
+      <p style="margin:0 0 10px">The PIN can't be recovered, and your entries can't be read without it. You can erase the diary on this phone and start over. Your tasks aren't affected.</p>
+      <button type="button" class="btn delete" id="dErase" style="width:100%">Erase diary and start over</button>
+    </div>
+  </div>
+
+  <div class="d-view" id="dList" hidden>
+    <div id="dEntries"></div>
+    <div class="d-empty" id="dEmpty" hidden><b>Nothing written yet</b>Tap <i>New entry</i> to write anything: your day, ideas, worries, plans.</div>
+    <div class="card d-lockcard" id="dLockCard">
+      <div class="d-lockrow"><b>PIN lock</b><span class="d-lockstate" id="dLockState">Off</span></div>
+      <p class="d-lockdesc" id="dLockDesc"></p>
+      <div class="d-lockbtns" id="dLockBtns">
+        <button type="button" class="btn soft" id="dSetPin">Set a PIN</button>
+        <button type="button" class="btn soft" id="dChangePin" hidden>Change PIN</button>
+        <button type="button" class="btn plain" id="dRemovePin" hidden>Remove PIN</button>
+      </div>
+      <form class="d-pinform" id="dPinForm" hidden autocomplete="off">
+        <p class="d-pinform-title" id="dPinFormTitle"></p>
+        <input class="field pin" id="dPin1" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="New PIN" aria-label="New PIN" autocomplete="new-password">
+        <input class="field pin" id="dPin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="Repeat PIN" aria-label="Repeat PIN" autocomplete="new-password">
+        <p class="d-err" id="dPinFormErr"></p>
+        <div class="d-lockbtns"><button type="button" class="btn plain" id="dPinCancel">Cancel</button><button type="submit" class="btn primary">Save PIN</button></div>
+      </form>
+    </div>
+    <p class="d-privacy">Your diary is kept only on this phone and in backups you export, separate from your tasks, reminders and calendar.</p>
+  </div>
+
+  <div class="d-view d-editor" id="dEditor" hidden>
+    <div class="d-meta-row">
+      <input type="date" class="d-date" id="dDate" aria-label="Entry date">
+      <span class="d-time" id="dTime"></span>
+    </div>
+    <div class="moods" id="dMoods" role="radiogroup" aria-label="Mood">
+      <button type="button" data-m="great" role="radio" aria-label="Great">😄</button>
+      <button type="button" data-m="good" role="radio" aria-label="Good">🙂</button>
+      <button type="button" data-m="okay" role="radio" aria-label="Okay">😐</button>
+      <button type="button" data-m="low" role="radio" aria-label="Low">🙁</button>
+      <button type="button" data-m="bad" role="radio" aria-label="Bad">😢</button>
+    </div>
+    <textarea id="dText" placeholder="Write anything…" aria-label="Diary entry"></textarea>
+    <p class="d-status" id="dStatus" aria-live="polite"></p>
+  </div>
+
+  <button type="button" class="d-new" id="dNew">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    New entry
+  </button>
+</section>
 
 <!-- Full-screen photo viewer -->
 <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Photo" hidden>
@@ -617,7 +741,7 @@
     </div>
     <h2 id="aboutTitle">Todo List</h2>
     <p class="ver">Version <span id="appVersion">1.0</span></p>
-    <p class="about-desc">A simple todo list for work and personal tasks, with urgency levels, sub-tasks, repeating tasks, photo and file attachments, critical alerts and a pull-up calendar. Your tasks are saved on this device.</p>
+    <p class="about-desc">A simple todo list for work and personal tasks, with urgency levels, sub-tasks, repeating tasks, photo and file attachments, critical alerts, a pull-up calendar and a private diary. Everything is saved on this device.</p>
     <div class="about-card">
       <div class="row"><span>Made by</span><b>CDDigital</b></div>
       <div class="row"><span>Designed with</span><b>Claude Code</b></div>
@@ -697,6 +821,9 @@
   }
   var BELL_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
   var $ = function(id){ return document.getElementById(id); };
+  // the app's own "go back one step" (to undo a history entry it added); the popstate it causes is ignored
+  var skipPop = 0;
+  function goBack(){ skipPop++; try { history.back(); } catch(e){ skipPop--; } }
   var noop = function(){};
   var pad = function(n){ return String(n).padStart(2, "0"); };
   var keyOf = function(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
@@ -1136,7 +1263,7 @@
     selecting = false;
     selectedIds = {};
     render();
-    if (!fromHistory && history.state && history.state.select){ try { history.back(); } catch(e){} }
+    if (!fromHistory && history.state && history.state.select){ goBack(); }
   }
   function toggleSel(id){
     if (selectedIds[id]) delete selectedIds[id]; else selectedIds[id] = true;
@@ -1612,7 +1739,7 @@
     viewerTask = null;
     if (viewerUrl){ URL.revokeObjectURL(viewerUrl); viewerUrl = null; }
     $("viewerImg").removeAttribute("src");
-    if (!fromHistory && history.state && history.state.viewer){ try { history.back(); } catch(e){} }
+    if (!fromHistory && history.state && history.state.viewer){ goBack(); }
   }
   $("viewerClose").onclick = function(){ closeViewer(); };
   $("viewerPrev").onclick = function(){ viewerIdx--; showViewerPhoto(); };
@@ -1823,7 +1950,7 @@
     document.body.classList.remove("lock");
     if (el === calSheet) view = null;
     if (el === editSheet) editing = null;
-    if (!keepHistory && history.state && history.state.sheet){ try { history.back(); } catch(e){} }
+    if (!keepHistory && history.state && history.state.sheet){ goBack(); }
   }
   [calSheet, alertSheet, editSheet, menuSheet, aboutSheet].forEach(function(s){ s.inert = true; });
   $("aboutBtn").onclick = function(){ openSheet(aboutSheet); };
@@ -1832,14 +1959,19 @@
     $("copyright").textContent = "© " + (y > 2026 ? "2026–" + y : "2026") + " CDDigital. All rights reserved.";
   })();
   window.addEventListener("popstate", function(){
+    if (skipPop > 0){ skipPop--; return; }     // a step back the app took itself, not the Back button
     if (!$("viewer").hidden) closeViewer(true);
     else if (openEl) closeSheet(true);
+    else if (D.open && D.entryHist){ D.entryHist = false; closeEntry(true); }
+    else if (D.open) closeDiary(true);
     else if (selecting) exitSelect(true);
   });
   document.addEventListener("keydown", function(e){
     if (e.key !== "Escape") return;
     if (!$("viewer").hidden) closeViewer();
-    else if (openEl) closeSheet(); else if (selecting) exitSelect();
+    else if (openEl) closeSheet();
+    else if (D.open){ if (D.current) closeEntry(); else closeDiary(); }
+    else if (selecting) exitSelect();
   });
   backdrop.onclick = function(){ closeSheet(); };
   document.querySelectorAll(".grab").forEach(function(g){ g.onclick = function(){ closeSheet(); }; });
@@ -2248,11 +2380,12 @@
     if ((hasPhotos || hasFiles) && window.indexedDB) toast("Preparing backup…");
     Promise.all([
       hasPhotos && window.indexedDB ? collectPhotos() : Promise.resolve({}),
-      hasFiles && window.indexedDB ? collectFiles() : Promise.resolve({})
-    ]).then(function(r){ downloadBackup(r[0], r[1]); });
+      hasFiles && window.indexedDB ? collectFiles() : Promise.resolve({}),
+      collectDiary()
+    ]).then(function(r){ downloadBackup(r[0], r[1], r[2]); });
   };
-  function downloadBackup(photos, files){
-    var data = JSON.stringify({ app: "todo-calendar", version: 3, exported: new Date().toISOString(), tasks: tasks, photos: photos, files: files || {} }, null, 1);
+  function downloadBackup(photos, files, diary){
+    var data = JSON.stringify({ app: "todo-calendar", version: 4, exported: new Date().toISOString(), tasks: tasks, photos: photos, files: files || {}, diary: diary || null }, null, 1);
     var a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([data], { type: "application/json" }));
     a.download = "todo-backup-" + todayKey() + ".json";
@@ -2263,7 +2396,9 @@
     ui.lastExport = todayKey(); saveUi();
     renderMenu();
     var np = Object.keys(photos || {}).length, nf = Object.keys(files || {}).length;
-    var extra = [np ? plural(np, "photo") : "", nf ? plural(nf, "file") : ""].filter(Boolean).join(" and ");
+    var nd = diary && diary.entries ? diary.entries.length : 0;
+    var extra = [np ? plural(np, "photo") : "", nf ? plural(nf, "file") : "",
+                 nd ? dEntries(nd) + (diary.lock ? " (encrypted)" : "") : ""].filter(Boolean).join(", ");
     toast("Backup saved" + (extra ? " with " + extra : "") + ": " + a.download);
   }
   $("importInput").onchange = function(){
@@ -2306,9 +2441,14 @@
           .then(function(b){ return Photos.put({ id: id, blob: b[0], thumb: b[1], w: ph.w, h: ph.h, created: ph.created || Date.now() }); })
           .catch(noop);
       }))).then(function(){
+        return importDiary(data && !Array.isArray(data) ? data.diary : null);
+      }).then(function(dnote){
         save(); render();
         closeSheet();
-        toast(n ? "Imported " + plural(n, "task") : "No new tasks in that file");
+        var parts = [n ? plural(n, "task") : "", dnote && dnote.indexOf("not imported") < 0 ? dnote : ""].filter(Boolean);
+        var msg = parts.length ? "Imported " + parts.join(" and ") : "No new tasks in that file";
+        if (dnote && dnote.indexOf("not imported") >= 0) msg += "; " + dnote;
+        toast(msg);
       });
     }).catch(function(){ toast("That file isn't a valid backup"); })
       .then(function(){ fileInput.value = ""; });
@@ -2348,6 +2488,419 @@
     $("toast").classList.remove("show");
     if (act) act();
   };
+
+  // ---------- Private diary ----------
+  // Entries live in their own IndexedDB database. With a PIN they're encrypted (AES-GCM, key from the PIN via PBKDF2).
+  var DiaryDB = (function(){
+    var dbp = null;
+    function db(){
+      if (!dbp) dbp = new Promise(function(res, rej){
+        var r = indexedDB.open("todo-diary", 1);
+        r.onupgradeneeded = function(){ r.result.createObjectStore("entries", { keyPath: "id" }); };
+        r.onsuccess = function(){ res(r.result); };
+        r.onerror = function(){ rej(r.error); };
+      });
+      return dbp;
+    }
+    function run(mode, fn){
+      return db().then(function(d){
+        return new Promise(function(res, rej){
+          var t = d.transaction("entries", mode), req = fn(t.objectStore("entries"));
+          t.oncomplete = function(){ res(req ? req.result : undefined); };
+          t.onerror = function(){ rej(t.error); };
+          t.onabort = function(){ rej(t.error); };
+        });
+      });
+    }
+    return {
+      all: function(){ return run("readonly", function(st){ return st.getAll(); }); },
+      get: function(id){ return run("readonly", function(st){ return st.get(id); }); },
+      put: function(rec){ return run("readwrite", function(st){ return st.put(rec); }); },
+      del: function(id){ return run("readwrite", function(st){ return st.delete(id); }); },
+      batch: function(puts, dels){ return run("readwrite", function(st){ puts.forEach(function(x){ st.put(x); }); dels.forEach(function(x){ st.delete(x); }); return null; }); },
+      clear: function(){ return run("readwrite", function(st){ return st.clear(); }); }
+    };
+  })();
+  var TE = new TextEncoder(), TD = new TextDecoder();
+  function toB64(buf){
+    var u = new Uint8Array(buf), out = "";
+    for (var i = 0; i < u.length; i += 0x8000) out += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+    return btoa(out);
+  }
+  function fromB64(str){ var s = atob(str), u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+  function deriveKey(pin, salt, iter){
+    return crypto.subtle.importKey("raw", TE.encode(pin), "PBKDF2", false, ["deriveKey"]).then(function(base){
+      return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: iter, hash: "SHA-256" }, base,
+        { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    });
+  }
+  function seal(key, obj){
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, TE.encode(JSON.stringify(obj))).then(function(ct){ return { iv: iv, data: ct }; });
+  }
+  function unseal(key, rec){
+    return crypto.subtle.decrypt({ name: "AES-GCM", iv: rec.iv }, key, rec.data).then(function(pt){ return JSON.parse(TD.decode(pt)); });
+  }
+
+  var LOCK_ID = "__lock__", PIN_ITER = 250000;
+  var MOODS = { great: "😄", good: "🙂", okay: "😐", low: "🙁", bad: "😢" };
+  var D = { open: false, key: null, entries: [], current: null, entryHist: false, lock: null, saveTimer: null, fails: 0, waitUntil: 0 };
+  var canDiary = !!(window.indexedDB && window.crypto && crypto.subtle);
+  var dReady = canDiary ? DiaryDB.get(LOCK_ID).then(function(m){ D.lock = m || null; }).catch(noop) : Promise.resolve();
+  var dEntries = function(n){ return n + (n === 1 ? " diary entry" : " diary entries"); };
+
+  function dView(name){
+    ["dLocked", "dList", "dEditor"].forEach(function(id){ $(id).hidden = id !== name; });
+    $("dNew").hidden = name !== "dList";
+    $("dLockNow").hidden = !(D.lock && D.key) || name === "dLocked";
+    $("dDelete").hidden = name !== "dEditor";
+    $("dTitle").textContent = name === "dEditor" ? "Entry" : "Diary";
+    $("diary").scrollTop = 0;
+  }
+  function entryRecord(e){ return { date: e.date, text: e.text, mood: e.mood || "", created: e.created, updated: e.updated }; }
+  function storeEntry(e){
+    if (D.lock){
+      if (!D.key) return Promise.reject(new Error("locked"));
+      return seal(D.key, entryRecord(e)).then(function(c){ return DiaryDB.put({ id: e.id, enc: true, iv: c.iv, data: c.data }); });
+    }
+    var r = entryRecord(e); r.id = e.id; r.enc = false;
+    return DiaryDB.put(r);
+  }
+  function loadEntries(){
+    return DiaryDB.all().then(function(recs){
+      return Promise.all(recs.filter(function(r){ return r.id !== LOCK_ID; }).map(function(r){
+        if (!r.enc) return { id: r.id, date: r.date, text: r.text || "", mood: r.mood || "", created: r.created, updated: r.updated, plain: true };
+        if (!D.key) return null;
+        return unseal(D.key, r).then(function(o){ o.id = r.id; return o; }).catch(function(){ return null; });
+      }));
+    }).then(function(list){
+      D.entries = list.filter(function(e){ return e && isDateKey(e.date); });
+      var fix = [];
+      D.entries.forEach(function(e){ if (e.plain){ delete e.plain; if (D.lock && D.key) fix.push(e); } });
+      return Promise.all(fix.map(storeEntry));   // anything still unencrypted gets encrypted once unlocked
+    });
+  }
+
+  function openDiary(){
+    if (!canDiary){ toast("This browser can't keep a private diary"); return; }
+    D.open = true;
+    $("diary").hidden = false;
+    document.body.classList.add("lock");
+    try { history.pushState({ diary: true }, ""); } catch(e){}
+    dReady.then(function(){
+      if (D.lock && !D.key){ showLocked(); return; }
+      return loadEntries().then(showList);
+    }).catch(function(){ toast("Couldn't open the diary"); });
+  }
+  function closeDiary(fromHistory){
+    if (!D.open) return;
+    D.open = false;
+    $("diary").hidden = true;
+    if (!openEl) document.body.classList.remove("lock");
+    var forget = function(){ if (D.lock){ D.key = null; D.entries = []; } D.current = null; };
+    flushSave().then(forget, forget);          // leaving the diary locks it again
+    if (!fromHistory && history.state && history.state.diary){ goBack(); }
+  }
+  function lockDiary(){
+    if (!D.lock) return;
+    D.key = null; D.entries = []; D.current = null;
+    if (D.open) showLocked();
+  }
+  $("diaryBtn").onclick = openDiary;
+  $("dBack").onclick = function(){ if (D.current) closeEntry(); else closeDiary(); };
+  $("dLockNow").onclick = function(){ flushSave().then(lockDiary, lockDiary); };
+  // switching to another app locks it
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden && D.lock && D.key) flushSave().then(lockDiary, lockDiary);
+  });
+
+  // locked screen
+  function showLocked(){
+    dView("dLocked");
+    $("dPin").value = "";
+    $("dPinErr").textContent = "";
+    $("dForgotBox").hidden = true;
+    setTimeout(function(){ if (D.open && !$("dLocked").hidden) $("dPin").focus(); }, 250);
+  }
+  $("dUnlockForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var pin = $("dPin").value.trim(), err = $("dPinErr");
+    if (Date.now() < D.waitUntil){ err.textContent = "Too many tries. Wait " + Math.ceil((D.waitUntil - Date.now()) / 1000) + " seconds."; return; }
+    if (!/^\d{4,8}$/.test(pin)){ err.textContent = "Enter your 4 to 8 digit PIN"; return; }
+    err.textContent = "Unlocking…";
+    var l = D.lock;
+    deriveKey(pin, fromB64(l.salt), l.iter || PIN_ITER).then(function(key){
+      return crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(l.iv) }, key, fromB64(l.check)).then(function(){ return key; });
+    }).then(function(key){
+      D.key = key; D.fails = 0;
+      return loadEntries().then(showList);
+    }).catch(function(){
+      D.fails++;
+      if (D.fails >= 5){ D.fails = 0; D.waitUntil = Date.now() + 30000; }
+      $("dPin").value = "";
+      err.textContent = "Wrong PIN";
+    });
+  });
+  $("dForgot").onclick = function(){ $("dForgotBox").hidden = false; };
+  $("dErase").onclick = function(){
+    DiaryDB.clear().then(function(){
+      D.lock = null; D.key = null; D.entries = []; D.current = null;
+      showList();
+      toast("Diary erased. You can start fresh.");
+    }).catch(function(){ toast("Couldn't erase the diary"); });
+  };
+
+  // entry list
+  function showList(){
+    dView("dList");
+    renderDiaryList();
+    renderLockCard();
+  }
+  function renderDiaryList(){
+    var box = $("dEntries");
+    box.innerHTML = "";
+    var list = D.entries.filter(function(e){ return e.text.trim(); }).sort(function(a, b){
+      return a.date < b.date ? 1 : a.date > b.date ? -1 : b.created - a.created;
+    });
+    $("dEmpty").hidden = list.length > 0;
+    var month = null;
+    list.forEach(function(e){
+      var d = dateOf(e.date), m = e.date.slice(0, 7);
+      if (m !== month){
+        month = m;
+        var h = document.createElement("p");
+        h.className = "d-month";
+        h.textContent = d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+        box.appendChild(h);
+      }
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "d-entry";
+      var mo = document.createElement("span");
+      mo.className = "d-mood";
+      mo.textContent = MOODS[e.mood] || "✎";
+      var body = document.createElement("span");
+      body.className = "d-body";
+      var when = document.createElement("span");
+      when.className = "d-when";
+      when.textContent = (relative(e.date) || d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })) +
+        " · " + new Date(e.created).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+      var prev = document.createElement("span");
+      prev.className = "d-prev";
+      prev.textContent = e.text.trim().slice(0, 300);
+      body.append(when, prev);
+      b.append(mo, body);
+      b.onclick = function(){ openEntry(e); };
+      box.appendChild(b);
+    });
+  }
+  $("dNew").onclick = function(){
+    var now = Date.now();
+    var e = { id: uid(), date: todayKey(), text: "", mood: "", created: now, updated: now };
+    D.entries.push(e);
+    openEntry(e);
+  };
+
+  // editor
+  function openEntry(e){
+    D.current = e;
+    $("dDate").value = e.date;
+    $("dText").value = e.text;
+    $("dTime").textContent = "Started " + new Date(e.created).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    paintMoods();
+    dStatus();
+    dView("dEditor");
+    try { history.pushState({ entry: true }, ""); } catch(err){}
+    D.entryHist = true;
+    if (!e.text) setTimeout(function(){ if (D.current === e) $("dText").focus(); }, 200);
+  }
+  function closeEntry(fromHistory){
+    var e = D.current;
+    if (e){
+      clearTimeout(D.saveTimer);
+      if (!e.text.trim()){
+        D.entries = D.entries.filter(function(x){ return x !== e; });
+        DiaryDB.del(e.id).catch(noop);          // nothing written: don't keep an empty entry
+      } else {
+        storeEntry(e).catch(noop);
+      }
+      D.current = null;
+      if (D.open && !(D.lock && !D.key)) showList();
+    }
+    if (!fromHistory && D.entryHist){ D.entryHist = false; goBack(); }
+  }
+  function wordsLabel(){ var n = D.current ? (D.current.text.trim().match(/\S+/g) || []).length : 0; return plural(n, "word"); }
+  function dStatus(){
+    var e = D.current;
+    $("dStatus").textContent = e && e.text.trim() ? wordsLabel() + " · Saved" + (D.lock ? " · Encrypted" : "") : "";
+  }
+  function flushSave(){
+    clearTimeout(D.saveTimer);
+    var e = D.current;
+    if (!e || !e.text.trim()) return Promise.resolve();
+    return storeEntry(e).then(function(){ if (D.current === e) dStatus(); })
+      .catch(function(){ if (D.current === e) $("dStatus").textContent = "Couldn't save"; });
+  }
+  function scheduleSave(){
+    clearTimeout(D.saveTimer);
+    if (D.current && D.current.text.trim()) $("dStatus").textContent = wordsLabel() + " · Saving…";
+    D.saveTimer = setTimeout(flushSave, 600);
+  }
+  $("dText").addEventListener("input", function(){
+    if (!D.current) return;
+    D.current.text = this.value;
+    D.current.updated = Date.now();
+    scheduleSave();
+  });
+  $("dDate").addEventListener("change", function(){
+    if (!D.current || !isDateKey(this.value)) return;
+    D.current.date = this.value;
+    D.current.updated = Date.now();
+    scheduleSave();
+  });
+  function paintMoods(){
+    var m = D.current ? D.current.mood : "";
+    $("dMoods").querySelectorAll("button").forEach(function(b){
+      var on = b.dataset.m === m;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-checked", String(on));
+    });
+  }
+  $("dMoods").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if (!b || !D.current) return;
+    D.current.mood = D.current.mood === b.dataset.m ? "" : b.dataset.m;
+    D.current.updated = Date.now();
+    paintMoods();
+    scheduleSave();
+  });
+  $("dDelete").onclick = function(){
+    var e = D.current;
+    if (!e) return;
+    clearTimeout(D.saveTimer);
+    D.entries = D.entries.filter(function(x){ return x !== e; });
+    DiaryDB.del(e.id).catch(noop);
+    D.current = null;
+    if (D.entryHist){ D.entryHist = false; goBack(); }
+    showList();
+    if (e.text.trim()) toast("Entry deleted", "Undo", function(){
+      if (D.lock && !D.key) return;
+      D.entries.push(e);
+      storeEntry(e).catch(noop);
+      if (D.open && !D.current) renderDiaryList();
+    });
+  };
+
+  // PIN lock settings
+  function renderLockCard(){
+    var on = !!D.lock;
+    var st = $("dLockState");
+    st.textContent = on ? "On" : "Off";
+    st.classList.toggle("on", on);
+    $("dLockDesc").textContent = on
+      ? "Entries are encrypted with your PIN. The diary locks when you leave it or switch apps. If you forget the PIN, the entries can't be recovered."
+      : "Set a PIN so nobody who picks up your phone can read your diary. Entries are then encrypted on the phone.";
+    $("dSetPin").hidden = on;
+    $("dChangePin").hidden = !on;
+    $("dRemovePin").hidden = !on;
+    $("dLockBtns").hidden = false;
+    $("dPinForm").hidden = true;
+  }
+  function startPinForm(mode){
+    $("dPinForm").hidden = false;
+    $("dLockBtns").hidden = true;
+    $("dPin1").value = ""; $("dPin2").value = "";
+    $("dPinFormErr").textContent = "";
+    $("dPinFormTitle").textContent = mode === "set" ? "Choose a PIN (4 to 8 digits)" : "Choose a new PIN (4 to 8 digits)";
+    $("dPin1").focus();
+  }
+  $("dSetPin").onclick = function(){ startPinForm("set"); };
+  $("dChangePin").onclick = function(){ startPinForm("change"); };
+  $("dPinCancel").onclick = renderLockCard;
+  function applyNewPin(pin){
+    var salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    return deriveKey(pin, salt, PIN_ITER).then(function(key){
+      return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, TE.encode("diary-ok")).then(function(check){
+        var meta = { id: LOCK_ID, v: 1, salt: toB64(salt), iv: toB64(iv), check: toB64(check), iter: PIN_ITER };
+        var keep = D.entries.filter(function(e){ return e.text.trim(); });
+        return Promise.all(keep.map(function(e){
+          return seal(key, entryRecord(e)).then(function(c){ return { id: e.id, enc: true, iv: c.iv, data: c.data }; });
+        })).then(function(recs){
+          // entries and the new lock are written together, so a half-finished change can't happen
+          return DiaryDB.batch(recs.concat([meta]), []).then(function(){ D.lock = meta; D.key = key; });
+        });
+      });
+    });
+  }
+  $("dPinForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var a = $("dPin1").value.trim(), b = $("dPin2").value.trim(), err = $("dPinFormErr");
+    if (!/^\d{4,8}$/.test(a)){ err.textContent = "Use 4 to 8 digits"; return; }
+    if (a !== b){ err.textContent = "The two PINs don't match"; return; }
+    err.textContent = "Saving…";
+    var wasOn = !!D.lock;
+    applyNewPin(a).then(function(){
+      renderLockCard();
+      dView("dList");
+      toast(wasOn ? "PIN changed" : "Diary locked with your PIN. Don't forget it: it can't be recovered.");
+    }).catch(function(){ err.textContent = "Couldn't set the PIN"; });
+  });
+  $("dRemovePin").onclick = function(){
+    var recs = D.entries.filter(function(e){ return e.text.trim(); }).map(function(e){ var r = entryRecord(e); r.id = e.id; r.enc = false; return r; });
+    DiaryDB.batch(recs, [LOCK_ID]).then(function(){
+      D.lock = null; D.key = null;
+      renderLockCard();
+      dView("dList");
+      toast("PIN removed. The diary no longer locks.");
+    }).catch(function(){ toast("Couldn't remove the PIN"); });
+  };
+
+  // backups: locked diaries stay encrypted inside the backup file
+  function collectDiary(){
+    if (!canDiary) return Promise.resolve(null);
+    return dReady.then(function(){ return DiaryDB.all(); }).then(function(recs){
+      var lock = null, entries = [];
+      recs.forEach(function(r){
+        if (r.id === LOCK_ID){ lock = { salt: r.salt, iv: r.iv, check: r.check, iter: r.iter }; return; }
+        if (r.enc) entries.push({ id: r.id, enc: true, iv: toB64(r.iv), data: toB64(r.data) });
+        else entries.push({ id: r.id, enc: false, date: r.date, text: r.text, mood: r.mood || "", created: r.created, updated: r.updated });
+      });
+      return entries.length || lock ? { lock: lock, entries: entries } : null;
+    }).catch(function(){ return null; });
+  }
+  function importDiary(d){
+    if (!d || !Array.isArray(d.entries) || !canDiary) return Promise.resolve("");
+    return dReady.then(function(){ return DiaryDB.all(); }).then(function(recs){
+      var have = {};
+      recs.forEach(function(r){ have[r.id] = true; });
+      var mine = D.lock, theirs = d.lock && typeof d.lock.salt === "string" ? d.lock : null;
+      var hasEntries = recs.some(function(r){ return r.id !== LOCK_ID; });
+      var puts = [], newLock = null;
+      if (theirs && !(mine && mine.salt === theirs.salt)){
+        if (mine || hasEntries) return "diary not imported (it uses a different PIN)";
+        newLock = { id: LOCK_ID, v: 1, salt: theirs.salt, iv: theirs.iv, check: theirs.check, iter: Number(theirs.iter) || PIN_ITER };
+        puts.push(newLock);
+      }
+      var n = 0;
+      d.entries.forEach(function(x){
+        if (!x || typeof x.id !== "string" || x.id === LOCK_ID || have[x.id]) return;
+        if (x.enc){
+          if (!theirs || typeof x.iv !== "string" || typeof x.data !== "string") return;
+          puts.push({ id: x.id, enc: true, iv: fromB64(x.iv), data: fromB64(x.data).buffer });
+        } else {
+          if (typeof x.text !== "string" || !isDateKey(x.date)) return;
+          puts.push({ id: x.id, enc: false, date: x.date, text: x.text, mood: MOODS[x.mood] ? x.mood : "",
+                      created: Number(x.created) || Date.now(), updated: Number(x.updated) || Date.now() });
+        }
+        n++;
+      });
+      if (!puts.length) return "";
+      return DiaryDB.batch(puts, []).then(function(){
+        if (newLock) D.lock = newLock;
+        return n ? dEntries(n) : "";
+      });
+    }).catch(function(){ return ""; });
+  }
 
   function render(){
     renderHeader(); renderOverdue(); renderFilter(); renderSelection(); renderList(); renderCalendar(); updateBell();

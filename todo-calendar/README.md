@@ -37,6 +37,11 @@ date, grouped by date (Overdue, Today, Tomorrow, later), with finished ones unde
   delete it (with Undo). Documents (PDF, Word, Excel, anything; up to 10 per task, 25 MB each) are kept as-is:
   tap one to save/open it, share it to another app, or remove it (with Undo). Everything is stored in the browser's
   IndexedDB, shown as camera / paperclip counts in the list, and included in backups.
+- **Private diary** (📖 button at the top): write entries with a date and optional mood; they save as you type and
+  are listed by month. Set a 4–8 digit PIN to lock it: entries are then encrypted on the phone (AES-GCM, key derived
+  from the PIN with PBKDF2) and the diary locks when you leave it or switch apps. A forgotten PIN can't be recovered;
+  the only way back in is to erase the diary. Diary entries are kept apart from tasks and included in backups
+  (still encrypted when a PIN is set).
 - Finished tasks move to a collapsible *Completed* section
 - **Deleting:** delete one task from its edit panel; long-press a task (or tap *Select*) to pick several and delete
   them together; *Clear* on the Completed section removes all finished tasks for that day. Every delete has Undo.
