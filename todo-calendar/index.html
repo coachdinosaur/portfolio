@@ -293,6 +293,28 @@
   .menu-item .ico{flex:none;width:42px;height:42px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
   .menu-item .sub{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
 
+  /* Photos */
+  .photos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+  .photos:empty{display:none}
+  .thumb{position:relative;aspect-ratio:1/1;border:none;padding:0;border-radius:12px;overflow:hidden;background:var(--line)}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo-btns{display:flex;gap:8px}
+  .photo-btns label{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:12px;
+                    background:var(--accent-soft);color:var(--accent);font-weight:700;cursor:pointer;font-size:.92rem}
+  .photo-btns input{display:none}
+  .photo-note{font-size:.78rem;color:var(--muted);margin:8px 2px 0}
+  .meta .pics{display:inline-flex;align-items:center;gap:3px;color:var(--muted);font-weight:650}
+
+  /* Full-screen photo viewer */
+  .viewer{position:fixed;inset:0;z-index:40;background:#000;display:flex;align-items:center;justify-content:center;touch-action:pan-y pinch-zoom}
+  .viewer img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:none}
+  .viewer-bar{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;gap:10px;
+              padding:calc(10px + env(safe-area-inset-top)) 12px 10px;background:linear-gradient(rgba(0,0,0,.6),transparent);color:#fff}
+  .viewer-bar button{height:42px;min-width:42px;padding:0 12px;border:none;border-radius:12px;background:rgba(255,255,255,.16);color:#fff;font-weight:700;font-size:.95rem}
+  .viewer-bar .vx{font-size:1.5rem;line-height:1;padding:0}
+  .viewer-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:none;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-size:1.8rem}
+  .viewer-nav.prev{left:8px} .viewer-nav.next{right:8px}
+
   /* About sheet */
   .about{text-align:center;padding:4px 4px 8px}
   .about-icon{width:76px;height:76px;border-radius:20px;display:grid;place-items:center;margin:6px auto 12px;background:var(--accent);color:var(--on-accent);box-shadow:0 6px 18px rgba(0,0,0,.15)}
@@ -327,7 +349,7 @@
   .toast{position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top));margin:0 auto;width:fit-content;max-width:520px;
          transform:translateY(-16px);opacity:0;pointer-events:none;
          background:#1c1f2a;color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:16px;align-items:center;
-         box-shadow:0 6px 24px rgba(0,0,0,.25);transition:transform .2s ease,opacity .2s ease;z-index:30;font-size:.9rem}
+         box-shadow:0 6px 24px rgba(0,0,0,.25);transition:transform .2s ease,opacity .2s ease;z-index:50;font-size:.9rem}
   .toast.show{transform:none;opacity:1;pointer-events:auto}
   .toast button{background:none;border:none;color:#a5b4fc;font-weight:700;padding:0;white-space:nowrap}
   .toast button:empty{display:none}
@@ -470,6 +492,21 @@
     <input class="field" id="subInput" type="text" maxlength="200" placeholder="Add a sub-task" aria-label="New sub-task" enterkeyhint="done">
     <button type="submit" class="btn soft">Add</button>
   </form>
+  <p class="sec">Photos</p>
+  <div class="photos" id="editPhotos"></div>
+  <div class="photo-btns" id="photoBtns">
+    <label>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg>
+      Take photo
+      <input type="file" id="cameraInput" accept="image/*" capture="environment">
+    </label>
+    <label>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>
+      Choose photo
+      <input type="file" id="galleryInput" accept="image/*" multiple>
+    </label>
+  </div>
+  <p class="photo-note" id="photoNote" hidden></p>
   <p class="sec">Urgency</p>
   <div class="chips" id="editChips" role="radiogroup" aria-label="Urgency">
     <button type="button" class="uchip p1" data-p="1" role="radio">Critical</button>
@@ -521,7 +558,7 @@
   <div class="swatches" id="swatches" role="radiogroup" aria-label="Accent colour"></div>
   <div class="menu-sep"></div>
   <p class="sec">Backup &amp; restore</p>
-  <p class="menu-note">Your tasks are saved on this phone only. Export a backup now and then so you can get them back if you clear your browser data or change phones.</p>
+  <p class="menu-note">Your tasks are saved on this phone only. Export a backup now and then (photos included) so you can get them back if you clear your browser data or change phones.</p>
   <button type="button" class="menu-item" id="exportBtn">
     <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span>
     <span><b>Export backup</b><span class="sub" id="lastBackup"></span></span>
@@ -536,6 +573,18 @@
     <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></span>
     <span><b>About</b><span class="sub">Version, credits and copyright</span></span>
   </button>
+</div>
+
+<!-- Full-screen photo viewer -->
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Photo" hidden>
+  <img id="viewerImg" alt="" draggable="false">
+  <div class="viewer-bar">
+    <button type="button" class="vx" id="viewerClose" aria-label="Close photo">×</button>
+    <span id="viewerCount"></span>
+    <button type="button" id="viewerDelete">Delete</button>
+  </div>
+  <button type="button" class="viewer-nav prev" id="viewerPrev" aria-label="Previous photo">‹</button>
+  <button type="button" class="viewer-nav next" id="viewerNext" aria-label="Next photo">›</button>
 </div>
 
 <!-- About sheet -->
@@ -601,8 +650,14 @@
   var PRIO = {1:"Critical", 2:"High", 3:"Medium", 4:"Low"};
   var CATS = { work: "Work", personal: "Personal" };
   var normCat = function(c){ return c === "work" ? "work" : "personal"; };
+  var MAX_PHOTOS = 10;
   var REPEAT = { daily: "Daily", weekdays: "Weekdays", weekly: "Weekly", monthly: "Monthly", quarterly: "Quarterly", yearly: "Yearly" };
   var REPEAT_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>';
+  function normImages(x){
+    if (!Array.isArray(x.images)){ delete x.images; return; }
+    x.images = x.images.filter(function(id){ return typeof id === "string" && id; }).slice(0, MAX_PHOTOS);
+    if (!x.images.length) delete x.images;
+  }
   function normSubs(x){
     if (!Array.isArray(x.subs)){ delete x.subs; return; }
     x.subs = x.subs.filter(function(s){ return s && typeof s.text === "string" && s.text.trim(); }).slice(0, 50)
@@ -629,7 +684,7 @@
     try {
       var v = JSON.parse(localStorage.getItem(KEY));
       if (!Array.isArray(v)) return [];
-      v.forEach(function(x){ x.cat = normCat(x.cat); normRepeat(x); normSubs(x); });   // older tasks had no category
+      v.forEach(function(x){ x.cat = normCat(x.cat); normRepeat(x); normSubs(x); normImages(x); });   // older tasks had no category
       return v;
     }
     catch(e){ return []; }
@@ -861,6 +916,14 @@
       rp.innerHTML = REPEAT_SVG;
       rp.append(REPEAT[tk.repeat]);
       meta.append(rp);
+    }
+    if (tk.images && tk.images.length){
+      var pc = document.createElement("span");
+      pc.className = "pics";
+      pc.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg>';
+      pc.append(String(tk.images.length));
+      pc.setAttribute("aria-label", plural(tk.images.length, "photo"));
+      meta.append(pc);
     }
     if (subs.length){
       var sn = document.createElement("span");
@@ -1236,6 +1299,194 @@
 
   // ---------- Edit sheet ----------
   var editing = null, editPrio = 3, editCat = "personal", editRepeat = "none";
+  // ---------- Photos ----------
+  // Photos live in IndexedDB (much more room than localStorage); tasks keep only their ids.
+  var Photos = (function(){
+    var dbp = null;
+    function db(){
+      if (!dbp) dbp = new Promise(function(res, rej){
+        var r = indexedDB.open("todo-calendar-files", 1);
+        r.onupgradeneeded = function(){ r.result.createObjectStore("images", { keyPath: "id" }); };
+        r.onsuccess = function(){ res(r.result); };
+        r.onerror = function(){ rej(r.error); };
+      });
+      return dbp;
+    }
+    function run(mode, fn){
+      return db().then(function(d){
+        return new Promise(function(res, rej){
+          var t = d.transaction("images", mode), req = fn(t.objectStore("images"));
+          t.oncomplete = function(){ res(req ? req.result : undefined); };
+          t.onerror = function(){ rej(t.error); };
+          t.onabort = function(){ rej(t.error); };
+        });
+      });
+    }
+    return {
+      put: function(rec){ return run("readwrite", function(st){ return st.put(rec); }); },
+      get: function(id){ return run("readonly", function(st){ return st.get(id); }); },
+      del: function(id){ return run("readwrite", function(st){ return st.delete(id); }); },
+      keys: function(){ return run("readonly", function(st){ return st.getAllKeys(); }); }
+    };
+  })();
+  var thumbUrls = {};
+  function thumbUrl(id){
+    if (thumbUrls[id]) return Promise.resolve(thumbUrls[id]);
+    return Photos.get(id).then(function(rec){
+      if (!rec) return null;
+      return (thumbUrls[id] = URL.createObjectURL(rec.thumb || rec.blob));
+    });
+  }
+  // shrink a camera photo (often 3–5 MB) to ~1600 px JPEG, plus a small thumbnail
+  function processImage(file){
+    var decode = window.createImageBitmap
+      ? createImageBitmap(file, { imageOrientation: "from-image" }).catch(function(){ return createImageBitmap(file); })
+      : new Promise(function(res, rej){ var im = new Image(); im.onload = function(){ res(im); }; im.onerror = rej; im.src = URL.createObjectURL(file); });
+    return decode.then(function(src){
+      var w = src.width, h = src.height;
+      function scaled(max, q){
+        var r = Math.min(1, max / Math.max(w, h));
+        var c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(w * r)); c.height = Math.max(1, Math.round(h * r));
+        c.getContext("2d").drawImage(src, 0, 0, c.width, c.height);
+        return new Promise(function(res){ c.toBlob(res, "image/jpeg", q); });
+      }
+      return Promise.all([scaled(1600, 0.8), scaled(360, 0.7)]).then(function(b){
+        if (src.close) src.close();
+        if (!b[0]) throw new Error("encode failed");
+        return { id: uid(), blob: b[0], thumb: b[1] || b[0], w: w, h: h, created: Date.now() };
+      });
+    });
+  }
+  function addPhotos(files){
+    if (!editing || !files || !files.length) return;
+    var tk = editing, room = MAX_PHOTOS - (tk.images ? tk.images.length : 0);
+    var list = Array.prototype.slice.call(files, 0, Math.max(0, room));
+    if (!list.length){ toast("A task can have up to " + MAX_PHOTOS + " photos"); return; }
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(noop);   // ask the phone to keep them
+    var note = $("photoNote");
+    note.hidden = false; note.textContent = "Adding " + plural(list.length, "photo") + "…";
+    list.reduce(function(chain, f){
+      return chain.then(function(){
+        return processImage(f).then(function(rec){
+          return Photos.put(rec).then(function(){
+            (tk.images = tk.images || []).push(rec.id);
+            save(); render();
+            if (editing === tk) renderEditPhotos();
+          });
+        });
+      });
+    }, Promise.resolve()).then(function(){
+      note.hidden = true;
+      if (files.length > list.length) toast("Only " + MAX_PHOTOS + " photos per task");
+    }).catch(function(){
+      note.hidden = true;
+      toast("Couldn't add that photo");
+    });
+  }
+  $("cameraInput").onchange = function(){ addPhotos(this.files); this.value = ""; };
+  $("galleryInput").onchange = function(){ addPhotos(this.files); this.value = ""; };
+
+  function renderEditPhotos(){
+    var box = $("editPhotos");
+    box.innerHTML = "";
+    if (!editing) return;
+    var ids = editing.images || [];
+    ids.forEach(function(id, i){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "thumb";
+      b.setAttribute("aria-label", "Photo " + (i + 1) + " of " + ids.length);
+      var img = document.createElement("img");
+      img.alt = "";
+      b.appendChild(img);
+      thumbUrl(id).then(function(u){ if (u) img.src = u; }).catch(noop);
+      b.onclick = function(){ openViewer(editing, i); };
+      box.appendChild(b);
+    });
+    $("photoBtns").hidden = ids.length >= MAX_PHOTOS;
+  }
+
+  // full-screen viewer
+  var viewerTask = null, viewerIdx = 0, viewerUrl = null;
+  function showViewerPhoto(){
+    var ids = (viewerTask && viewerTask.images) || [];
+    if (!ids.length){ closeViewer(); return; }
+    viewerIdx = Math.max(0, Math.min(viewerIdx, ids.length - 1));
+    $("viewerCount").textContent = (viewerIdx + 1) + " / " + ids.length;
+    $("viewerPrev").hidden = viewerIdx === 0;
+    $("viewerNext").hidden = viewerIdx === ids.length - 1;
+    var id = ids[viewerIdx];
+    Photos.get(id).then(function(rec){
+      if (!rec || !viewerTask || viewerTask.images[viewerIdx] !== id) return;
+      if (viewerUrl) URL.revokeObjectURL(viewerUrl);
+      viewerUrl = URL.createObjectURL(rec.blob);
+      $("viewerImg").src = viewerUrl;
+    }).catch(noop);
+  }
+  function openViewer(tk, i){
+    viewerTask = tk; viewerIdx = i;
+    $("viewerImg").removeAttribute("src");
+    $("viewer").hidden = false;
+    try { history.pushState({ viewer: true }, ""); } catch(e){}
+    showViewerPhoto();
+  }
+  function closeViewer(fromHistory){
+    if ($("viewer").hidden) return;
+    $("viewer").hidden = true;
+    viewerTask = null;
+    if (viewerUrl){ URL.revokeObjectURL(viewerUrl); viewerUrl = null; }
+    $("viewerImg").removeAttribute("src");
+    if (!fromHistory && history.state && history.state.viewer){ try { history.back(); } catch(e){} }
+  }
+  $("viewerClose").onclick = function(){ closeViewer(); };
+  $("viewerPrev").onclick = function(){ viewerIdx--; showViewerPhoto(); };
+  $("viewerNext").onclick = function(){ viewerIdx++; showViewerPhoto(); };
+  $("viewerDelete").onclick = function(){
+    var tk = viewerTask, i = viewerIdx;
+    if (!tk || !tk.images) return;
+    var id = tk.images.splice(i, 1)[0];
+    if (!tk.images.length) delete tk.images;
+    save(); render();
+    if (editing === tk) renderEditPhotos();
+    if (tk.images) showViewerPhoto(); else closeViewer();
+    // the file itself is only cleaned up on the next start, so Undo can bring it back
+    toast("Photo deleted", "Undo", function(){
+      (tk.images = tk.images || []).splice(Math.min(i, tk.images.length), 0, id);
+      save(); render();
+      if (editing === tk) renderEditPhotos();
+    });
+  };
+  // swipe sideways between photos
+  (function(){
+    var v = $("viewer"), sx = null, sy = 0;
+    v.addEventListener("pointerdown", function(e){ if (e.target.closest("button")) return; sx = e.clientX; sy = e.clientY; });
+    v.addEventListener("pointerup", function(e){
+      if (sx === null) return;
+      var dx = e.clientX - sx, dy = e.clientY - sy;
+      sx = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)){
+        var n = viewerTask && viewerTask.images ? viewerTask.images.length : 0;
+        if (dx < 0 && viewerIdx < n - 1){ viewerIdx++; showViewerPhoto(); }
+        else if (dx > 0 && viewerIdx > 0){ viewerIdx--; showViewerPhoto(); }
+      }
+    });
+    v.addEventListener("pointercancel", function(){ sx = null; });
+  })();
+
+  // remove photo files that no task uses any more (deleted tasks/photos from earlier sessions).
+  // The list of photos in use is taken right at start-up, before anything can be deleted and undone.
+  function cleanupPhotos(){
+    if (!window.indexedDB) return;
+    var usedAtStart = {};
+    tasks.forEach(function(x){ (x.images || []).forEach(function(id){ usedAtStart[id] = true; }); });
+    Photos.keys().then(function(keys){
+      var usedNow = {};
+      tasks.forEach(function(x){ (x.images || []).forEach(function(id){ usedNow[id] = true; }); });
+      (keys || []).forEach(function(k){ if (!usedAtStart[k] && !usedNow[k]) Photos.del(k).catch(noop); });
+    }).catch(noop);
+  }
+
   function renderEditSubs(){
     var ul = $("editSubs");
     ul.innerHTML = "";
@@ -1262,7 +1513,9 @@
   function openEdit(tk, focusSub){
     editing = tk;
     $("subInput").value = "";
+    $("photoNote").hidden = true;
     renderEditSubs();
+    renderEditPhotos();
     editPrio = tk.prio;
     editCat = tk.cat;
     editRepeat = REPEAT[tk.repeat] ? tk.repeat : "none";
@@ -1397,12 +1650,14 @@
     $("copyright").textContent = "© " + (y > 2026 ? "2026–" + y : "2026") + " CDDigital. All rights reserved.";
   })();
   window.addEventListener("popstate", function(){
-    if (openEl) closeSheet(true);
+    if (!$("viewer").hidden) closeViewer(true);
+    else if (openEl) closeSheet(true);
     else if (selecting) exitSelect(true);
   });
   document.addEventListener("keydown", function(e){
     if (e.key !== "Escape") return;
-    if (openEl) closeSheet(); else if (selecting) exitSelect();
+    if (!$("viewer").hidden) closeViewer();
+    else if (openEl) closeSheet(); else if (selecting) exitSelect();
   });
   backdrop.onclick = function(){ closeSheet(); };
   document.querySelectorAll(".grab").forEach(function(g){ g.onclick = function(){ closeSheet(); }; });
@@ -1776,8 +2031,28 @@
       : "Saves a file to your Downloads";
   }
   $("menuBtn").onclick = function(){ openSheet(menuSheet); };
+  function blobToDataUrl(b){
+    return new Promise(function(res, rej){ var r = new FileReader(); r.onload = function(){ res(r.result); }; r.onerror = rej; r.readAsDataURL(b); });
+  }
+  function collectPhotos(){
+    var ids = {};
+    tasks.forEach(function(x){ (x.images || []).forEach(function(id){ ids[id] = true; }); });
+    var out = {};
+    return Promise.all(Object.keys(ids).map(function(id){
+      return Photos.get(id).then(function(rec){
+        if (!rec) return;
+        return Promise.all([blobToDataUrl(rec.blob), blobToDataUrl(rec.thumb || rec.blob)]).then(function(u){
+          out[id] = { full: u[0], thumb: u[1], w: rec.w, h: rec.h, created: rec.created };
+        });
+      }).catch(noop);
+    })).then(function(){ return out; });
+  }
   $("exportBtn").onclick = function(){
-    var data = JSON.stringify({ app: "todo-calendar", version: 1, exported: new Date().toISOString(), tasks: tasks }, null, 2);
+    var hasPhotos = tasks.some(function(x){ return x.images && x.images.length; });
+    (hasPhotos && window.indexedDB ? collectPhotos() : Promise.resolve({})).then(function(photos){ downloadBackup(photos); });
+  };
+  function downloadBackup(photos){
+    var data = JSON.stringify({ app: "todo-calendar", version: 2, exported: new Date().toISOString(), tasks: tasks, photos: photos }, null, 1);
     var a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([data], { type: "application/json" }));
     a.download = "todo-backup-" + todayKey() + ".json";
@@ -1787,14 +2062,16 @@
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
     ui.lastExport = todayKey(); saveUi();
     renderMenu();
-    toast("Backup saved: " + a.download);
-  };
+    var np = Object.keys(photos || {}).length;
+    toast("Backup saved" + (np ? " with " + plural(np, "photo") : "") + ": " + a.download);
+  }
   $("importInput").onchange = function(){
     var f = this.files[0], fileInput = this;
     if (!f) return;
     f.text().then(function(raw){
       var data = JSON.parse(raw);
       var list = Array.isArray(data) ? data : data && data.tasks;
+      var photos = data && !Array.isArray(data) && data.photos && typeof data.photos === "object" ? data.photos : {};
       if (!Array.isArray(list)) throw new Error("bad file");
       var ids = {}; tasks.forEach(function(x){ ids[x.id] = true; });
       var n = 0;
@@ -1803,14 +2080,25 @@
         var p = Number(x.prio);
         var it = { id: x.id || uid(), text: x.text.slice(0, 200), prio: PRIO[p] ? p : 3, cat: normCat(x.cat), date: x.date, done: !!x.done, created: Number(x.created) || Date.now(), repeat: x.repeat, repeatDay: x.repeatDay };
         if (Array.isArray(x.subs)) it.subs = x.subs;
+        if (Array.isArray(x.images)) it.images = x.images.filter(function(id){ return photos[id]; });
         normRepeat(it);
         normSubs(it);
+        normImages(it);
         tasks.push(it);
         n++;
       });
-      save(); render();
-      closeSheet();
-      toast(n ? "Imported " + plural(n, "task") : "No new tasks in that file");
+      return Promise.all(Object.keys(photos).map(function(id){
+        var ph = photos[id];
+        if (!ph || typeof ph.full !== "string" || ph.full.indexOf("data:image/") !== 0) return;
+        return Promise.all([fetch(ph.full).then(function(r){ return r.blob(); }),
+                            fetch(typeof ph.thumb === "string" && ph.thumb.indexOf("data:image/") === 0 ? ph.thumb : ph.full).then(function(r){ return r.blob(); })])
+          .then(function(b){ return Photos.put({ id: id, blob: b[0], thumb: b[1], w: ph.w, h: ph.h, created: ph.created || Date.now() }); })
+          .catch(noop);
+      })).then(function(){
+        save(); render();
+        closeSheet();
+        toast(n ? "Imported " + plural(n, "task") : "No new tasks in that file");
+      });
     }).catch(function(){ toast("That file isn't a valid backup"); })
       .then(function(){ fileInput.value = ""; });
   };
@@ -1869,6 +2157,7 @@
   paintComposer();
   render();
   syncAlerts();
+  cleanupPhotos();
 
   if ("serviceWorker" in navigator){
     var hadController = !!navigator.serviceWorker.controller, reloaded = false;

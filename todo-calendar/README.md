@@ -32,6 +32,9 @@ date, grouped by date (Overdue, Today, Tomorrow, later), with finished ones unde
 - **Sub-tasks:** open a task to add a checklist under it; tick sub-tasks right in the list. Finished tasks have a **+**
   button to add a follow-up, which puts the task back in *To do*. Ticking a task ticks its sub-tasks; repeating tasks
   get a fresh checklist each time.
+- **Photos:** open a task to *Take photo* (camera) or *Choose photo* (gallery), up to 10 per task. Photos are shrunk
+  (~1600 px JPEG) and kept in the browser's IndexedDB; tap one to view it full screen, swipe between them, or delete
+  it (with Undo). Tasks with photos show a camera count in the list. Backups include the photos.
 - Finished tasks move to a collapsible *Completed* section
 - **Deleting:** delete one task from its edit panel; long-press a task (or tap *Select*) to pick several and delete
   them together; *Clear* on the Completed section removes all finished tasks for that day. Every delete has Undo.
