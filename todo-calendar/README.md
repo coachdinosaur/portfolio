@@ -32,6 +32,8 @@ the calendar, pick a day, then add tasks for that date.
   button to add a follow-up, which puts the task back in *To do*. Ticking a task ticks its sub-tasks; repeating tasks
   get a fresh checklist each time.
 - Finished tasks move to a collapsible *Completed* section
+- **Deleting:** delete one task from its edit panel; long-press a task (or tap *Select*) to pick several and delete
+  them together; *Clear* on the Completed section removes all finished tasks for that day. Every delete has Undo.
 - **Repeating tasks:** open a task and pick Daily, Weekdays, Weekly, Monthly, Quarterly or Yearly. When you tick it off,
   the next one is added automatically (overdue ones skip ahead so the next isn't already late; month-based repeats keep
   their day, e.g. the 31st becomes the 28th in February and back to the 31st in March). Un-ticking takes the next copy back.

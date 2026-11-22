@@ -123,10 +123,34 @@
   /* Task list */
   .sec-head{display:flex;align-items:center;justify-content:space-between;width:100%;margin:4px 2px 8px;padding:0;background:none;border:none;
             font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-  .sec-head.toggle{margin-top:18px;justify-content:flex-start;gap:8px}
+  .sec-head.toggle{margin:0;width:auto;justify-content:flex-start;gap:8px}
+  .done-head{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 8px}
+  .head-btn{border:none;background:none;padding:4px 2px;color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.02em}
+  .task{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+  /* Selection mode */
+  .selbox{display:none;flex:none;width:24px;height:24px;margin-top:20px;border-radius:7px;border:2.2px solid var(--muted);place-items:center}
+  body.selecting .selbox{display:grid}
+  body.selecting .check, body.selecting .rem, body.selecting .addsub{display:none}
+  body.selecting .subs{pointer-events:none}
+  body.selecting .task{cursor:pointer}
+  .task.selected{background:var(--accent-soft);margin:0 -4px 0 -14px;padding:0 4px 0 14px}
+  .task.selected .selbox{background:var(--accent);border-color:var(--accent)}
+  .task.selected .selbox::after{content:"";width:6px;height:11px;border:solid var(--on-accent);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+  body.selecting .composer, body.selecting #selectBtn, body.selecting #clearDone, body.selecting #hint{display:none}
+  body.selecting .top, body.selecting .filter, body.selecting .banner{pointer-events:none;opacity:.45}
+  .selbar{position:fixed;left:0;right:0;bottom:0;z-index:15;margin:0 auto;max-width:560px;background:var(--card);
+          border-top:1px solid var(--line);border-radius:20px 20px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.07);
+          padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px}
+  .selbar .x{flex:none;width:44px;height:44px;border:none;border-radius:12px;background:var(--bg);font-size:1.4rem;line-height:1}
+  .selbar #selCount{flex:1;font-weight:700;white-space:nowrap}
+  .selbar .btn{height:44px;padding:0 14px;white-space:nowrap}
+  .btn.plain{background:var(--bg);color:var(--text)}
+  .btn.delete{background:var(--p1);color:#fff}
+  .btn.delete:disabled{opacity:.4}
   .chev{width:7px;height:7px;border:solid var(--muted);border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px);transition:transform .2s}
   .collapsed .chev{transform:rotate(-45deg)}
-  .list{list-style:none;margin:0;padding:0 4px 0 14px}
+  .list{list-style:none;margin:0;padding:0 4px 0 14px;overflow:hidden}
   .task{display:flex;align-items:flex-start;gap:12px;border-top:1px solid var(--line);min-height:62px}
   .task:first-child{border-top:none}
   .check{flex:none;width:26px;height:26px;margin-top:19px;border-radius:50%;border:2.2px solid var(--pc);background:transparent;padding:0;display:grid;place-items:center;transition:background .15s}
@@ -331,9 +355,9 @@
   </div>
 
   <main>
-    <div class="sec-head" id="todoHead"><span>To do</span><span id="todoCount"></span></div>
+    <div class="sec-head" id="todoHead"><span>To do · <span id="todoCount"></span></span><button type="button" class="head-btn" id="selectBtn">Select</button></div>
     <ul class="list card" id="list"></ul>
-    <p class="hint" id="hint" hidden>Tap a task to edit it, add sub-tasks, change its urgency, move it or make it repeat</p>
+    <p class="hint" id="hint" hidden>Tap a task to edit it, add sub-tasks or make it repeat. Long-press to select several.</p>
 
     <div class="empty-state" id="empty" hidden>
       <div class="big"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
@@ -341,9 +365,12 @@
       <span id="emptySub"></span>
     </div>
 
-    <button class="sec-head toggle" id="doneToggle" type="button" hidden aria-expanded="true">
-      <span id="doneLabel"></span><i class="chev"></i>
-    </button>
+    <div class="done-head" id="doneHead" hidden>
+      <button class="sec-head toggle" id="doneToggle" type="button" aria-expanded="true">
+        <span id="doneLabel"></span><i class="chev"></i>
+      </button>
+      <button type="button" class="head-btn" id="clearDone">Clear</button>
+    </div>
     <ul class="list card" id="doneList"></ul>
   </main>
 
@@ -501,6 +528,14 @@
   <p class="status" id="alertStatus" hidden></p>
   <button class="link-btn" id="testBtn" type="button" hidden>Send a test notification</button>
   <p class="note"><b>Need an exact time?</b> Open a Critical task and tap <i>Remind me in Google Calendar</i>, or tap the bell next to it. Calendar will alert you on time, even when this app is closed.</p>
+</div>
+
+<!-- Selection bar (replaces the add bar while selecting) -->
+<div class="selbar" id="selbar" hidden>
+  <button type="button" class="x" id="selCancel" aria-label="Cancel selection">×</button>
+  <span id="selCount" aria-live="polite">0 selected</span>
+  <button type="button" class="btn plain" id="selAll">Select all</button>
+  <button type="button" class="btn delete" id="selDelete" disabled>Delete</button>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastBtn"></button></div>
@@ -721,8 +756,9 @@
 
   function taskRow(tk){
     var li = document.createElement("li");
-    li.className = "task p" + tk.prio + (tk.done ? " done" : "") + (tk.id === justAdded ? " new" : "");
+    li.className = "task p" + tk.prio + (tk.done ? " done" : "") + (tk.id === justAdded ? " new" : "") + (selectedIds[tk.id] ? " selected" : "");
     li.dataset.id = tk.id;
+    if (selecting) li.setAttribute("aria-selected", String(!!selectedIds[tk.id]));
 
     var check = document.createElement("button");
     check.type = "button";
@@ -776,7 +812,10 @@
       main.append(ul);
     }
 
-    li.append(check, main);
+    var selbox = document.createElement("span");
+    selbox.className = "selbox";
+    selbox.setAttribute("aria-hidden", "true");
+    li.append(selbox, check, main);
 
     if (tk.done){
       var add = document.createElement("button");
@@ -858,7 +897,8 @@
 
     var collapsed = !!ui.doneCollapsed;
     var toggle = $("doneToggle");
-    toggle.hidden = done.length === 0;
+    toggle.hidden = false;
+    $("doneHead").hidden = done.length === 0;
     toggle.classList.toggle("collapsed", collapsed);
     toggle.setAttribute("aria-expanded", String(!collapsed));
     $("doneLabel").textContent = "Completed · " + done.length;
@@ -874,6 +914,120 @@
     }
   }
   $("doneToggle").onclick = function(){ ui.doneCollapsed = !ui.doneCollapsed; saveUi(); renderList(); };
+
+  // ---------- Deleting several tasks ----------
+  var selecting = false, selectedIds = {}, suppressClick = 0, suppressId = null;
+
+  function visibleTasks(){
+    return tasks.filter(function(x){
+      return x.date === selected && matches(x) && (!x.done || !ui.doneCollapsed);
+    });
+  }
+  function enterSelect(id){
+    if (!selecting){
+      selecting = true;
+      selectedIds = {};
+      try { history.pushState({ select: true }, ""); } catch(e){}
+    }
+    if (id) selectedIds[id] = true;
+    render();
+  }
+  function exitSelect(fromHistory){
+    if (!selecting) return;
+    selecting = false;
+    selectedIds = {};
+    render();
+    if (!fromHistory && history.state && history.state.select){ try { history.back(); } catch(e){} }
+  }
+  function toggleSel(id){
+    if (selectedIds[id]) delete selectedIds[id]; else selectedIds[id] = true;
+    render();
+  }
+  function renderSelection(){
+    document.body.classList.toggle("selecting", selecting);
+    $("selbar").hidden = !selecting;
+    if (!selecting) return;
+    // only tasks on screen can stay selected
+    var vis = {};
+    visibleTasks().forEach(function(x){ vis[x.id] = true; });
+    Object.keys(selectedIds).forEach(function(id){ if (!vis[id]) delete selectedIds[id]; });
+    var n = Object.keys(selectedIds).length, total = Object.keys(vis).length;
+    $("selCount").textContent = n + " selected";
+    $("selDelete").disabled = n === 0;
+    $("selDelete").textContent = n > 1 ? "Delete " + n : "Delete";
+    $("selAll").textContent = n === total && total > 0 ? "Select none" : "Select all";
+  }
+  // remove several tasks at once, with one Undo for all of them
+  function removeMany(ids, message){
+    var set = {}; ids.forEach(function(id){ set[id] = true; });
+    var removed = [];
+    tasks.forEach(function(x, i){ if (set[x.id]) removed.push({ task: x, index: i }); });
+    if (!removed.length) return;
+    tasks = tasks.filter(function(x){ return !set[x.id]; });
+    save(); render();
+    toast(message || ("Deleted " + plural(removed.length, "task")), "Undo", function(){
+      removed.forEach(function(r){ tasks.splice(Math.min(r.index, tasks.length), 0, r.task); });
+      save(); render();
+    });
+  }
+
+  $("selectBtn").onclick = function(){ enterSelect(); };
+  $("selCancel").onclick = function(){ exitSelect(); };
+  $("selAll").onclick = function(){
+    var vis = visibleTasks();
+    var all = vis.length && vis.every(function(x){ return selectedIds[x.id]; });
+    selectedIds = {};
+    if (!all) vis.forEach(function(x){ selectedIds[x.id] = true; });
+    render();
+  };
+  $("selDelete").onclick = function(){
+    var ids = Object.keys(selectedIds);
+    if (!ids.length) return;
+    exitSelect();
+    removeMany(ids);
+  };
+  $("clearDone").onclick = function(){
+    var ids = tasks.filter(function(x){ return x.date === selected && matches(x) && x.done; }).map(function(x){ return x.id; });
+    removeMany(ids, "Cleared " + plural(ids.length, "completed task"));
+  };
+
+  // while selecting, a tap anywhere on a task selects it (and nothing else happens)
+  var mainEl = document.querySelector("main");
+  mainEl.addEventListener("click", function(e){
+    var li = e.target.closest(".task");
+    // ignore only the "tap" from lifting the finger off the task that was long-pressed
+    if (li && Date.now() < suppressClick && li.dataset.id === suppressId){ e.stopPropagation(); e.preventDefault(); return; }
+    if (!selecting) return;
+    if (li && li.dataset.id){ e.stopPropagation(); e.preventDefault(); toggleSel(li.dataset.id); }
+  }, true);
+
+  // long-press a task to start selecting (pointer events cover touch, pen and mouse)
+  var lpTimer = null, lpX = 0, lpY = 0, lpFired = false, lpId = null;
+  function cancelLongPress(){ if (lpTimer){ clearTimeout(lpTimer); lpTimer = null; } }
+  mainEl.addEventListener("pointerdown", function(e){
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    var li = e.target.closest(".task");
+    if (!li) return;
+    lpX = e.clientX; lpY = e.clientY;
+    cancelLongPress();
+    lpFired = false;
+    lpId = li.dataset.id;
+    lpTimer = setTimeout(function(){
+      lpTimer = null;
+      lpFired = true;
+      if (navigator.vibrate) { try { navigator.vibrate(15); } catch(err){} }
+      enterSelect(li.dataset.id);
+    }, 480);
+  });
+  mainEl.addEventListener("pointermove", function(e){
+    if (lpTimer && (Math.abs(e.clientX - lpX) > 10 || Math.abs(e.clientY - lpY) > 10)) cancelLongPress();
+  });
+  mainEl.addEventListener("pointerup", function(){
+    cancelLongPress();
+    if (lpFired){ lpFired = false; suppressId = lpId; suppressClick = Date.now() + 600; }   // lifting the finger isn't a tap
+  });
+  mainEl.addEventListener("pointercancel", cancelLongPress);   // e.g. the list started scrolling
+  mainEl.addEventListener("contextmenu", function(e){ if (e.target.closest(".task")) e.preventDefault(); });
 
   function removeTask(id){
     var i = tasks.findIndex(function(x){ return x.id === id; });
@@ -1120,8 +1274,14 @@
     if (!keepHistory && history.state && history.state.sheet){ try { history.back(); } catch(e){} }
   }
   [calSheet, alertSheet, editSheet, menuSheet].forEach(function(s){ s.inert = true; });
-  window.addEventListener("popstate", function(){ if (openEl) closeSheet(true); });
-  document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeSheet(); });
+  window.addEventListener("popstate", function(){
+    if (openEl) closeSheet(true);
+    else if (selecting) exitSelect(true);
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Escape") return;
+    if (openEl) closeSheet(); else if (selecting) exitSelect();
+  });
   backdrop.onclick = function(){ closeSheet(); };
   document.querySelectorAll(".grab").forEach(function(g){ g.onclick = function(){ closeSheet(); }; });
 
@@ -1516,7 +1676,7 @@
   };
 
   function render(){
-    renderHeader(); renderOverdue(); renderFilter(); renderList(); renderCalendar(); updateBell();
+    renderHeader(); renderOverdue(); renderFilter(); renderSelection(); renderList(); renderCalendar(); updateBell();
     if (openEl === alertSheet) renderAlerts();
   }
 
