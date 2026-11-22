@@ -1265,8 +1265,8 @@
 
   // ---------- Composer ----------
   var composer = $("composer"), input = $("taskInput");
-  var addPrio = 3;
-  try { var lp = Number(localStorage.getItem(PRIO_KEY)); if (PRIO[lp]) addPrio = lp; } catch(e){}
+  var DEFAULT_PRIO = 3;            // Medium
+  var addPrio = DEFAULT_PRIO;
   var addCat = filter !== "all" ? filter : normCat(ui.lastCat);
   function paintSeg(group, c){
     group.querySelectorAll("button").forEach(function(b){
@@ -1286,7 +1286,13 @@
 
   input.addEventListener("focus", function(){ setActive(true); });
   input.addEventListener("blur", function(){
-    setTimeout(function(){ if (document.activeElement !== input && !input.value.trim()) setActive(false); }, 150);
+    setTimeout(function(){
+      if (document.activeElement !== input && !input.value.trim()){
+        setActive(false);
+        addPrio = DEFAULT_PRIO;     // next time it opens on Medium again
+        paintComposer();
+      }
+    }, 150);
   });
   input.addEventListener("input", paintComposer);
 
@@ -1298,7 +1304,7 @@
     var c = e.target.closest(".uchip");
     if (!c) return;
     addPrio = Number(c.dataset.p);
-    try { localStorage.setItem(PRIO_KEY, String(addPrio)); } catch(err){}
+
     paintComposer();
   });
   $("addCat").addEventListener("click", function(e){
