@@ -303,6 +303,19 @@
                     background:var(--accent-soft);color:var(--accent);font-weight:700;cursor:pointer;font-size:.92rem}
   .photo-btns input{display:none}
   .photo-note{font-size:.78rem;color:var(--muted);margin:8px 2px 0}
+  .photo-btns label{font-size:.88rem;gap:6px}
+  .files{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
+  .files:empty{display:none}
+  .file{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:4px 4px 4px 0}
+  .file-open{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:none;background:none;padding:6px 6px 6px 10px;text-align:left}
+  .ftype{flex:none;width:40px;height:40px;border-radius:9px;display:grid;place-items:center;font-size:.66rem;font-weight:800;letter-spacing:.03em;color:#fff;background:#6b7280}
+  .ftype.pdf{background:#dc2626} .ftype.doc{background:#2563eb} .ftype.xls{background:#16a34a} .ftype.ppt{background:#ea580c} .ftype.img{background:#9333ea}
+  .fmeta{flex:1;min-width:0;display:flex;flex-direction:column}
+  .fname{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fsize{font-size:.75rem;color:var(--muted)}
+  .file .fbtn{flex:none;width:38px;height:38px;border:none;border-radius:10px;background:none;color:var(--accent);display:grid;place-items:center;padding:0}
+  .file .x{flex:none;width:36px;height:38px;border:none;background:none;color:var(--muted);font-size:1.35rem;line-height:1;border-radius:10px}
+  .meta .clip{display:inline-flex;align-items:center;gap:3px;color:var(--muted);font-weight:650}
   .meta .pics{display:inline-flex;align-items:center;gap:3px;color:var(--muted);font-weight:650}
 
   /* Full-screen photo viewer */
@@ -492,18 +505,24 @@
     <input class="field" id="subInput" type="text" maxlength="200" placeholder="Add a sub-task" aria-label="New sub-task" enterkeyhint="done">
     <button type="submit" class="btn soft">Add</button>
   </form>
-  <p class="sec">Photos</p>
+  <p class="sec">Attachments</p>
   <div class="photos" id="editPhotos"></div>
+  <ul class="files" id="editFiles"></ul>
   <div class="photo-btns" id="photoBtns">
-    <label>
+    <label id="cameraBtn">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg>
-      Take photo
+      Camera
       <input type="file" id="cameraInput" accept="image/*" capture="environment">
     </label>
-    <label>
+    <label id="galleryBtn">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>
-      Choose photo
+      Gallery
       <input type="file" id="galleryInput" accept="image/*" multiple>
+    </label>
+    <label id="fileBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.4 11.1l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>
+      File
+      <input type="file" id="docInput" multiple>
     </label>
   </div>
   <p class="photo-note" id="photoNote" hidden></p>
@@ -558,7 +577,7 @@
   <div class="swatches" id="swatches" role="radiogroup" aria-label="Accent colour"></div>
   <div class="menu-sep"></div>
   <p class="sec">Backup &amp; restore</p>
-  <p class="menu-note">Your tasks are saved on this phone only. Export a backup now and then (photos included) so you can get them back if you clear your browser data or change phones.</p>
+  <p class="menu-note">Your tasks are saved on this phone only. Export a backup now and then (photos and files included) so you can get them back if you clear your browser data or change phones.</p>
   <button type="button" class="menu-item" id="exportBtn">
     <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span>
     <span><b>Export backup</b><span class="sub" id="lastBackup"></span></span>
@@ -598,7 +617,7 @@
     </div>
     <h2 id="aboutTitle">Todo List</h2>
     <p class="ver">Version <span id="appVersion">1.0</span></p>
-    <p class="about-desc">A simple todo list for work and personal tasks, with urgency levels, sub-tasks, repeating tasks, critical alerts and a pull-up calendar. Your tasks are saved on this device.</p>
+    <p class="about-desc">A simple todo list for work and personal tasks, with urgency levels, sub-tasks, repeating tasks, photo and file attachments, critical alerts and a pull-up calendar. Your tasks are saved on this device.</p>
     <div class="about-card">
       <div class="row"><span>Made by</span><b>CDDigital</b></div>
       <div class="row"><span>Designed with</span><b>Claude Code</b></div>
@@ -650,9 +669,16 @@
   var PRIO = {1:"Critical", 2:"High", 3:"Medium", 4:"Low"};
   var CATS = { work: "Work", personal: "Personal" };
   var normCat = function(c){ return c === "work" ? "work" : "personal"; };
-  var MAX_PHOTOS = 10;
+  var MAX_PHOTOS = 10, MAX_FILES = 10, MAX_FILE_MB = 25;
   var REPEAT = { daily: "Daily", weekdays: "Weekdays", weekly: "Weekly", monthly: "Monthly", quarterly: "Quarterly", yearly: "Yearly" };
   var REPEAT_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>';
+  // documents: [{ id, name, type, size }]; the file itself lives in IndexedDB
+  function normFiles(x){
+    if (!Array.isArray(x.files)){ delete x.files; return; }
+    x.files = x.files.filter(function(f){ return f && typeof f.id === "string" && f.id && typeof f.name === "string"; }).slice(0, MAX_FILES)
+      .map(function(f){ return { id: f.id, name: f.name.slice(0, 120) || "file", type: typeof f.type === "string" ? f.type.slice(0, 100) : "", size: Number(f.size) || 0 }; });
+    if (!x.files.length) delete x.files;
+  }
   function normImages(x){
     if (!Array.isArray(x.images)){ delete x.images; return; }
     x.images = x.images.filter(function(id){ return typeof id === "string" && id; }).slice(0, MAX_PHOTOS);
@@ -684,7 +710,7 @@
     try {
       var v = JSON.parse(localStorage.getItem(KEY));
       if (!Array.isArray(v)) return [];
-      v.forEach(function(x){ x.cat = normCat(x.cat); normRepeat(x); normSubs(x); normImages(x); });   // older tasks had no category
+      v.forEach(function(x){ x.cat = normCat(x.cat); normRepeat(x); normSubs(x); normImages(x); normFiles(x); });   // older tasks had no category
       return v;
     }
     catch(e){ return []; }
@@ -916,6 +942,14 @@
       rp.innerHTML = REPEAT_SVG;
       rp.append(REPEAT[tk.repeat]);
       meta.append(rp);
+    }
+    if (tk.files && tk.files.length){
+      var fc = document.createElement("span");
+      fc.className = "clip";
+      fc.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.4 11.1l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>';
+      fc.append(String(tk.files.length));
+      fc.setAttribute("aria-label", plural(tk.files.length, "file"));
+      meta.append(fc);
     }
     if (tk.images && tk.images.length){
       var pc = document.createElement("span");
@@ -1387,6 +1421,141 @@
   $("cameraInput").onchange = function(){ addPhotos(this.files); this.value = ""; };
   $("galleryInput").onchange = function(){ addPhotos(this.files); this.value = ""; };
 
+  // ---------- Documents ----------
+  function fileKind(name, type){
+    var ext = (name.split(".").pop() || "").toLowerCase();
+    if (ext === "pdf" || type === "application/pdf") return ["pdf", "PDF"];
+    if (/^(doc|docx|odt|rtf)$/.test(ext)) return ["doc", ext === "docx" ? "DOCX" : ext.toUpperCase()];
+    if (/^(xls|xlsx|csv|ods)$/.test(ext)) return ["xls", ext.toUpperCase()];
+    if (/^(ppt|pptx|odp)$/.test(ext)) return ["ppt", ext.toUpperCase()];
+    if (/^image\//.test(type)) return ["img", (ext || "IMG").toUpperCase().slice(0, 4)];
+    return ["", (ext && ext.length <= 4 ? ext : "FILE").toUpperCase()];
+  }
+  function fmtSize(n){
+    if (n >= 1048576) return (n / 1048576).toFixed(n >= 10485760 ? 0 : 1) + " MB";
+    return Math.max(1, Math.round(n / 1024)) + " KB";
+  }
+  function addFiles(list){
+    if (!editing || !list || !list.length) return;
+    var tk = editing, room = MAX_FILES - (tk.files ? tk.files.length : 0);
+    var files = Array.prototype.slice.call(list);
+    var tooBig = files.filter(function(f){ return f.size > MAX_FILE_MB * 1048576; });
+    files = files.filter(function(f){ return f.size <= MAX_FILE_MB * 1048576; }).slice(0, Math.max(0, room));
+    if (!files.length){
+      toast(tooBig.length ? "Files over " + MAX_FILE_MB + " MB can't be attached" : "A task can have up to " + MAX_FILES + " files");
+      return;
+    }
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(noop);
+    var note = $("photoNote");
+    note.hidden = false; note.textContent = "Adding " + plural(files.length, "file") + "…";
+    files.reduce(function(chain, f){
+      return chain.then(function(){
+        var rec = { id: uid(), kind: "file", blob: f, name: f.name || "file", type: f.type || "", size: f.size, created: Date.now() };
+        return Photos.put(rec).then(function(){
+          (tk.files = tk.files || []).push({ id: rec.id, name: rec.name.slice(0, 120), type: rec.type, size: rec.size });
+          save(); render();
+          if (editing === tk) renderEditFiles();
+        });
+      });
+    }, Promise.resolve()).then(function(){
+      note.hidden = true;
+      if (tooBig.length) toast(plural(tooBig.length, "file") + " over " + MAX_FILE_MB + " MB skipped");
+    }).catch(function(){
+      note.hidden = true;
+      toast("Couldn't attach that file. The phone may be out of space.");
+    });
+  }
+  $("docInput").onchange = function(){ addFiles(this.files); this.value = ""; };
+
+  function fileFromStore(meta){
+    return Photos.get(meta.id).then(function(rec){
+      if (!rec) throw new Error("missing");
+      return new File([rec.blob], meta.name, { type: meta.type || rec.blob.type || "application/octet-stream" });
+    });
+  }
+  // "Open": save to the phone; Chrome then offers to open it in the right app
+  function openFile(meta){
+    fileFromStore(meta).then(function(f){
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(f);
+      a.download = meta.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 60000);
+      toast("Saved " + meta.name + ". Tap Open on the download message to view it.");
+    }).catch(function(){ toast("That file is missing from this phone"); });
+  }
+  var canShareFiles = !!(navigator.canShare && window.File && (function(){
+    try { return navigator.canShare({ files: [new File(["x"], "x.txt", { type: "text/plain" })] }); } catch(e){ return false; }
+  })());
+  function shareFile(meta){
+    fileFromStore(meta).then(function(f){
+      return navigator.share({ files: [f], title: meta.name });
+    }).catch(function(err){
+      if (err && err.name === "AbortError") return;      // closed the share sheet
+      toast("Couldn't share that file");
+    });
+  }
+  var SHARE_SVG = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>';
+  function renderEditFiles(){
+    var ul = $("editFiles");
+    ul.innerHTML = "";
+    if (!editing) return;
+    var tk = editing, list = tk.files || [];
+    list.forEach(function(meta, i){
+      var li = document.createElement("li");
+      li.className = "file";
+      var open = document.createElement("button");
+      open.type = "button";
+      open.className = "file-open";
+      open.setAttribute("aria-label", "Open " + meta.name);
+      var k = fileKind(meta.name, meta.type);
+      var ft = document.createElement("span");
+      ft.className = "ftype" + (k[0] ? " " + k[0] : "");
+      ft.textContent = k[1];
+      var fm = document.createElement("span");
+      fm.className = "fmeta";
+      var fn = document.createElement("span"); fn.className = "fname"; fn.textContent = meta.name;
+      var fs = document.createElement("span"); fs.className = "fsize"; fs.textContent = fmtSize(meta.size) + " · tap to open";
+      fm.append(fn, fs);
+      open.append(ft, fm);
+      open.onclick = function(){ openFile(meta); };
+      li.append(open);
+      if (canShareFiles){
+        var sh = document.createElement("button");
+        sh.type = "button";
+        sh.className = "fbtn";
+        sh.innerHTML = SHARE_SVG;
+        sh.setAttribute("aria-label", "Share " + meta.name);
+        sh.onclick = function(){ shareFile(meta); };
+        li.append(sh);
+      }
+      var x = document.createElement("button");
+      x.type = "button";
+      x.className = "x";
+      x.textContent = "×";
+      x.setAttribute("aria-label", "Remove " + meta.name);
+      x.onclick = function(){
+        var idx = tk.files.indexOf(meta);
+        if (idx < 0) return;
+        tk.files.splice(idx, 1);
+        if (!tk.files.length) delete tk.files;
+        save(); render();
+        if (editing === tk) renderEditFiles();
+        // the stored file is only cleaned up on the next start, so Undo can bring it back
+        toast("Removed " + meta.name, "Undo", function(){
+          (tk.files = tk.files || []).splice(Math.min(idx, tk.files.length), 0, meta);
+          save(); render();
+          if (editing === tk) renderEditFiles();
+        });
+      };
+      li.append(x);
+      ul.appendChild(li);
+    });
+    $("fileBtn").hidden = list.length >= MAX_FILES;
+  }
+
   function renderEditPhotos(){
     var box = $("editPhotos");
     box.innerHTML = "";
@@ -1404,7 +1573,7 @@
       b.onclick = function(){ openViewer(editing, i); };
       box.appendChild(b);
     });
-    $("photoBtns").hidden = ids.length >= MAX_PHOTOS;
+    $("cameraBtn").hidden = $("galleryBtn").hidden = ids.length >= MAX_PHOTOS;
   }
 
   // full-screen viewer
@@ -1479,10 +1648,16 @@
   function cleanupPhotos(){
     if (!window.indexedDB) return;
     var usedAtStart = {};
-    tasks.forEach(function(x){ (x.images || []).forEach(function(id){ usedAtStart[id] = true; }); });
+    tasks.forEach(function(x){
+      (x.images || []).forEach(function(id){ usedAtStart[id] = true; });
+      (x.files || []).forEach(function(f){ usedAtStart[f.id] = true; });
+    });
     Photos.keys().then(function(keys){
       var usedNow = {};
-      tasks.forEach(function(x){ (x.images || []).forEach(function(id){ usedNow[id] = true; }); });
+      tasks.forEach(function(x){
+        (x.images || []).forEach(function(id){ usedNow[id] = true; });
+        (x.files || []).forEach(function(f){ usedNow[f.id] = true; });
+      });
       (keys || []).forEach(function(k){ if (!usedAtStart[k] && !usedNow[k]) Photos.del(k).catch(noop); });
     }).catch(noop);
   }
@@ -1516,6 +1691,7 @@
     $("photoNote").hidden = true;
     renderEditSubs();
     renderEditPhotos();
+    renderEditFiles();
     editPrio = tk.prio;
     editCat = tk.cat;
     editRepeat = REPEAT[tk.repeat] ? tk.repeat : "none";
@@ -2047,12 +2223,30 @@
       }).catch(noop);
     })).then(function(){ return out; });
   }
+  function collectFiles(){
+    var metas = {};
+    tasks.forEach(function(x){ (x.files || []).forEach(function(f){ metas[f.id] = f; }); });
+    var out = {};
+    return Promise.all(Object.keys(metas).map(function(id){
+      return Photos.get(id).then(function(rec){
+        if (!rec) return;
+        return blobToDataUrl(rec.blob).then(function(u){
+          out[id] = { data: u, name: metas[id].name, type: metas[id].type, size: metas[id].size, created: rec.created };
+        });
+      }).catch(noop);
+    })).then(function(){ return out; });
+  }
   $("exportBtn").onclick = function(){
     var hasPhotos = tasks.some(function(x){ return x.images && x.images.length; });
-    (hasPhotos && window.indexedDB ? collectPhotos() : Promise.resolve({})).then(function(photos){ downloadBackup(photos); });
+    var hasFiles = tasks.some(function(x){ return x.files && x.files.length; });
+    if ((hasPhotos || hasFiles) && window.indexedDB) toast("Preparing backup…");
+    Promise.all([
+      hasPhotos && window.indexedDB ? collectPhotos() : Promise.resolve({}),
+      hasFiles && window.indexedDB ? collectFiles() : Promise.resolve({})
+    ]).then(function(r){ downloadBackup(r[0], r[1]); });
   };
-  function downloadBackup(photos){
-    var data = JSON.stringify({ app: "todo-calendar", version: 2, exported: new Date().toISOString(), tasks: tasks, photos: photos }, null, 1);
+  function downloadBackup(photos, files){
+    var data = JSON.stringify({ app: "todo-calendar", version: 3, exported: new Date().toISOString(), tasks: tasks, photos: photos, files: files || {} }, null, 1);
     var a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([data], { type: "application/json" }));
     a.download = "todo-backup-" + todayKey() + ".json";
@@ -2062,8 +2256,9 @@
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
     ui.lastExport = todayKey(); saveUi();
     renderMenu();
-    var np = Object.keys(photos || {}).length;
-    toast("Backup saved" + (np ? " with " + plural(np, "photo") : "") + ": " + a.download);
+    var np = Object.keys(photos || {}).length, nf = Object.keys(files || {}).length;
+    var extra = [np ? plural(np, "photo") : "", nf ? plural(nf, "file") : ""].filter(Boolean).join(" and ");
+    toast("Backup saved" + (extra ? " with " + extra : "") + ": " + a.download);
   }
   $("importInput").onchange = function(){
     var f = this.files[0], fileInput = this;
@@ -2072,6 +2267,7 @@
       var data = JSON.parse(raw);
       var list = Array.isArray(data) ? data : data && data.tasks;
       var photos = data && !Array.isArray(data) && data.photos && typeof data.photos === "object" ? data.photos : {};
+      var docs = data && !Array.isArray(data) && data.files && typeof data.files === "object" ? data.files : {};
       if (!Array.isArray(list)) throw new Error("bad file");
       var ids = {}; tasks.forEach(function(x){ ids[x.id] = true; });
       var n = 0;
@@ -2081,20 +2277,29 @@
         var it = { id: x.id || uid(), text: x.text.slice(0, 200), prio: PRIO[p] ? p : 3, cat: normCat(x.cat), date: x.date, done: !!x.done, created: Number(x.created) || Date.now(), repeat: x.repeat, repeatDay: x.repeatDay };
         if (Array.isArray(x.subs)) it.subs = x.subs;
         if (Array.isArray(x.images)) it.images = x.images.filter(function(id){ return photos[id]; });
+        if (Array.isArray(x.files)) it.files = x.files.filter(function(f){ return f && docs[f.id]; });
         normRepeat(it);
         normSubs(it);
         normImages(it);
+        normFiles(it);
         tasks.push(it);
         n++;
       });
-      return Promise.all(Object.keys(photos).map(function(id){
+      var docJobs = Object.keys(docs).map(function(id){
+        var d = docs[id];
+        if (!d || typeof d.data !== "string" || d.data.indexOf("data:") !== 0) return;
+        return fetch(d.data).then(function(r){ return r.blob(); })
+          .then(function(b){ return Photos.put({ id: id, kind: "file", blob: b, name: String(d.name || "file"), type: String(d.type || ""), size: b.size, created: d.created || Date.now() }); })
+          .catch(noop);
+      });
+      return Promise.all(docJobs.concat(Object.keys(photos).map(function(id){
         var ph = photos[id];
         if (!ph || typeof ph.full !== "string" || ph.full.indexOf("data:image/") !== 0) return;
         return Promise.all([fetch(ph.full).then(function(r){ return r.blob(); }),
                             fetch(typeof ph.thumb === "string" && ph.thumb.indexOf("data:image/") === 0 ? ph.thumb : ph.full).then(function(r){ return r.blob(); })])
           .then(function(b){ return Photos.put({ id: id, blob: b[0], thumb: b[1], w: ph.w, h: ph.h, created: ph.created || Date.now() }); })
           .catch(noop);
-      })).then(function(){
+      }))).then(function(){
         save(); render();
         closeSheet();
         toast(n ? "Imported " + plural(n, "task") : "No new tasks in that file");
