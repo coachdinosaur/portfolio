@@ -31,7 +31,7 @@ the calendar, pick a day, then add tasks for that date.
 - Finished tasks move to a collapsible *Completed* section
 - "Move to today" for unfinished tasks from earlier days
 - Works offline; an **Install** button appears when Chrome allows installing it (or Chrome ⋮ → *Add to Home screen*). It shows up as "Todo List" in your apps
-- ⋮ menu: export / import a JSON backup
+- ⋮ Settings: theme (Auto / Light / Dark), accent colour, and export / import a JSON backup
 
 Tasks are stored in the browser's `localStorage`, so they stay on the device you use.
 No build step: it's plain HTML, CSS and JavaScript in `index.html`.

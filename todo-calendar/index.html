@@ -9,18 +9,66 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<script>
+// Theme: Auto / Light / Dark + accent colour. Runs before the page paints so there's no flash.
+(function(){
+  var ACCENTS = {
+    indigo: { name: "Indigo",   light: "#4f46e5", dark: "#818cf8" },
+    violet: { name: "Violet",   light: "#7c3aed", dark: "#a78bfa" },
+    teal:   { name: "Teal",     light: "#0f766e", dark: "#2dd4bf" },
+    green:  { name: "Green",    light: "#15803d", dark: "#4ade80" },
+    pink:   { name: "Pink",     light: "#db2777", dark: "#f472b6" },
+    slate:  { name: "Graphite", light: "#334155", dark: "#cbd5e1" }
+  };
+  var KEY = "todo-calendar-theme";
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function read(){
+    var t = {};
+    try { t = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){}
+    return { mode: t.mode === "light" || t.mode === "dark" ? t.mode : "system", accent: ACCENTS[t.accent] ? t.accent : "indigo" };
+  }
+  function mix(hex, base, share){
+    var a = parseInt(hex.slice(1), 16), b = parseInt(base.slice(1), 16);
+    var ch = function(sh){ return Math.round(((a >> sh) & 255) * share + ((b >> sh) & 255) * (1 - share)); };
+    return "#" + ((1 << 24) | (ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).slice(1);
+  }
+  function apply(){
+    var t = read();
+    var dark = t.mode === "dark" || (t.mode === "system" && !!(mq && mq.matches));
+    var c = ACCENTS[t.accent][dark ? "dark" : "light"];
+    var root = document.documentElement;
+    root.setAttribute("data-theme", dark ? "dark" : "light");
+    root.style.setProperty("--accent", c);
+    root.style.setProperty("--accent-soft", mix(c, dark ? "#181b24" : "#ffffff", dark ? 0.22 : 0.1));
+    root.style.setProperty("--on-accent", dark ? "#0f1117" : "#ffffff");
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", dark ? "#0f1117" : ACCENTS[t.accent].light);
+    t.dark = dark;
+    return t;
+  }
+  function save(t){
+    try { localStorage.setItem(KEY, JSON.stringify({ mode: t.mode, accent: t.accent })); } catch(e){}
+    return apply();
+  }
+  if (mq){
+    if (mq.addEventListener) mq.addEventListener("change", function(){ apply(); window.dispatchEvent(new Event("themechange")); });
+    else if (mq.addListener) mq.addListener(function(){ apply(); window.dispatchEvent(new Event("themechange")); });
+  }
+  window.TodoTheme = { ACCENTS: ACCENTS, read: read, apply: apply, save: save };
+  apply();
+})();
+</script>
 <style>
   :root{
     --bg:#f5f6fa; --card:#ffffff; --text:#1c1f2a; --muted:#6b7280; --line:#e8eaf1;
     --accent:#4f46e5; --accent-soft:#eef0ff; --on-accent:#ffffff;
     --p1:#dc2626; --p2:#ea580c; --p3:#2563eb; --p4:#6b7280; --p1-soft:#fdecec;
   }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#0f1117; --card:#181b24; --text:#e8eaf0; --muted:#9aa1b2; --line:#272c38;
-      --accent:#818cf8; --accent-soft:#232846; --on-accent:#0f1117;
-      --p1:#f87171; --p2:#fb923c; --p3:#60a5fa; --p4:#9ca3af; --p1-soft:#3a1f24;
-    }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0f1117; --card:#181b24; --text:#e8eaf0; --muted:#9aa1b2; --line:#272c38;
+    --accent:#818cf8; --accent-soft:#232846; --on-accent:#0f1117;
+    --p1:#f87171; --p2:#fb923c; --p3:#60a5fa; --p4:#9ca3af; --p1-soft:#3a1f24;
   }
   *{box-sizing:border-box}
   [hidden]{display:none !important}
@@ -60,10 +108,8 @@
   .seg .n{font-size:.72rem;font-weight:700;color:var(--muted)}
   .filter{margin:0 0 14px}
   .seg.small{flex:none;width:184px}
-  @media (prefers-color-scheme: dark){
-    .seg{background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)}
-    .seg button.on{background:var(--accent-soft);color:var(--text);box-shadow:none}
-  }
+  [data-theme="dark"] .seg{background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)}
+  [data-theme="dark"] .seg button.on{background:var(--accent-soft);color:var(--text);box-shadow:none}
   .seg.small button{height:30px;font-size:.8rem}
 
   /* Banners */
@@ -128,7 +174,7 @@
   .chips{display:flex;gap:6px;flex-wrap:nowrap}
   .uchip{flex:none;height:34px;padding:0 12px;border-radius:999px;border:1.5px solid var(--pc);background:transparent;color:var(--pc);font-weight:700;font-size:.82rem;white-space:nowrap}
   .uchip.on{background:var(--pc);color:#fff}
-  @media (prefers-color-scheme: dark){ .uchip.on{color:#0f1117} }
+  [data-theme="dark"] .uchip.on{color:#0f1117}
 
   /* Pull-up sheets */
   .backdrop{position:fixed;inset:0;background:rgba(10,12,20,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
@@ -179,6 +225,13 @@
   .remind-btn{display:flex;align-items:center;gap:8px;width:100%;margin-top:14px;padding:12px 14px;border-radius:12px;border:none;background:var(--p1-soft);color:var(--p1);font-weight:650;text-align:left}
 
   /* Menu sheet */
+  .swatches{display:flex;flex-wrap:wrap;gap:12px;margin:2px 0 4px}
+  .swatch{width:42px;height:42px;border-radius:50%;border:none;padding:0;background:var(--sw);display:grid;place-items:center;
+          color:var(--on-accent);box-shadow:0 0 0 2px var(--card),0 0 0 4px transparent;transition:box-shadow .15s}
+  .swatch svg{opacity:0}
+  .swatch.on{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--sw)}
+  .swatch.on svg{opacity:1}
+  .menu-sep{height:1px;background:var(--line);margin:18px 0 4px}
   .menu-note{font-size:.85rem;color:var(--muted);margin:0 0 14px}
   .menu-item{display:flex;align-items:center;gap:14px;width:100%;padding:14px;margin-bottom:10px;border-radius:14px;border:1px solid var(--line);
              background:var(--bg);text-align:left;cursor:pointer;font-size:1rem}
@@ -229,7 +282,7 @@
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
       <span class="badge" id="bellBadge" hidden></span>
     </button>
-    <button class="icon-btn" id="menuBtn" type="button" aria-label="Menu: backup and restore">
+    <button class="icon-btn" id="menuBtn" type="button" aria-label="Settings: theme and backup">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
     </button>
   </header>
@@ -364,8 +417,18 @@
 <div class="sheet" id="menuSheet" role="dialog" aria-modal="true" aria-labelledby="menuTitle" aria-hidden="true">
   <div class="sheet-top">
     <div class="grab" aria-hidden="true"><span></span></div>
-    <h2 class="sheet-title" id="menuTitle">Backup &amp; restore</h2>
+    <h2 class="sheet-title" id="menuTitle">Settings</h2>
   </div>
+  <p class="sec">Theme</p>
+  <div class="seg" id="modeSeg" role="radiogroup" aria-label="Theme">
+    <button type="button" data-m="system" role="radio">Auto</button>
+    <button type="button" data-m="light" role="radio">Light</button>
+    <button type="button" data-m="dark" role="radio">Dark</button>
+  </div>
+  <p class="sec">Accent colour</p>
+  <div class="swatches" id="swatches" role="radiogroup" aria-label="Accent colour"></div>
+  <div class="menu-sep"></div>
+  <p class="sec">Backup &amp; restore</p>
   <p class="menu-note">Your tasks are saved on this phone only. Export a backup now and then so you can get them back if you clear your browser data or change phones.</p>
   <button type="button" class="menu-item" id="exportBtn">
     <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span>
@@ -1097,7 +1160,43 @@
   }
 
   // ---------- Backup ----------
+  var CHECK_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  function renderTheme(){
+    var T = window.TodoTheme, t = T.apply();
+    $("modeSeg").querySelectorAll("button").forEach(function(b){
+      var on = b.dataset.m === t.mode;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-checked", String(on));
+    });
+    var box = $("swatches");
+    box.innerHTML = "";
+    Object.keys(T.ACCENTS).forEach(function(k){
+      var a = T.ACCENTS[k];
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "swatch" + (k === t.accent ? " on" : "");
+      b.style.setProperty("--sw", t.dark ? a.dark : a.light);
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", String(k === t.accent));
+      b.setAttribute("aria-label", a.name);
+      b.title = a.name;
+      b.innerHTML = CHECK_SVG;
+      b.onclick = function(){ var cur = T.read(); cur.accent = k; T.save(cur); renderTheme(); };
+      box.appendChild(b);
+    });
+  }
+  $("modeSeg").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if (!b) return;
+    var cur = window.TodoTheme.read();
+    cur.mode = b.dataset.m;
+    window.TodoTheme.save(cur);
+    renderTheme();
+  });
+  window.addEventListener("themechange", function(){ if (openEl === menuSheet) renderTheme(); });
+
   function renderMenu(){
+    renderTheme();
     $("lastBackup").textContent = ui.lastExport
       ? "Last exported " + (relative(ui.lastExport) ? relative(ui.lastExport).toLowerCase() : "on " + shortDate(ui.lastExport)) + " · saves a file to Downloads"
       : "Saves a file to your Downloads";
