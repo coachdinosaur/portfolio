@@ -284,6 +284,18 @@
   .menu-item .ico{flex:none;width:42px;height:42px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
   .menu-item .sub{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
 
+  /* About sheet */
+  .about{text-align:center;padding:4px 4px 8px}
+  .about-icon{width:76px;height:76px;border-radius:20px;display:grid;place-items:center;margin:6px auto 12px;background:var(--accent);color:var(--on-accent);box-shadow:0 6px 18px rgba(0,0,0,.15)}
+  .about h2{margin:0;font-size:1.35rem}
+  .about .ver{margin:2px 0 12px;color:var(--muted);font-size:.85rem}
+  .about-desc{margin:0 auto 16px;max-width:380px;font-size:.92rem;color:var(--muted)}
+  .about-card{border:1px solid var(--line);border-radius:14px;background:var(--bg);text-align:left;margin-bottom:14px}
+  .about-card .row{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border-top:1px solid var(--line);font-size:.92rem}
+  .about-card .row:first-child{border-top:none}
+  .about-card .row span{color:var(--muted)}
+  .about .copy{margin:0;font-size:.82rem;color:var(--muted)}
+
   /* Alerts sheet */
   .crit-list{list-style:none;margin:0;padding:0;max-height:32vh;overflow-y:auto}
   .crit-list button{width:100%;display:flex;align-items:center;gap:10px;text-align:left;background:var(--p1-soft);border:none;
@@ -505,6 +517,31 @@
     <span><b>Import backup</b><span class="sub">Adds tasks from a backup file. Nothing gets deleted.</span></span>
   </label>
   <input type="file" id="importInput" accept="application/json,.json" hidden>
+  <div class="menu-sep"></div>
+  <button type="button" class="menu-item" id="aboutBtn">
+    <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></span>
+    <span><b>About</b><span class="sub">Version, credits and copyright</span></span>
+  </button>
+</div>
+
+<!-- About sheet -->
+<div class="sheet" id="aboutSheet" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" aria-hidden="true">
+  <div class="sheet-top">
+    <div class="grab" aria-hidden="true"><span></span></div>
+  </div>
+  <div class="about">
+    <div class="about-icon" aria-hidden="true">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4M8 3v4M8.5 13.5l2.5 2.5 4.5-4.5"/></svg>
+    </div>
+    <h2 id="aboutTitle">Todo List</h2>
+    <p class="ver">Version <span id="appVersion">1.0</span></p>
+    <p class="about-desc">A simple todo list for work and personal tasks, with urgency levels, sub-tasks, repeating tasks, critical alerts and a pull-up calendar. Your tasks are saved on this device.</p>
+    <div class="about-card">
+      <div class="row"><span>Made by</span><b>CDDigital</b></div>
+      <div class="row"><span>Designed with</span><b>Claude Code</b></div>
+    </div>
+    <p class="copy" id="copyright">© 2026 CDDigital. All rights reserved.</p>
+  </div>
 </div>
 
 <!-- Alerts sheet -->
@@ -1250,7 +1287,7 @@
   };
 
   // ---------- Sheets ----------
-  var backdrop = $("backdrop"), calSheet = $("calSheet"), alertSheet = $("alertSheet"), editSheet = $("editSheet"), menuSheet = $("menuSheet");
+  var backdrop = $("backdrop"), calSheet = $("calSheet"), alertSheet = $("alertSheet"), editSheet = $("editSheet"), menuSheet = $("menuSheet"), aboutSheet = $("aboutSheet");
   var openEl = null;
 
   function openSheet(el){
@@ -1288,7 +1325,12 @@
     if (el === editSheet) editing = null;
     if (!keepHistory && history.state && history.state.sheet){ try { history.back(); } catch(e){} }
   }
-  [calSheet, alertSheet, editSheet, menuSheet].forEach(function(s){ s.inert = true; });
+  [calSheet, alertSheet, editSheet, menuSheet, aboutSheet].forEach(function(s){ s.inert = true; });
+  $("aboutBtn").onclick = function(){ openSheet(aboutSheet); };
+  (function(){
+    var y = new Date().getFullYear();
+    $("copyright").textContent = "© " + (y > 2026 ? "2026–" + y : "2026") + " CDDigital. All rights reserved.";
+  })();
   window.addEventListener("popstate", function(){
     if (openEl) closeSheet(true);
     else if (selecting) exitSelect(true);

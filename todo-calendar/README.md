@@ -39,7 +39,11 @@ the calendar, pick a day, then add tasks for that date.
   their day, e.g. the 31st becomes the 28th in February and back to the 31st in March). Un-ticking takes the next copy back.
 - "Move to today" for unfinished tasks from earlier days
 - Works offline; an **Install** button appears when Chrome allows installing it (or Chrome ⋮ → *Add to Home screen*). It shows up as "Todo List" in your apps
-- ⋮ Settings: theme (Auto / Light / Dark), accent colour, and export / import a JSON backup
+- ⋮ Settings: theme (Auto / Light / Dark), accent colour, export / import a JSON backup, and About
 
 Tasks are stored in the browser's `localStorage`, so they stay on the device you use.
 No build step: it's plain HTML, CSS and JavaScript in `index.html`.
+
+---
+
+© 2026 CDDigital. All rights reserved. Designed with Claude Code.
