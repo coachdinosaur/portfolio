@@ -96,6 +96,8 @@
   .task.done .meta{display:none}
   .rem{flex:none;width:38px;height:38px;border:none;border-radius:10px;background:var(--p1-soft);color:var(--p1);display:grid;place-items:center;padding:0;margin-right:6px}
   .task.new{animation:flash 1.2s ease}
+  main.switching{animation:tabfade .18s ease}
+  @keyframes tabfade{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
   @keyframes flash{0%{background:var(--accent-soft)}100%{background:transparent}}
   .hint{color:var(--muted);font-size:.78rem;text-align:center;margin:10px 0 0}
   .empty-state{text-align:center;padding:42px 20px 30px;color:var(--muted)}
@@ -232,7 +234,7 @@
     </button>
   </header>
 
-  <div class="progress" id="progress" hidden>
+  <div class="progress" id="progress">
     <div class="bar"><i id="bar"></i></div>
     <span id="progressText"></span>
   </div>
@@ -478,9 +480,9 @@
 
     var items = tasks.filter(function(x){ return x.date === selected && matches(x); });
     var done = items.filter(function(x){ return x.done; }).length;
-    $("progress").hidden = items.length === 0;
     $("bar").style.width = items.length ? (done / items.length * 100) + "%" : "0";
-    $("progressText").textContent = done === items.length && items.length ? "All done ✓" : done + " of " + items.length + " done";
+    $("progressText").textContent = !items.length ? "No tasks yet"
+      : done === items.length ? "All done ✓" : done + " of " + items.length + " done";
 
     $("addDateLabel").textContent = chipDate(selected);
     composer.classList.toggle("other-day", selected !== t);
@@ -567,6 +569,10 @@
     if (f !== "all"){ addCat = f; }
     paintComposer();
     render();
+    var m = document.querySelector("main");
+    m.classList.remove("switching");
+    void m.offsetWidth;                 // restart the animation
+    m.classList.add("switching");
   }
   $("filterSeg").addEventListener("click", function(e){
     var b = e.target.closest("button");

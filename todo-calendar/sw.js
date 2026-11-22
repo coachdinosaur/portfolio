@@ -1,7 +1,7 @@
 // Offline support: always try the network first so updates show right away,
 // fall back to the cached copy when offline.
 // Also shows the daily "critical tasks" notification.
-const CACHE = "todo-calendar-v7";
+const CACHE = "todo-calendar-v8";
 const DATA = "todo-data"; // written by the page: alert settings + open Critical tasks
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./badge-96.png"];
 const DATA_URL = new URL("__alerts.json", self.location.href).href;
