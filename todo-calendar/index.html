@@ -248,6 +248,8 @@
   .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:10px;font-size:.75rem;color:var(--muted)}
   .legend span{display:inline-flex;align-items:center;gap:5px}
   .legend i{width:8px;height:8px;border-radius:50%;background:var(--pc)}
+  .cal-swipe{touch-action:pan-y;overflow:hidden}
+  .grid{will-change:transform}
   .sheet-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;font-size:.8rem;color:var(--muted)}
   .sheet-foot .foot-btns{display:flex;gap:6px;flex:none}
   .group-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:12px 10px 4px 0;
@@ -438,8 +440,10 @@
       <button class="nav-btn" id="nextBtn" type="button" aria-label="Next month">›</button>
     </div>
   </div>
-  <div class="dow" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
-  <div class="grid" id="grid"></div>
+  <div class="cal-swipe" id="calSwipe">
+    <div class="dow" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+    <div class="grid" id="grid"></div>
+  </div>
   <div class="legend">
     <span class="p1"><i></i>Critical</span><span class="p2"><i></i>High</span>
     <span class="p3"><i></i>Medium</span><span class="p4"><i></i>Low</span>
@@ -1479,7 +1483,7 @@
 
   $("grid").addEventListener("click", function(e){
     var btn = e.target.closest(".day");
-    if (!btn) return;
+    if (!btn || Date.now() - swipedAt < 400) return;   // the end of a swipe isn't a tap on a day
     closeSheet();
     selectDay(btn.dataset.key);
     // if a task was half-typed, go straight back to it
@@ -1491,18 +1495,70 @@
     view = { y: d.getFullYear(), m: d.getMonth() };
     renderCalendar();
   }
-  $("prevBtn").onclick = function(){ shiftMonth(-1); };
-  $("nextBtn").onclick = function(){ shiftMonth(1); };
+  // slide the days out, switch month, slide the new month in
+  var sliding = false;
+  function slideMonth(n){
+    var g = $("grid");
+    if (sliding){ shiftMonth(n); return; }
+    sliding = true;
+    g.style.transition = "transform .14s ease-in, opacity .14s ease-in";
+    g.style.transform = "translateX(" + (n > 0 ? -35 : 35) + "%)";
+    g.style.opacity = "0";
+    setTimeout(function(){
+      shiftMonth(n);
+      g.style.transition = "none";
+      g.style.transform = "translateX(" + (n > 0 ? 35 : -35) + "%)";
+      void g.offsetWidth;
+      g.style.transition = "transform .2s ease-out, opacity .2s ease-out";
+      g.style.transform = "";
+      g.style.opacity = "";
+      setTimeout(function(){ sliding = false; g.style.transition = ""; }, 210);
+    }, 140);
+  }
+  $("prevBtn").onclick = function(){ slideMonth(-1); };
+  $("nextBtn").onclick = function(){ slideMonth(1); };
 
-  // swipe left/right on the days to change month
-  var sx = null, sy = null;
-  $("grid").addEventListener("touchstart", function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
-  $("grid").addEventListener("touchend", function(e){
-    if (sx === null) return;
-    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-    sx = null;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) shiftMonth(dx < 0 ? 1 : -1);
+  // swipe sideways on the calendar: the month follows your finger, then snaps to the next/previous one
+  var sw = { id: null, x: 0, y: 0, dx: 0, on: false }, swipedAt = 0;
+  var swipeArea = $("calSwipe");
+  swipeArea.addEventListener("pointerdown", function(e){
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    sw = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, on: false };
   });
+  swipeArea.addEventListener("pointermove", function(e){
+    if (sw.id !== e.pointerId) return;
+    var dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+    if (!sw.on){
+      if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)){
+        sw.on = true;
+        try { swipeArea.setPointerCapture(e.pointerId); } catch(err){}
+      } else if (Math.abs(dy) > 12){ sw.id = null; return; }   // vertical: let the page scroll
+    }
+    if (sw.on){
+      sw.dx = dx;
+      var g = $("grid");
+      g.style.transition = "none";
+      g.style.transform = "translateX(" + dx + "px)";
+      g.style.opacity = String(1 - Math.min(Math.abs(dx) / swipeArea.clientWidth, 0.6));
+    }
+  });
+  function endSwipe(e){
+    if (sw.id !== e.pointerId) return;
+    var was = sw.on, dx = sw.dx;
+    sw.id = null; sw.on = false;
+    if (!was) return;
+    swipedAt = Date.now();
+    var g = $("grid");
+    if (Math.abs(dx) > Math.min(70, swipeArea.clientWidth * 0.18)){
+      slideMonth(dx < 0 ? 1 : -1);
+    } else {
+      g.style.transition = "transform .18s ease-out, opacity .18s ease-out";
+      g.style.transform = "";
+      g.style.opacity = "";
+    }
+  }
+  swipeArea.addEventListener("pointerup", endSwipe);
+  swipeArea.addEventListener("pointercancel", endSwipe);
 
   // ---------- Critical alerts ----------
   var settings = (function(){
